@@ -1,5 +1,7 @@
 package com.alex1304dev.jdash.api;
 
+import com.alex1304dev.jdash.component.GDComponent;
+
 /**
  * Stores the response returned by the Geometry Dash servers.
  * 
@@ -9,7 +11,7 @@ package com.alex1304dev.jdash.api;
  * @author Alex1304
  *
  */
-public abstract class GDHttpResponse<T> {
+public abstract class GDHttpResponse<T extends GDComponent> {
 
 	private T response;
 	private int statusCode;

@@ -2,6 +2,8 @@ package com.alex1304dev.jdash.api;
 
 import java.util.Map;
 
+import com.alex1304dev.jdash.component.GDComponent;
+
 /**
  * Contains the parameters sent with the POST request to the Geometry Dash
  * servers
@@ -11,7 +13,7 @@ import java.util.Map;
  * @author Alex1304
  *
  */
-public abstract class GDHttpRequest<E> {
+public abstract class GDHttpRequest<E extends GDComponent> {
 
 	private Map<String, String> params;
 	private String path;

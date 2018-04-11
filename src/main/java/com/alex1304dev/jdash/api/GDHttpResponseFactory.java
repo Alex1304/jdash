@@ -1,5 +1,7 @@
 package com.alex1304dev.jdash.api;
 
+import com.alex1304dev.jdash.component.GDComponent;
+
 /**
  * Builds a GDHttpResponse object according to the string returned by the server
  * 
@@ -8,7 +10,7 @@ package com.alex1304dev.jdash.api;
  * @author Alex1304
  *
  */
-public interface GDHttpResponseFactory<T> {
+public interface GDHttpResponseFactory<T extends GDComponent> {
 	
 	/**
 	 * Builds the GDHttpResponse instance according to the given raw response and the status code

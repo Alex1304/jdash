@@ -9,6 +9,7 @@ import java.net.URL;
 import java.util.Map.Entry;
 import java.util.function.Consumer;
 
+import com.alex1304dev.jdash.component.GDComponent;
 import com.alex1304dev.jdash.util.Constants;
 
 /**
@@ -47,7 +48,7 @@ public class GDHttpClient {
 	 * 
 	 * @return a GDHttpResponse, or null if actionOnError has been executed
 	 */
-	public <T> GDHttpResponse<T> fetch(GDHttpRequest<T> request, Consumer<Exception> actionOnError)  {
+	public <T extends GDComponent> GDHttpResponse<T> fetch(GDHttpRequest<T> request, Consumer<Exception> actionOnError)  {
 		try {
 			HttpURLConnection con;
 			con = (HttpURLConnection) new URL(Constants.GD_API_URL + request.getPath()).openConnection();
