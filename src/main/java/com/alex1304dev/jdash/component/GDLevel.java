@@ -25,7 +25,10 @@ public class GDLevel implements GDComponent {
 	private int likes;
 	private GDLevelLength length;
 	private int pass;
-	
+	private long songID;
+	private int coinCount;
+	private boolean coinsVerified;
+
 	/**
 	 * @param id
 	 *            - the level ID
@@ -55,10 +58,16 @@ public class GDLevel implements GDComponent {
 	 * @param pass
 	 *            - the passcode to copy the level into the editor. -1 if the
 	 *            level is not copyable, -2 if the level is free to copy.
+	 * @param songID
+	 *            - the ID of the song of the level
+	 * @param coinCount
+	 *            - the number of coins the level has
+	 * @param coinsVerified
+	 *            - whether the coins are verified
 	 */
 	public GDLevel(long id, String name, long creatorID, String description, GDLevelDifficulty difficulty,
 			GDLevelDemonDifficulty demonDifficulty, int stars, int featuredScore, boolean epic, int downloads,
-			int likes, GDLevelLength length, int pass) {
+			int likes, GDLevelLength length, int pass, long songID, int coinCount, boolean coinsVerified) {
 		this.id = id;
 		this.name = name;
 		this.creatorID = creatorID;
@@ -72,6 +81,9 @@ public class GDLevel implements GDComponent {
 		this.likes = likes;
 		this.length = length;
 		this.pass = pass;
+		this.songID = songID;
+		this.coinCount = coinCount;
+		this.coinsVerified = coinsVerified;
 	}
 
 	/**
@@ -82,7 +94,7 @@ public class GDLevel implements GDComponent {
 	public long getId() {
 		return id;
 	}
-	
+
 	/**
 	 * Gets the level name
 	 * 
@@ -91,7 +103,7 @@ public class GDLevel implements GDComponent {
 	public String getName() {
 		return name;
 	}
-	
+
 	/**
 	 * Gets the account ID of the creator of this level
 	 * 
@@ -100,7 +112,7 @@ public class GDLevel implements GDComponent {
 	public long getCreatorID() {
 		return creatorID;
 	}
-	
+
 	/**
 	 * Gets the description of the level
 	 * 
@@ -109,7 +121,7 @@ public class GDLevel implements GDComponent {
 	public String getDescription() {
 		return description;
 	}
-	
+
 	/**
 	 * Gets the level difficulty
 	 * 
@@ -118,7 +130,7 @@ public class GDLevel implements GDComponent {
 	public GDLevelDifficulty getDifficulty() {
 		return difficulty;
 	}
-	
+
 	/**
 	 * Gets the level demon difficulty
 	 * 
@@ -127,7 +139,7 @@ public class GDLevel implements GDComponent {
 	public GDLevelDemonDifficulty getDemonDifficulty() {
 		return demonDifficulty;
 	}
-	
+
 	/**
 	 * Gets the number of stars assigned to this level
 	 * 
@@ -136,7 +148,7 @@ public class GDLevel implements GDComponent {
 	public int getStars() {
 		return stars;
 	}
-	
+
 	/**
 	 * Gets the featured score of the level. This score is mainly used to sort
 	 * levels in the Featured section.
@@ -146,7 +158,7 @@ public class GDLevel implements GDComponent {
 	public int getFeaturedScore() {
 		return featuredScore;
 	}
-	
+
 	/**
 	 * Gets whether the level is marked as Epic
 	 * 
@@ -155,7 +167,7 @@ public class GDLevel implements GDComponent {
 	public boolean isEpic() {
 		return epic;
 	}
-	
+
 	/**
 	 * Gets the number of downloads of the level
 	 *
@@ -164,7 +176,7 @@ public class GDLevel implements GDComponent {
 	public int getDownloads() {
 		return downloads;
 	}
-	
+
 	/**
 	 * Gets the number of likes the level received
 	 * 
@@ -173,7 +185,7 @@ public class GDLevel implements GDComponent {
 	public int getLikes() {
 		return likes;
 	}
-	
+
 	/**
 	 * Gets the level length
 	 * 
@@ -182,14 +194,41 @@ public class GDLevel implements GDComponent {
 	public GDLevelLength getLength() {
 		return length;
 	}
-	
+
 	/**
-	 * Gets the passcode to copy the level into the editor.
-	 * -1 if the level is not copyable, -2 if the level is free to copy.
+	 * Gets the passcode to copy the level into the editor. -1 if the level is
+	 * not copyable, -2 if the level is free to copy.
 	 * 
 	 * @return int
 	 */
 	public int getPass() {
 		return pass;
+	}
+
+	/**
+	 * Gets the ID of the song of the level
+	 * 
+	 * @return long
+	 */
+	public long getSongID() {
+		return songID;
+	}
+
+	/**
+	 * Gets the number of coins the level has
+	 * 
+	 * @return int
+	 */
+	public int getCoinCount() {
+		return coinCount;
+	}
+
+	/**
+	 * Gets whether the coins are verified
+	 * 
+	 * @return boolean
+	 */
+	public boolean hasCoinsVerified() {
+		return coinsVerified;
 	}
 }
