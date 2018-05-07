@@ -11,7 +11,7 @@ import com.alex1304dev.jdash.component.GDComponent;
  * @author Alex1304
  *
  */
-public abstract class GDHttpResponse<T extends GDComponent> {
+public class GDHttpResponse<T extends GDComponent> {
 
 	private T response;
 	private int statusCode;

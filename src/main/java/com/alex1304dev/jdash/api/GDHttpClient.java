@@ -7,9 +7,9 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Map.Entry;
-import java.util.function.Consumer;
 
 import com.alex1304dev.jdash.component.GDComponent;
+import com.alex1304dev.jdash.exceptions.GDAPIException;
 import com.alex1304dev.jdash.util.Constants;
 
 /**
@@ -22,6 +22,7 @@ public class GDHttpClient {
 
 	private long accountID;
 	private String password;
+	private boolean isAuthenticated;
 
 	/**
 	 * @param accountID
@@ -32,6 +33,14 @@ public class GDHttpClient {
 	public GDHttpClient(long accountID, String password) {
 		this.accountID = accountID;
 		this.password = password;
+		this.isAuthenticated = true;
+	}
+	
+	/**
+	 * Constructor that creates an anonymous (logged out) client.
+	 */
+	public GDHttpClient() {
+		this.isAuthenticated = false;
 	}
 	
 	/**
@@ -42,13 +51,10 @@ public class GDHttpClient {
 	 * @param request
 	 *            - the request object that contains the URL to request and the
 	 *            POST parameters
-	 * @param actionOnError
-	 *            - a consumer that executes if an error occurs when fetching
-	 *            data
 	 * 
-	 * @return a GDHttpResponse, or null if actionOnError has been executed
+	 * @return a GDHttpResponse
 	 */
-	public <T extends GDComponent> GDHttpResponse<T> fetch(GDHttpRequest<T> request, Consumer<Exception> actionOnError)  {
+	public <T extends GDComponent> GDHttpResponse<T> fetch(GDHttpRequest<T> request) throws GDAPIException  {
 		try {
 			HttpURLConnection con;
 			con = (HttpURLConnection) new URL(Constants.GD_API_URL + request.getPath()).openConnection();
@@ -58,6 +64,10 @@ public class GDHttpClient {
 			// Sending the request to the server
 			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
 			StringBuffer reqBody = new StringBuffer();
+			
+			request.getParams().putAll(request.requiresAuthentication()
+					? Constants.globalHttpRequestParamsWithAuthentication(accountID, password)
+					: Constants.globalHttpRequestParams());
 			
 			for (Entry<String, String> param: request.getParams().entrySet())
 				reqBody.append(param.getKey() + "=" + param.getValue() + "&");
@@ -79,8 +89,7 @@ public class GDHttpClient {
 			GDHttpResponseFactory<T> factory = request.getResponseFactory();
 			return factory.build(result.replaceAll("\n", ""), con.getResponseCode());
 		} catch (IOException e) {
-			actionOnError.accept(e);
-			return null;
+			throw new GDAPIException(e.getMessage());
 		}
 	}
 
@@ -100,5 +109,14 @@ public class GDHttpClient {
 	 */
 	public String getPassword() {
 		return password;
+	}
+
+	/**
+	 * Gets whether the client is authenticated with a GD account
+	 * 
+	 * @return boolean
+	 */
+	public boolean isAuthenticated() {
+		return isAuthenticated;
 	}
 }

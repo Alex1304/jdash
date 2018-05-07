@@ -1,12 +1,14 @@
 package com.alex1304dev.jdash.api;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import com.alex1304dev.jdash.component.GDComponent;
 
 /**
  * Contains the parameters sent with the POST request to the Geometry Dash
- * servers
+ * servers. The role of this class is also to return a response factory, which
+ * defines how the response to this request should be parsed.
  * 
  * @param <E> - the expected type of the HTTP response
  * 
@@ -18,10 +20,12 @@ public abstract class GDHttpRequest<E extends GDComponent> {
 	private Map<String, String> params;
 	private String path;
 	private GDHttpResponseFactory<E> responseFactory;
+	private boolean requiresAuthentication;
 
-	public GDHttpRequest(String path, Map<String, String> params) {
+	public GDHttpRequest(String path, boolean requiresAuthentication) {
 		this.path = path;
-		this.params = params;
+		this.params = new HashMap<>();
+		this.requiresAuthentication = requiresAuthentication;
 		this.responseFactory = responseFactoryInstance();
 	}
 
@@ -60,5 +64,14 @@ public abstract class GDHttpRequest<E extends GDComponent> {
 	 * @return
 	 */
 	public abstract GDHttpResponseFactory<E> responseFactoryInstance();
+
+	/**
+	 * Gets whether the request requires to be authenticated
+	 * 
+	 * @return boolean
+	 */
+	public boolean requiresAuthentication() {
+		return requiresAuthentication;
+	}
 
 }

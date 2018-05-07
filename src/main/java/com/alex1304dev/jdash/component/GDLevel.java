@@ -20,14 +20,24 @@ public class GDLevel implements GDComponent {
 	private GDLevelDemonDifficulty demonDifficulty;
 	private int stars;
 	private int featuredScore;
-	private boolean epic;
+	private boolean isEpic;
 	private int downloads;
 	private int likes;
 	private GDLevelLength length;
 	private int pass;
 	private long songID;
 	private int coinCount;
-	private boolean coinsVerified;
+	private boolean hasCoinsVerified;
+	private int levelVersion;
+	private int gameVersion;
+	private int objectCount;
+	private boolean isDemon;
+	private boolean isAuto;
+	private long originalLevelID;
+	private int audioTrack;
+	private int requestedStars;
+	private String uploadTimestamp;
+	private String lastUpdatedTimestamp;
 
 	/**
 	 * @param id
@@ -64,10 +74,33 @@ public class GDLevel implements GDComponent {
 	 *            - the number of coins the level has
 	 * @param coinsVerified
 	 *            - whether the coins are verified
+	 * @param levelVersion
+	 *            - the level version
+	 * @param gameVersion
+	 *            - whether the the game version which this level has been made on
+	 * @param objectCount
+	 *            - the number of objects the level has
+	 * @param isDemon
+	 *            - whether this level is Demon
+	 * @param isAuto
+	 *            - whether this level is auto
+	 * @param originalLevelID
+	 *            - the ID of the original level
+	 * @param audioTrack
+	 *            - Gets the index of the audio track (1 for Stereo Madness, 2 for Back On Track, etc)
+	 * @param requestedStars
+	 *            - the amount of stars requested by the uploader
+	 * @param uploadTimestamp
+	 *            - the timestamp of when the level has been uploaded
+	 * @param lastUpdatedTimestamp
+	 *            - the timestamp of when the level has been updated for the last time
 	 */
 	public GDLevel(long id, String name, long creatorID, String description, GDLevelDifficulty difficulty,
 			GDLevelDemonDifficulty demonDifficulty, int stars, int featuredScore, boolean epic, int downloads,
-			int likes, GDLevelLength length, int pass, long songID, int coinCount, boolean coinsVerified) {
+			int likes, GDLevelLength length, int pass, long songID, int coinCount, boolean coinsVerified,
+			int levelVersion, int gameVersion, int objectCount, boolean isDemon, boolean isAuto,
+			long originalLevelID, int audioTrack, int requestedStars, String uploadTimestamp,
+			String lastUpdatedTimestamp) {
 		this.id = id;
 		this.name = name;
 		this.creatorID = creatorID;
@@ -76,14 +109,24 @@ public class GDLevel implements GDComponent {
 		this.demonDifficulty = demonDifficulty;
 		this.stars = stars;
 		this.featuredScore = featuredScore;
-		this.epic = epic;
+		this.isEpic = epic;
 		this.downloads = downloads;
 		this.likes = likes;
 		this.length = length;
 		this.pass = pass;
 		this.songID = songID;
 		this.coinCount = coinCount;
-		this.coinsVerified = coinsVerified;
+		this.hasCoinsVerified = coinsVerified;
+		this.levelVersion = levelVersion;
+		this.gameVersion = gameVersion;
+		this.objectCount = objectCount;
+		this.isDemon = isDemon;
+		this.isAuto = isAuto;
+		this.originalLevelID = originalLevelID;
+		this.audioTrack = audioTrack;
+		this.requestedStars = requestedStars;
+		this.uploadTimestamp = uploadTimestamp;
+		this.lastUpdatedTimestamp = lastUpdatedTimestamp;
 	}
 
 	/**
@@ -165,7 +208,7 @@ public class GDLevel implements GDComponent {
 	 * @return boolean
 	 */
 	public boolean isEpic() {
-		return epic;
+		return isEpic;
 	}
 
 	/**
@@ -229,6 +272,110 @@ public class GDLevel implements GDComponent {
 	 * @return boolean
 	 */
 	public boolean hasCoinsVerified() {
-		return coinsVerified;
+		return hasCoinsVerified;
+	}
+
+	/**
+	 * Gets the level version
+	 * 
+	 * @return int
+	 */
+	public int getLevelVersion() {
+		return levelVersion;
+	}
+
+	/**
+	 * Gets the game version which this level has been made on
+	 * 
+	 * @return int
+	 */
+	public int getGameVersion() {
+		return gameVersion;
+	}
+
+	/**
+	 * Gets the number of objects the level has
+	 * 
+	 * @return int
+	 */
+	public int getObjectCount() {
+		return objectCount;
+	}
+
+	/**
+	 * Gets whether this level is Demon
+	 * 
+	 * @return boolean
+	 */
+	public boolean isDemon() {
+		return isDemon;
+	}
+
+	/**
+	 * Gets whether this level is auto
+	 * 
+	 * @return boolean
+	 */
+	public boolean isAuto() {
+		return isAuto;
+	}
+
+	/**
+	 * Gets the ID of the original level, or 0 if it's already an original level
+	 * 
+	 * @return int
+	 */
+	public long getOriginalLevelID() {
+		return originalLevelID;
+	}
+
+	/**
+	 * Gets the index of the audio track (1 for Stereo Madness, 2 for Back On Track, etc)
+	 * Returns 0 if it uses a custom song.
+	 * 
+	 * @return the audioTrack
+	 */
+	public int getAudioTrack() {
+		return audioTrack;
+	}
+
+	/**
+	 * Gets the amount of stars requested by the uploader
+	 * 
+	 * @return the requestedStars
+	 */
+	public int getRequestedStars() {
+		return requestedStars;
+	}
+
+	/**
+	 * Gets the timestamp of when the level has been uploaded
+	 * 
+	 * @return String
+	 */
+	public String getUploadTimestamp() {
+		return uploadTimestamp;
+	}
+
+	/**
+	 * Gets the timestamp of when the level has been updated for the last time
+	 * 
+	 * @return the lastUpdatedTimestamp
+	 */
+	public String getLastUpdatedTimestamp() {
+		return lastUpdatedTimestamp;
+	}
+
+	@Override
+	public String toString() {
+		return "GDLevel [id=" + id + ", name=" + name + ", creatorID=" + creatorID + ", description=" + description
+				+ ", difficulty=" + difficulty + ", demonDifficulty=" + demonDifficulty + ", stars=" + stars
+				+ ", featuredScore=" + featuredScore + ", isEpic=" + isEpic + ", downloads=" + downloads + ", likes="
+				+ likes + ", length=" + length + ", pass=" + pass + ", songID=" + songID + ", coinCount=" + coinCount
+				+ ", hasCoinsVerified=" + hasCoinsVerified + ", levelVersion=" + levelVersion + ", gameVersion="
+				+ gameVersion + ", objectCount=" + objectCount + ", isDemon=" + isDemon + ", isAuto=" + isAuto
+				+ ", originalLevelID=" + originalLevelID + ", audioTrack=" + audioTrack + ", requestedStars="
+				+ requestedStars + ", uploadTimestamp=" + uploadTimestamp + ", lastUpdatedTimestamp="
+				+ lastUpdatedTimestamp + "]";
 	}
 }
