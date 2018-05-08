@@ -2,6 +2,7 @@ package com.alex1304dev.jdash.util;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Contains utility static methods 
@@ -12,7 +13,7 @@ import java.util.Map;
 public abstract class Utils {
 	
 	/**
-	 * transforms a string into a map. The string must be in a specific format for this
+	 * Transforms a string into a map. The string must be in a specific format for this
 	 * method to work. For example, a string formatted as <code>"1:abc:2:def:3:xyz"</code>
 	 * will return the following map:
 	 * <pre>
@@ -36,5 +37,27 @@ public abstract class Utils {
 			map.put(Integer.parseInt(splitted[i]), splitted[i + 1]);
 		
 		return map;
+	}
+	
+	/**
+	 * Converts a set of integers to a string with the following format:
+	 * <code>val1,val2,val3,val4</code>
+	 * 
+	 * @param intSet
+	 *            - the set of integers to convert
+	 * 
+	 * @return String
+	 */
+	public static String setOfIntToString(Set<Integer> intSet) {
+		StringBuffer sb = new StringBuffer();
+		
+		for (int val : intSet) {
+			sb.append(val);
+			sb.append(",");
+		}
+		
+		if (!intSet.isEmpty())
+			sb.deleteCharAt(sb.length() - 1);
+		return sb.toString();
 	}
 }

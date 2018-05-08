@@ -1,12 +1,14 @@
 package com.alex1304dev.jdash.api;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import com.alex1304dev.jdash.component.GDComponent;
 
 /**
  * Contains the parameters sent with the POST request to the Geometry Dash
- * servers
+ * servers. The role of this class is also to return a response factory, which
+ * defines how the response to this request should be parsed.
  * 
  * @param <E> - the expected type of the HTTP response
  * 
@@ -17,12 +19,14 @@ public abstract class GDHttpRequest<E extends GDComponent> {
 
 	private Map<String, String> params;
 	private String path;
-	private GDHttpResponseFactory<E> responseFactory;
+	private GDHttpResponseBuilder<E> response;
+	private boolean requiresAuthentication;
 
-	public GDHttpRequest(String path, Map<String, String> params) {
+	public GDHttpRequest(String path, boolean requiresAuthentication) {
 		this.path = path;
-		this.params = params;
-		this.responseFactory = responseFactoryInstance();
+		this.params = new HashMap<>();
+		this.requiresAuthentication = requiresAuthentication;
+		this.response = responseBuilderInstance();
 	}
 
 	/**
@@ -44,21 +48,30 @@ public abstract class GDHttpRequest<E extends GDComponent> {
 	}
 	
 	/**
-	 * Gets the response factory object associated with this request.
+	 * Gets the response builder object associated with this request.
 	 * 
-	 * @return GDHttpResponseFactory
+	 * @return GDHttpResponseBuilder
 	 */
-	public GDHttpResponseFactory<E> getResponseFactory() {
-		return responseFactory;
+	public GDHttpResponseBuilder<E> getResponseBuilder() {
+		return response;
 	}
 	
 	/**
 	 * The role of this method is to build an instance of GDHttpResponseFactory
-	 * that will be then returned by {@link GDHttpRequest#getResponseFactory()}
+	 * that will be then returned by {@link GDHttpRequest#getResponseBuilder()}
 	 * This method is automatically called in the constructor of GDHttpRequest.
 	 * 
 	 * @return
 	 */
-	public abstract GDHttpResponseFactory<E> responseFactoryInstance();
+	public abstract GDHttpResponseBuilder<E> responseBuilderInstance();
+
+	/**
+	 * Gets whether the request requires to be authenticated
+	 * 
+	 * @return boolean
+	 */
+	public boolean requiresAuthentication() {
+		return requiresAuthentication;
+	}
 
 }
