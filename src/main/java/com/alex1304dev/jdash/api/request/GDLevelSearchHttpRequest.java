@@ -8,8 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.alex1304dev.jdash.api.GDHttpRequest;
-import com.alex1304dev.jdash.api.GDHttpResponse;
-import com.alex1304dev.jdash.api.GDHttpResponseFactory;
+import com.alex1304dev.jdash.api.GDHttpResponseBuilder;
 import com.alex1304dev.jdash.component.GDComponentList;
 import com.alex1304dev.jdash.component.GDLevelPreview;
 import com.alex1304dev.jdash.component.property.GDLevelLength;
@@ -23,13 +22,13 @@ import com.alex1304dev.jdash.util.Utils;
  */
 public class GDLevelSearchHttpRequest extends GDHttpRequest<GDComponentList<GDLevelPreview>> {
 	
-	public GDLevelSearchHttpRequest(String keywords) {
+	public GDLevelSearchHttpRequest(String keywords, int page) {
 		this(
 			Constants.LEVEL_SEARCH_TYPE_REGULAR,
 			keywords,
 			new HashSet<>(),
 			new HashSet<>(),
-			0,
+			page,
 			false,
 			false,
 			false,
@@ -69,52 +68,48 @@ public class GDLevelSearchHttpRequest extends GDHttpRequest<GDComponentList<GDLe
 	}
 
 	@Override
-	public GDHttpResponseFactory<GDComponentList<GDLevelPreview>> responseFactoryInstance() {
-		return (response, statusCode) -> {
-			if (statusCode != 200 || response.equals("-1"))
-				return new GDHttpResponse<>(new GDComponentList<>(), statusCode);
+	public GDHttpResponseBuilder<GDComponentList<GDLevelPreview>> responseBuilderInstance() {
+		return response -> {
+			if (response.equals("-1"))
+				return new GDComponentList<>();
 			
-			try {
-				GDComponentList<GDLevelPreview> lvlPrevList = new GDComponentList<>();
+			GDComponentList<GDLevelPreview> lvlPrevList = new GDComponentList<>();
 
-				String[] split1 = response.split("#");
-				String levels = split1[0];
-				String creators = split1[1];
-				String songs = split1[2];
+			String[] split1 = response.split("#");
+			String levels = split1[0];
+			String creators = split1[1];
+			String songs = split1[2];
 
-				Map<Long, String> structuredCreatorsInfo = structureCreatorsInfo(creators);
-				Map<Long, String> structuredSongsInfo = structureSongsInfo(songs);
-				String[] levelArray = levels.split("\\|");
+			Map<Long, String> structuredCreatorsInfo = structureCreatorsInfo(creators);
+			Map<Long, String> structuredSongsInfo = structureSongsInfo(songs);
+			String[] levelArray = levels.split("\\|");
 
-				for (int i = 0; i < levelArray.length; i++) {
-					String l = levelArray[i];
+			for (int i = 0; i < levelArray.length; i++) {
+				String l = levelArray[i];
 
-					Map<Integer, String> lmap = Utils.splitToMap(l, ":");
+				Map<Integer, String> lmap = Utils.splitToMap(l, ":");
 
-					lvlPrevList.add(new GDLevelPreview(Long.parseLong(lmap.get(Constants.INDEX_LEVEL_ID)),
-						lmap.get(Constants.INDEX_LEVEL_NAME),
-						structuredCreatorsInfo.get(Long.parseLong(lmap.get(Constants.INDEX_LEVEL_CREATOR_ID))),
-						Constants.VALUE_TO_DIFFICULTY
-								.apply(Integer.parseInt(lmap.get(Constants.INDEX_LEVEL_DIFFICULTY))),
-						Constants.VALUE_TO_DEMON_DIFFICULTY
-								.apply(Integer.parseInt(lmap.get(Constants.INDEX_LEVEL_DEMON_DIFFICULTY))),
-						Integer.parseInt(lmap.get(Constants.INDEX_LEVEL_STARS)),
-						structuredSongsInfo.get(Long.parseLong(lmap.get(Constants.INDEX_LEVEL_SONG_ID))),
-						Integer.parseInt(lmap.get(Constants.INDEX_LEVEL_FEATURED_SCORE)),
-						lmap.get(Constants.INDEX_LEVEL_IS_EPIC).equals("1"),
-						Integer.parseInt(lmap.get(Constants.INDEX_LEVEL_DOWNLOADS)),
-						Integer.parseInt(lmap.get(Constants.INDEX_LEVEL_LIKES)),
-						GDLevelLength.values()[Integer.parseInt(lmap.get(Constants.INDEX_LEVEL_LENGTH))],
-						Integer.parseInt(lmap.get(Constants.INDEX_LEVEL_COIN_COUNT)),
-						lmap.get(Constants.INDEX_LEVEL_COIN_VERIFIED).equals("1"),
-						lmap.get(Constants.INDEX_LEVEL_IS_DEMON).equals("1"),
-						lmap.get(Constants.INDEX_LEVEL_IS_AUTO).equals("1")));
-				}
-
-				return new GDHttpResponse<>(lvlPrevList, statusCode);
-			} catch (RuntimeException e) {
-				return new GDHttpResponse<>(null, statusCode);
+				lvlPrevList.add(new GDLevelPreview(Long.parseLong(lmap.get(Constants.INDEX_LEVEL_ID)),
+					lmap.get(Constants.INDEX_LEVEL_NAME),
+					structuredCreatorsInfo.get(Long.parseLong(lmap.get(Constants.INDEX_LEVEL_CREATOR_ID))),
+					Constants.VALUE_TO_DIFFICULTY
+							.apply(Integer.parseInt(lmap.get(Constants.INDEX_LEVEL_DIFFICULTY))),
+					Constants.VALUE_TO_DEMON_DIFFICULTY
+							.apply(Integer.parseInt(lmap.get(Constants.INDEX_LEVEL_DEMON_DIFFICULTY))),
+					Integer.parseInt(lmap.get(Constants.INDEX_LEVEL_STARS)),
+					structuredSongsInfo.get(Long.parseLong(lmap.get(Constants.INDEX_LEVEL_SONG_ID))),
+					Integer.parseInt(lmap.get(Constants.INDEX_LEVEL_FEATURED_SCORE)),
+					lmap.get(Constants.INDEX_LEVEL_IS_EPIC).equals("1"),
+					Integer.parseInt(lmap.get(Constants.INDEX_LEVEL_DOWNLOADS)),
+					Integer.parseInt(lmap.get(Constants.INDEX_LEVEL_LIKES)),
+					GDLevelLength.values()[Integer.parseInt(lmap.get(Constants.INDEX_LEVEL_LENGTH))],
+					Integer.parseInt(lmap.get(Constants.INDEX_LEVEL_COIN_COUNT)),
+					lmap.get(Constants.INDEX_LEVEL_COIN_VERIFIED).equals("1"),
+					lmap.get(Constants.INDEX_LEVEL_IS_DEMON).equals("1"),
+					lmap.get(Constants.INDEX_LEVEL_IS_AUTO).equals("1")));
 			}
+
+			return lvlPrevList;
 		};
 	}
 	

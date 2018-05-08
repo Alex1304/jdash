@@ -173,6 +173,14 @@ public interface Constants {
 	public static final int INDEX_USER_TWITTER = 44;
 	public static final int INDEX_USER_TWITCH = 45;
 	
+	/* Message data */
 	
+	public static final int INDEX_MESSAGE_ID = 1;
+	public static final int INDEX_MESSAGE_SENDER_ID = 2;
+	public static final int INDEX_MESSAGE_SENDER_NAME = 6;
+	public static final int INDEX_MESSAGE_SUBJECT = 4;
+	public static final int INDEX_MESSAGE_BODY = 5;
+	public static final int INDEX_MESSAGE_TIMESTAMP = 7;
+	public static final int INDEX_MESSAGE_IS_READ = 8;
 	
 }

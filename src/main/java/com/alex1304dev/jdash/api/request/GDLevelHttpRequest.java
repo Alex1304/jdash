@@ -4,8 +4,7 @@ import java.util.Base64;
 import java.util.Map;
 
 import com.alex1304dev.jdash.api.GDHttpRequest;
-import com.alex1304dev.jdash.api.GDHttpResponse;
-import com.alex1304dev.jdash.api.GDHttpResponseFactory;
+import com.alex1304dev.jdash.api.GDHttpResponseBuilder;
 import com.alex1304dev.jdash.component.GDLevel;
 import com.alex1304dev.jdash.component.property.GDLevelLength;
 import com.alex1304dev.jdash.util.Constants;
@@ -29,16 +28,16 @@ public class GDLevelHttpRequest extends GDHttpRequest<GDLevel> {
 	}
 
 	@Override
-	public GDHttpResponseFactory<GDLevel> responseFactoryInstance() {
-		return (response, statusCode) -> {
-			if (statusCode != 200 || response.equals("-1"))
-				return new GDHttpResponse<>(null, statusCode);
+	public GDHttpResponseBuilder<GDLevel> responseBuilderInstance() {
+		return response -> {
+			if (response.equals("-1"))
+				return null;
 			
 			String[] split1 = response.split("#");
 			String levelData = split1[0];
 			Map<Integer, String> mappedLevelData = Utils.splitToMap(levelData, ":");
 			
-			return new GDHttpResponse<GDLevel>(new GDLevel(
+			return new GDLevel(
 				Long.parseLong(mappedLevelData.get(Constants.INDEX_LEVEL_ID)),
 				mappedLevelData.get(Constants.INDEX_LEVEL_NAME),
 				Long.parseLong(mappedLevelData.get(Constants.INDEX_LEVEL_CREATOR_ID)),
@@ -64,8 +63,7 @@ public class GDLevelHttpRequest extends GDHttpRequest<GDLevel> {
 				Integer.parseInt(mappedLevelData.get(Constants.INDEX_LEVEL_AUDIO_TRACK)),
 				Integer.parseInt(mappedLevelData.get(Constants.INDEX_LEVEL_REQUESTED_STARS)),
 				mappedLevelData.get(Constants.INDEX_LEVEL_UPLOADED_TIMESTAMP),
-				mappedLevelData.get(Constants.INDEX_LEVEL_LAST_UPDATED_TIMESTAMP)),
-				statusCode
+				mappedLevelData.get(Constants.INDEX_LEVEL_LAST_UPDATED_TIMESTAMP)
 			);
 		};
 	}

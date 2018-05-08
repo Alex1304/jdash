@@ -54,7 +54,7 @@ public class GDHttpClient {
 	 * 
 	 * @return a GDHttpResponse
 	 */
-	public <T extends GDComponent> GDHttpResponse<T> fetch(GDHttpRequest<T> request) throws GDAPIException  {
+	public <T extends GDComponent> T fetch(GDHttpRequest<T> request) throws GDAPIException  {
 		try {
 			HttpURLConnection con;
 			con = (HttpURLConnection) new URL(Constants.GD_API_URL + request.getPath()).openConnection();
@@ -86,9 +86,11 @@ public class GDHttpClient {
 				result += line + "\n";
 			}
 			
-			GDHttpResponseFactory<T> factory = request.getResponseFactory();
-			return factory.build(result.replaceAll("\n", ""), con.getResponseCode());
-		} catch (IOException e) {
+			result = result.replaceAll("\n", "");
+			
+			GDHttpResponseBuilder<T> builder = request.getResponseBuilder();
+			return builder.build(result);
+		} catch (IOException | RuntimeException e) {
 			throw new GDAPIException(e.getMessage());
 		}
 	}
