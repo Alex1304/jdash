@@ -2,8 +2,6 @@ package com.alex1304dev.jdash.api;
 
 import static org.junit.Assert.*;
 
-import java.util.Scanner;
-
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -26,26 +24,21 @@ import com.alex1304dev.jdash.component.GDUserPreview;
 public class GDHttpClientTest {
 	
 	private GDHttpClient client, clientAuth;
-	private static long accountID;
-	private static String password;
+	private static long accountID = -1;
+	private static String password = null;
 	
 	@BeforeClass
 	public static void setupBeforeClass() throws Exception {
-		Scanner sc = new Scanner(System.in);
-		
-		do {
+		if (System.getenv().containsKey("JDASH_TEST_ACCOUNT_ID")) {
 			try {
-				System.out.print("Geometry Dash account ID: ");
-				accountID = Long.parseLong(sc.nextLine());
+				accountID = Long.parseLong(System.getenv().get("JDASH_TEST_ACCOUNT_ID"));
 			} catch (NumberFormatException e) {
-				System.out.println("Invalid input, try again.");
+				accountID = -1;
 			}
-		} while (accountID < 0);
+		}
 		
-		
-		System.out.print("Geometry Dash password: ");
-		password = sc.nextLine();
-		sc.close();
+		if (System.getenv().containsKey("JDASH_TEST_ACCOUNT_PASSWORD"))
+			password = System.getenv().get("JDASH_TEST_ACCOUNT_PASSWORD");
 	}
 
 	@Before
@@ -63,6 +56,7 @@ public class GDHttpClientTest {
 		System.out.println(level);
 	}
 	
+	@Test
 	public void test_level_caseLevelNotFound_fetch() throws Exception {
 		GDLevelHttpRequest levelReq = new GDLevelHttpRequest(0);
 		assertNull(client.fetch(levelReq));
@@ -96,6 +90,8 @@ public class GDHttpClientTest {
 	
 	@Test
 	public void test_messageList_fetch() throws Exception {
+		if (accountID == -1 || password == null)
+			return;
 		GDMessageListHttpRequest messageListReq = new GDMessageListHttpRequest(0);
 		GDComponentList<GDMessage> messageList = clientAuth.fetch(messageListReq);
 		assertNotNull(messageList);
@@ -105,6 +101,8 @@ public class GDHttpClientTest {
 	
 	@Test
 	public void test_messageRead_fetch() throws Exception {
+		if (accountID == -1 || password == null)
+			return;
 		GDMessageReadHttpRequest messageReadReq = new GDMessageReadHttpRequest(35557342);
 		GDMessage message = clientAuth.fetch(messageReadReq);
 		assertNotNull(message);
@@ -114,6 +112,8 @@ public class GDHttpClientTest {
 	
 	@Test
 	public void test_messageSend_fetch() throws Exception {
+		if (accountID == -1 || password == null)
+			return;
 		GDMessageSendHttpRequest req = new GDMessageSendHttpRequest(98006, "Test", "This is a test message.");
 		GDBoolean bool = clientAuth.fetch(req);
 		assertNotNull(bool);
