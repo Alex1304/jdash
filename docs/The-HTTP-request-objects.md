@@ -1,0 +1,218 @@
+# The HTTP request objects
+
+This section will focus more on the HTTP request objects.
+
+## Available objects
+
+There are different implementations of the request object, depending on the targeted resource on the Geometry Dash servers. Here's the full list of them.
+
+### `GDLevelHttpRequest`
+
+Fetches one online level by its ID.
+
+**Constructor parameters:**
+
+- levelID (`long`), the ID of th level to fetch
+
+```Java
+GDLevelHttpRequest request = new GDLevelHttpRequest(12345678);
+```
+
+**Response object: ** `GDLevel`
+
+```Java
+GDLevel response = client.fetch(request);
+```
+
+### `GDLevelSearchHttpRequest`
+
+Searches for online levels. This object has two constructors.
+
+**Constructor 1 parameters:**
+
+- keywords (`String`), the search keywords
+- page (`int`), the page number of the results
+
+```Java
+GDLevelSearchHttpRequest request = new GDLevelSearchHttpRequest("sonic wave", 0);
+```
+
+**Constructor 2 parameters:**
+
+* type (`int`), the type of search (regular search, featured section, most recent levels). It can be one of the following values:
+    * `com.alex1304dev.jdash.util.Constants.LEVEL_SEARCH_TYPE_REGULAR`
+    * `com.alex1304dev.jdash.util.Constants.LEVEL_SEARCH_TYPE_RECENT`
+    * `com.alex1304dev.jdash.util.Constants.LEVEL_SEARCH_TYPE_TRENDING`
+    * `com.alex1304dev.jdash.util.Constants.LEVEL_SEARCH_TYPE_MOST_DOWNLOADED`
+    * `com.alex1304dev.jdash.util.Constants.LEVEL_SEARCH_TYPE_MOST_LIKED`
+    * `com.alex1304dev.jdash.util.Constants.LEVEL_SEARCH_TYPE_FEATURED`
+    * `com.alex1304dev.jdash.util.Constants.LEVEL_SEARCH_TYPE_HALL_OF_FAME`
+* keywords (`String`), the search keywords
+* difficulties (`Set<Integer>`), the difficulty filter. Allows multi-selection of filters by giving more than one value in the set. Each item of this set can be one of the following values:
+    * `com.alex1304dev.jdash.util.Constants.LEVEL_SEARCH_DIFF_ALL`
+    * `com.alex1304dev.jdash.util.Constants.LEVEL_SEARCH_DIFF_NA`
+    * `com.alex1304dev.jdash.util.Constants.LEVEL_SEARCH_DIFF_EASY`
+    * `com.alex1304dev.jdash.util.Constants.LEVEL_SEARCH_DIFF_NORMAL`
+    * `com.alex1304dev.jdash.util.Constants.LEVEL_SEARCH_DIFF_HARD`
+    * `com.alex1304dev.jdash.util.Constants.LEVEL_SEARCH_DIFF_HARDER`
+    * `com.alex1304dev.jdash.util.Constants.LEVEL_SEARCH_DIFF_INSANE`
+    * `com.alex1304dev.jdash.util.Constants.LEVEL_SEARCH_DIFF_DEMON`
+* lengths (`Set<Integer>`), the length filter. Also allows multi-selection. Items can take the values of the ordinal of any item in `com.alex1304dev.jdash.component.property.GDLevelLength`:
+* page (`int`), the page number of the results, starting at 0
+* uncompleted (`boolean`), enables the "uncompleted" filter if set to true. Will request only uncompleted levels. For now this has no effect because this request object doesn't suppot authentication, and this filter would need the client to be authenticated for it to work.
+* onlyCompleted (`boolean`), enables the "only completed" filter if set to true. Will request only completed levels. Same note as for uncompleted.
+* featured (`boolean`), enables the "featured" filter if set to to true. Will request only featured levels.
+* original (`boolean`), enables the "original" filter if set to to true. Will request only original levels.
+* twoPlayers (`boolean`), enables the "twoPlayers" filter if set to to true. Will request only two-player levels.
+* coins (`boolean`), enables the "coins" filter if set to to true. Will request only levels with coins.
+* epic (`boolean`), enables the "epic" filter if set to to true. Will request only epic levels.
+* star (`boolean`), enables the "star" filter if set to to true. Will request only levels with a star rate.
+* demonFilter (`int`), sets a demon filter between the following values:
+    * `com.alex1304dev.jdash.util.Constants.LEVEL_SEARCH_DIFF_ALL`
+    * `com.alex1304dev.jdash.util.Constants.LEVEL_SEARCH_DIFF_EASY_DEMON`
+    * `com.alex1304dev.jdash.util.Constants.LEVEL_SEARCH_DIFF_MEDIUM_DEMON`
+    * `com.alex1304dev.jdash.util.Constants.LEVEL_SEARCH_DIFF_HARD_DEMON`
+    * `com.alex1304dev.jdash.util.Constants.LEVEL_SEARCH_DIFF_INSANE_DEMON`
+    * `com.alex1304dev.jdash.util.Constants.LEVEL_SEARCH_DIFF_EXTREME_DEMON`
+
+```Java
+// This will request all Easy epic levels with coins that match the keywords
+GDLevelSearchHttpRequest request = new GDLevelSearchHttpRequest(
+	Constants.LEVEL_SEARCH_TYPE_REGULAR,
+	"",
+	new HashSet<>(Arrays.asList(Constants.LEVEL_SEARCH_DIFF_EASY, Constants.LEVEL_SEARCH_DIFF_HARDER))
+	new HashSet<>(Arrays.asList(GDLevelLength.EASY.ordinal())),
+	0,
+	false,
+	false,
+	false,
+	false,
+	false,
+	true,
+	true,
+	true,
+	Constants.LEVEL_SEARCH_DIFF_ALL
+);
+```
+
+**Response object: ** `GDComponentList<GDLevelPreview>`
+The `GDLevelPreview` object is similar to `GDLevel` but with less info.
+The `GDComponentList` object is just an `ArrayList` that implements `GDComponent`
+
+
+```Java
+GDComponentList<GDLevelPreview> response = client.fetch(request);
+
+// Displays all results one by one
+for (GDLevelPreview level : response) {
+	System.out.println(level);
+}
+```
+
+### `GDUserHttpRequest`
+
+Fetches a user by its account ID.
+
+**Constructor parameters:**
+
+- accountID (`long`), the ID of the level to fetch
+
+```Java
+GDUserHttpRequest request = new GDUserHttpRequest(98006);
+```
+
+**Response object: ** `GDUser`
+
+```Java
+GDUser response = client.fetch(request);
+```
+
+### `GDUserSearchHttpRequest`
+
+Searches for users.
+
+**Constructor parameters:**
+
+- keywords (`String`), the search keywords
+- page (`int`), the page number of the results, starting at 0
+
+```Java
+GDUserSearchHttpRequest request = new GDUserSearchHttpRequest("viprin", 0);
+```
+
+**Response object: ** `GDUser`
+
+```Java
+GDUser response = client.fetch(request);
+```
+
+### `GDMessageListHttpRequest`
+
+Fetches the private messages inbox. Requires an authenticated client.
+
+**Constructor parameters:**
+
+- page (`int`), the page number of the results, starting at 0
+
+```Java
+GDMessageListHttpRequest request = new GDMessageListHttpRequest(0);
+```
+
+**Response object: ** `GDComponentList<GDMessage>`
+
+```Java
+// Note: the client object here must be authenticated
+GDComponentList<GDMessage> response = client.fetch(request);
+```
+
+### `GDMessageReadHttpRequest`
+
+Opens a private message to read its content
+
+**Constructor parameters:**
+
+- messageID (`long`), the ID of the message to read
+
+```Java
+GDMessageReadHttpRequest request = new GDMessageReadHttpRequest(555555);
+```
+
+**Response object: ** `GDMessage`
+
+```Java
+// Note: the client object here must be authenticated
+GDMessage response = client.fetch(request);
+```
+
+### `GDMessageSendHttpRequest`
+
+Sends a private message to another user
+
+**Constructor parameters:**
+
+- toAccountID (`long`), the account ID of the recipient
+- subject (`String`), the message subject
+- body (`String`), the message body
+
+```Java
+GDMessageSendHttpRequest request = new GDMessageSendHttpRequest(98006, "hello", "Plz play my level!!");
+```
+
+**Response object: ** `GDBoolean`
+
+An object that implements `GDComponent` and encapsulates a boolean value.
+
+```Java
+// Note: the client object here must be authenticated
+GDBoolean response = client.fetch(request);
+
+if (response.isSuccess()) {
+	System.out.println("Message sent successfully!");
+} else {
+	System.err.println("Message failed to send.");
+}
+```
+
+
+
+

@@ -50,7 +50,7 @@ public class GDHttpClientTest {
 
 	@Test
 	public void test_level_fetch() throws Exception {
-		GDLevelHttpRequest levelReq = new GDLevelHttpRequest(38693063);
+		GDLevelHttpRequest levelReq = new GDLevelHttpRequest(10565740);
 		GDLevel level = client.fetch(levelReq);
 		assertNotNull(level);
 		System.out.println(level);

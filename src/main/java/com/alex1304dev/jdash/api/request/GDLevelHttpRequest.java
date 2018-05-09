@@ -37,6 +37,15 @@ public class GDLevelHttpRequest extends GDHttpRequest<GDLevel> {
 			String levelData = split1[0];
 			Map<Integer, String> mappedLevelData = Utils.splitToMap(levelData, ":");
 			
+			int pass;
+			
+			if (mappedLevelData.get(Constants.INDEX_LEVEL_PASS).equals("Aw=="))
+				pass = -2;
+			if (mappedLevelData.get(Constants.INDEX_LEVEL_PASS).equals("0"))
+				pass = -1;
+			else
+				pass = Integer.parseInt(RobTopsWeakCrypto.decodeGDAccountPassword(mappedLevelData.get(Constants.INDEX_LEVEL_PASS)));
+			
 			return new GDLevel(
 				Long.parseLong(mappedLevelData.get(Constants.INDEX_LEVEL_ID)),
 				mappedLevelData.get(Constants.INDEX_LEVEL_NAME),
@@ -50,7 +59,7 @@ public class GDLevelHttpRequest extends GDHttpRequest<GDLevel> {
 				Integer.parseInt(mappedLevelData.get(Constants.INDEX_LEVEL_DOWNLOADS)),
 				Integer.parseInt(mappedLevelData.get(Constants.INDEX_LEVEL_LIKES)),
 				GDLevelLength.values()[Integer.parseInt(mappedLevelData.get(Constants.INDEX_LEVEL_LENGTH))],
-				Integer.parseInt(RobTopsWeakCrypto.decodeGDAccountPassword(mappedLevelData.get(Constants.INDEX_LEVEL_PASS))),
+				pass,
 				Long.parseLong(mappedLevelData.get(Constants.INDEX_LEVEL_SONG_ID)),
 				Integer.parseInt(mappedLevelData.get(Constants.INDEX_LEVEL_COIN_COUNT)),
 				mappedLevelData.get(Constants.INDEX_LEVEL_COIN_VERIFIED).equals("1"),
