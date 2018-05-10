@@ -17,10 +17,10 @@ Download the latest version at the [releases](https://github.com/Alex1304/jdash/
 Here is a quick example of the usage of the library:
 
 ```Java
-import com.alex1304dev.jdash.api.GDHttpClient;
-import com.alex1304dev.jdash.api.request.GDLevelHttpRequest;
-import com.alex1304dev.jdash.component.GDLevel;
-import com.alex1304dev.jdash.exceptions.GDAPIException;
+import com.github.alex1304.jdash.api.GDHttpClient;
+import com.github.alex1304.jdash.api.request.GDLevelHttpRequest;
+import com.github.alex1304.jdash.component.GDLevel;
+import com.github.alex1304.jdash.exceptions.GDAPIException;
 
 public class TestMain {
 
