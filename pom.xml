@@ -28,7 +28,9 @@
 	</developers>
 
 	<scm>
-		<url>https://github.com/Alex1304/jdash.git</url>
+		<connection>scm:git:git://github.com/Alex1304/jdash.git</connection>
+  		<developerConnection>scm:git:ssh://github.com:Alex1304/jdash.git</developerConnection>
+  		<url>http://github.com/Alex1304/jdash/tree/master</url>
 	</scm>
 
 	<properties>
