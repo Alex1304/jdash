@@ -28,10 +28,10 @@
 
 	<scm>
 		<connection>scm:git:git://github.com/Alex1304/jdash.git</connection>
-  		<developerConnection>scm:git:ssh://github.com:Alex1304/jdash.git</developerConnection>
+  		<developerConnection>scm:git:ssh://github.com/Alex1304/jdash.git</developerConnection>
   		<url>http://github.com/Alex1304/jdash/tree/master</url>
-	  <tag>jdash-2.0.1</tag>
-  </scm>
+		<tag>jdash-2.0.1</tag>
+	</scm>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
