@@ -1,4 +1,4 @@
-# Introduction
+# JDash Documentation
 
 ## Presentation
 
