@@ -17,9 +17,9 @@ public abstract class Utils {
 	 * method to work. For example, a string formatted as <code>"1:abc:2:def:3:xyz"</code>
 	 * will return the following map:
 	 * <pre>
-	 * 1 => abc
-	 * 2 => def
-	 * 3 => xyz
+	 * 1 =&gt; abc
+	 * 2 =&gt; def
+	 * 3 =&gt; xyz
 	 * </pre>
 	 * 
 	 * @param str - the string to convert to map

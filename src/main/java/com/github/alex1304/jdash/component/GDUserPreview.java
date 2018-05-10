@@ -27,8 +27,6 @@ public class GDUserPreview implements GDComponent {
 	 *            - user's user coins
 	 * @param stars
 	 *            - user's stars
-	 * @param diamonds
-	 *            - user's diamonds
 	 * @param demons
 	 *            - user's demons
 	 * @param creatorPoints
