@@ -10,30 +10,7 @@ A Java library for Geometry Dash.
 
 # Get started
 
-Want to use JDash in your Java project? Great. Here are the instructions to get started:
-
-## Pre-requisites
-
-- Java Runtime Environment (version 8 or above)
-- [Apache Maven](https://maven.apache.org)
-
-## Installation
-
-First, clone the project in the directory of your choice.
-
-```sh
-git clone https://github.com/Alex1304/jdash.git
-```
-
-Go to the newly created directory and compile the sources using Apache Maven.
-
-
-```sh
-cd jdash
-mvn package
-```
-
-This will create a JAR file in the folder `target/`. Copy this JAR and paste it in the lib directory of your Java project (don't forget to update the classpath).
+Download the latest version at the [releases](https://github.com/Alex1304/jdash/releases) page, and add the JAR into the build path of your Java project.
 
 # How to use it ?
 
