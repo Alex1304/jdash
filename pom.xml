@@ -1,9 +1,10 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.github.alex1304</groupId>
 	<artifactId>jdash</artifactId>
-	<version>2.0.1</version>
+	<version>2.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>jdash</name>
@@ -28,9 +29,8 @@
 
 	<scm>
 		<connection>scm:git:git://github.com/Alex1304/jdash.git</connection>
-  		<developerConnection>scm:git:ssh://github.com/Alex1304/jdash.git</developerConnection>
+  		<developerConnection>scm:git:ssh://github.com:Alex1304/jdash.git</developerConnection>
   		<url>http://github.com/Alex1304/jdash/tree/master</url>
-		<tag>jdash-2.0.1</tag>
 	</scm>
 
 	<properties>
