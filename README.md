@@ -42,7 +42,7 @@ public class TestMain {
 
 ```
 
-The full documentation hasn't been made yet, but it will come very soon in the next versions.
+The full documentation is available [here](http://jdash.readthedocs.io/en/latest).
 
 # License
 
