@@ -140,11 +140,12 @@ Searches for users.
 GDUserSearchHttpRequest request = new GDUserSearchHttpRequest("viprin", 0);
 ```
 
-**Response object: ** `GDUser`
+**Response object: ** `GDComponentList<GDUserPreview>`
 
 ```Java
-GDUser response = client.fetch(request);
+GDComponentList<GDUserPreview> response = client.fetch(request);
 ```
+The `GDUserPreview` object is similar to `GDUser` but with less info.
 
 ### `GDMessageListHttpRequest`
 
