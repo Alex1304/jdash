@@ -27,7 +27,7 @@ public class GDHttpClient {
 	/**
 	 * @param accountID
 	 *            - The GD account ID
-	 * @param gjp
+	 * @param password
 	 *            - The GD account password
 	 */
 	public GDHttpClient(long accountID, String password) {
@@ -52,7 +52,13 @@ public class GDHttpClient {
 	 *            - the request object that contains the URL to request and the
 	 *            POST parameters
 	 * 
+	 * @param <T>
+	 *            - The type of the response object returned
+	 * 
 	 * @return a GDHttpResponse
+	 * @throws GDAPIException
+	 *             if the request fails for some reason. It contains a message
+	 *             describing the error.
 	 */
 	public <T extends GDComponent> T fetch(GDHttpRequest<T> request) throws GDAPIException  {
 		try {

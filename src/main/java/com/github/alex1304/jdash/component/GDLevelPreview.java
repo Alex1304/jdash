@@ -59,13 +59,6 @@ public class GDLevelPreview implements GDComponent {
 	 *            - the number of coins the level has
 	 * @param hasCoinsVerified
 	 *            - whether the coins are verified
-	 * @param levelVersion
-	 *            - the level version
-	 * @param gameVersion
-	 *            - whether the the game version which this level has been made
-	 *            on
-	 * @param objectCount
-	 *            - the number of objects the level has
 	 * @param isDemon
 	 *            - whether this level is Demon
 	 * @param isAuto

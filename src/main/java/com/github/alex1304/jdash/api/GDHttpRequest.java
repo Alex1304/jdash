@@ -32,7 +32,7 @@ public abstract class GDHttpRequest<E extends GDComponent> {
 	/**
 	 * Gets the request parameters.
 	 * 
-	 * @return a Map of String => String
+	 * @return a Map of String, String
 	 */
 	public Map<String, String> getParams() {
 		return params;
@@ -61,7 +61,7 @@ public abstract class GDHttpRequest<E extends GDComponent> {
 	 * that will be then returned by {@link GDHttpRequest#getResponseBuilder()}
 	 * This method is automatically called in the constructor of GDHttpRequest.
 	 * 
-	 * @return
+	 * @return GDHttpResponseBuilder
 	 */
 	public abstract GDHttpResponseBuilder<E> responseBuilderInstance();
 

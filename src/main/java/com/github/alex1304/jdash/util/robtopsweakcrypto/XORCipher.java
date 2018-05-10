@@ -6,7 +6,7 @@ package com.github.alex1304.jdash.util.robtopsweakcrypto;
  * It's done by performing cyclically a XOR operation on the ASCII code of each character between the
  * message and a key.
  * 
- * @see {@link https://en.wikipedia.org/wiki/XOR_cipher}
+ * See https://en.wikipedia.org/wiki/XOR_cipher
  * 
  * @author Alex1304
  */
@@ -16,7 +16,12 @@ public class XORCipher {
 
 	/**
 	 * Constructs a new XORCipher with a provided key
-	 * @throws IllegalArgumentException if the key is an empty string or null
+	 * 
+	 * @param key
+	 *            - the key
+	 * 
+	 * @throws IllegalArgumentException
+	 *             if the key is an empty string or null
 	 */
 	public XORCipher(String key) {
 		if (key == null || key.isEmpty())

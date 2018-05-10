@@ -10,7 +10,22 @@ A Java library for Geometry Dash.
 
 # Get started
 
-Download the latest version at the [releases](https://github.com/Alex1304/jdash/releases) page, and add the JAR into the build path of your Java project.
+In a Maven project, add the following dependency to your `pom.xml`:
+
+```xml
+<dependencies>
+
+	// ... your other dependencies
+	
+	<dependency>
+		<groupId>com.github.alex1304</groupId>
+		<artifactId>jdash</artifactId>
+		<version>2.0.1</version>
+	</dependency>
+</dependencies>
+```
+
+Or download the latest version at the [releases](https://github.com/Alex1304/jdash/releases) page, and add the JAR into the build path of your Java project.
 
 # How to use it ?
 
