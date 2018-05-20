@@ -131,6 +131,8 @@ public interface Constants {
 	public static final int LEVEL_SEARCH_TYPE_MOST_DOWNLOADED = 1;
 	public static final int LEVEL_SEARCH_TYPE_MOST_LIKED = 2;
 	public static final int LEVEL_SEARCH_TYPE_FEATURED = 6;
+	public static final int LEVEL_SEARCH_TYPE_MAGIC = 6;
+	public static final int LEVEL_SEARCH_TYPE_AWARDED = 11;
 	public static final int LEVEL_SEARCH_TYPE_HALL_OF_FAME = 16;
 	
 	/* Level search diff property */
