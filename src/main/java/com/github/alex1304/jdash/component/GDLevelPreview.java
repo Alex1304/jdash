@@ -239,4 +239,26 @@ public class GDLevelPreview implements GDComponent {
 				+ featuredScore + ", isEpic=" + isEpic + ", downloads=" + downloads + ", likes=" + likes + ", length="
 				+ length + ", isDemon=" + isDemon + ", isAuto=" + isAuto + "]";
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (int) (id ^ (id >>> 32));
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (!(obj instanceof GDLevelPreview))
+			return false;
+		GDLevelPreview other = (GDLevelPreview) obj;
+		if (id != other.id)
+			return false;
+		return true;
+	}
 }

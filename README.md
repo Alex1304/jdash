@@ -15,12 +15,12 @@ In a Maven project, add the following dependency to your `pom.xml`:
 ```xml
 <dependencies>
 
-	// ... your other dependencies
+	<!-- ... your other dependencies -->
 	
 	<dependency>
 		<groupId>com.github.alex1304</groupId>
 		<artifactId>jdash</artifactId>
-		<version>2.0.1</version>
+		<version><!-- Latest version number --></version>
 	</dependency>
 </dependencies>
 ```

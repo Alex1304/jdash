@@ -65,4 +65,26 @@ public class GDSong implements GDComponent {
 	public String getSongTitle() {
 		return songTitle;
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (int) (songID ^ (songID >>> 32));
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (!(obj instanceof GDSong))
+			return false;
+		GDSong other = (GDSong) obj;
+		if (songID != other.songID)
+			return false;
+		return true;
+	}
 }
