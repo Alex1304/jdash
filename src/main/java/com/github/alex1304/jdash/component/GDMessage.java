@@ -105,13 +105,32 @@ public class GDMessage implements GDComponent {
 		return timestamp;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
 	@Override
 	public String toString() {
 		return "GDMessage [messageID=" + messageID + ", senderID=" + senderID + ", senderName=" + senderName
 				+ ", subject=" + subject + ", body=" + body + ", isRead=" + isRead + ", timestamp=" + timestamp + "]";
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (int) (messageID ^ (messageID >>> 32));
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (!(obj instanceof GDMessage))
+			return false;
+		GDMessage other = (GDMessage) obj;
+		if (messageID != other.messageID)
+			return false;
+		return true;
 	}
 	
 	

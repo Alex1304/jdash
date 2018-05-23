@@ -185,4 +185,9 @@ public interface Constants {
 	public static final int INDEX_MESSAGE_TIMESTAMP = 7;
 	public static final int INDEX_MESSAGE_IS_READ = 8;
 	
+	/* Timely level IDs */
+	
+	public static final int DAILY_LEVEL_ID = -1;
+	public static final int WEEKLY_DEMON_ID = -2;
+	
 }
