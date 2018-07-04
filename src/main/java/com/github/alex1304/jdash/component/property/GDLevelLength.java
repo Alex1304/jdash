@@ -9,7 +9,7 @@ package com.github.alex1304.jdash.component.property;
 public enum GDLevelLength {
 	TINY,
 	SHORT,
-	MEDUIM,
+	MEDIUM,
 	LONG,
 	XL;
 }

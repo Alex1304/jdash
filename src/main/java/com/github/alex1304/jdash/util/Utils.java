@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import com.github.alex1304.jdash.component.GDSong;
+
 /**
  * Contains utility static methods 
  *
@@ -11,6 +13,34 @@ import java.util.Set;
  *
  */
 public abstract class Utils {
+	
+	private static final Map<Integer, GDSong> AUDIO_TRACKS = initAudioTracks();
+	
+	private static Map<Integer, GDSong> initAudioTracks() {
+		Map<Integer, GDSong> map = new HashMap<>();
+		map.put(0, new GDSong("ForeverBound", "Stereo Madness"));
+		map.put(1, new GDSong("DJVI", "Back On Track"));
+		map.put(2, new GDSong("Step", "Polargeist"));
+		map.put(3, new GDSong("DJVI", "Dry Out"));
+		map.put(4, new GDSong("DJVI", "Base After Base"));
+		map.put(5, new GDSong("DJVI", "Cant Let Go"));
+		map.put(6, new GDSong("Waterflame", "Jumper"));
+		map.put(7, new GDSong("Waterflame", "Time Machine"));
+		map.put(8, new GDSong("DJVI", "Cycles"));
+		map.put(9, new GDSong("DJVI", "xStep"));
+		map.put(10, new GDSong("Waterflame", "Clutterfunk"));
+		map.put(11, new GDSong("DJ-Nate", "Theory of Everything"));
+		map.put(12, new GDSong("Waterflame", "Electroman Adventures"));
+		map.put(13, new GDSong("DJ-Nate", "Clubstep"));
+		map.put(14, new GDSong("DJ-Nate", "Electrodynamix"));
+		map.put(15, new GDSong("Waterflame", "Hexagon Force"));
+		map.put(16, new GDSong("Waterflame", "Blast Processing"));
+		map.put(17, new GDSong("DJ-Nate", "Theory of Everything 2"));
+		map.put(18, new GDSong("Waterflame", "Geometrical Dominator"));
+		map.put(19, new GDSong("F-777", "Deadlocked"));
+		map.put(20, new GDSong("MDK", "Fingerdash"));
+		return map;
+	}
 	
 	/**
 	 * Transforms a string into a map. The string must be in a specific format for this
@@ -59,5 +89,15 @@ public abstract class Utils {
 		if (!intSet.isEmpty())
 			sb.deleteCharAt(sb.length() - 1);
 		return sb.toString();
+	}
+	
+	/**
+	 * Gets an audio track by its ID
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public static GDSong getAudioTrack(int id) {
+		return AUDIO_TRACKS.containsKey(id) ?  AUDIO_TRACKS.get(id) : new GDSong("-", "Unknown");
 	}
 }
