@@ -91,7 +91,7 @@ public class GDLevelSearchHttpRequest extends GDHttpRequest<GDComponentList<GDLe
 
 				Map<Integer, String> lmap = Utils.splitToMap(l, ":");
 				
-				GDSong song = Integer.parseInt(lmap.get(Constants.INDEX_LEVEL_AUDIO_TRACK)) > 0 ?
+				GDSong song = Long.parseLong(lmap.get(Constants.INDEX_LEVEL_SONG_ID)) <= 0 ?
 						Utils.getAudioTrack(Integer.parseInt(lmap.get(Constants.INDEX_LEVEL_AUDIO_TRACK))):
 						structuredSongsInfo.get(Long.parseLong(lmap.get(Constants.INDEX_LEVEL_SONG_ID)));
 						
