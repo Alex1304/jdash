@@ -51,7 +51,7 @@ public class GDHttpClientTest {
 
 	@Test
 	public void test_level_fetch() throws Exception {
-		GDLevelHttpRequest levelReq = new GDLevelHttpRequest(10565740);
+		GDLevelHttpRequest levelReq = new GDLevelHttpRequest(38693063);
 		GDLevel level = client.fetch(levelReq);
 		assertNotNull(level);
 		System.out.println(level);
@@ -64,8 +64,17 @@ public class GDHttpClientTest {
 	}
 	
 	@Test
-	public void test_levelSearch_fetch() throws Exception {
+	public void test_levelSearch_sonicwave_fetch() throws Exception {
 		GDLevelSearchHttpRequest lvlSearchReq = new GDLevelSearchHttpRequest("sonic wave", 0);
+		GDComponentList<GDLevelPreview> lvlList = client.fetch(lvlSearchReq);
+		assertNotNull(lvlList);
+		
+		System.out.println(lvlList);
+	}
+	
+	@Test
+	public void test_levelSearch_autoplayarea_fetch() throws Exception {
+		GDLevelSearchHttpRequest lvlSearchReq = new GDLevelSearchHttpRequest("auto play area", 0);
 		GDComponentList<GDLevelPreview> lvlList = client.fetch(lvlSearchReq);
 		assertNotNull(lvlList);
 		

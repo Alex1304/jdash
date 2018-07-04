@@ -1,6 +1,7 @@
 package com.github.alex1304.jdash.api.request;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -11,6 +12,7 @@ import com.github.alex1304.jdash.api.GDHttpRequest;
 import com.github.alex1304.jdash.api.GDHttpResponseBuilder;
 import com.github.alex1304.jdash.component.GDComponentList;
 import com.github.alex1304.jdash.component.GDLevelPreview;
+import com.github.alex1304.jdash.component.GDSong;
 import com.github.alex1304.jdash.component.property.GDLevelLength;
 import com.github.alex1304.jdash.util.Constants;
 import com.github.alex1304.jdash.util.Utils;
@@ -81,23 +83,30 @@ public class GDLevelSearchHttpRequest extends GDHttpRequest<GDComponentList<GDLe
 			String songs = split1[2];
 
 			Map<Long, String> structuredCreatorsInfo = structureCreatorsInfo(creators);
-			Map<Long, String> structuredSongsInfo = structureSongsInfo(songs);
+			Map<Long, GDSong> structuredSongsInfo = structureSongsInfo(songs);
 			String[] levelArray = levels.split("\\|");
 
 			for (int i = 0; i < levelArray.length; i++) {
 				String l = levelArray[i];
 
 				Map<Integer, String> lmap = Utils.splitToMap(l, ":");
+				
+				GDSong song = Integer.parseInt(lmap.get(Constants.INDEX_LEVEL_AUDIO_TRACK)) > 0 ?
+						Utils.getAudioTrack(Integer.parseInt(lmap.get(Constants.INDEX_LEVEL_AUDIO_TRACK))):
+						structuredSongsInfo.get(Long.parseLong(lmap.get(Constants.INDEX_LEVEL_SONG_ID)));
+						
+				String creatorName = structuredCreatorsInfo.get(Long.parseLong(
+						lmap.get(Constants.INDEX_LEVEL_CREATOR_ID)));
 
 				lvlPrevList.add(new GDLevelPreview(Long.parseLong(lmap.get(Constants.INDEX_LEVEL_ID)),
 					lmap.get(Constants.INDEX_LEVEL_NAME),
-					structuredCreatorsInfo.get(Long.parseLong(lmap.get(Constants.INDEX_LEVEL_CREATOR_ID))),
+					creatorName == null ? "-" : creatorName,
 					Constants.VALUE_TO_DIFFICULTY
 							.apply(Integer.parseInt(lmap.get(Constants.INDEX_LEVEL_DIFFICULTY))),
 					Constants.VALUE_TO_DEMON_DIFFICULTY
 							.apply(Integer.parseInt(lmap.get(Constants.INDEX_LEVEL_DEMON_DIFFICULTY))),
 					Integer.parseInt(lmap.get(Constants.INDEX_LEVEL_STARS)),
-					structuredSongsInfo.get(Long.parseLong(lmap.get(Constants.INDEX_LEVEL_SONG_ID))),
+					song,
 					Integer.parseInt(lmap.get(Constants.INDEX_LEVEL_FEATURED_SCORE)),
 					lmap.get(Constants.INDEX_LEVEL_IS_EPIC).equals("1"),
 					Integer.parseInt(lmap.get(Constants.INDEX_LEVEL_DOWNLOADS)),
@@ -143,18 +152,29 @@ public class GDLevelSearchHttpRequest extends GDHttpRequest<GDComponentList<GDLe
 	 *            - the String representing the songs
 	 * @return a Map of Long, String
 	 */
-	private static Map<Long, String> structureSongsInfo(String songsInfoRD) {
+	private static Map<Long, GDSong> structureSongsInfo(String songsInfoRD) {
 		if (songsInfoRD.isEmpty())
-			return null;
+			return new HashMap<>();
 
 		String[] arraySongsRD = songsInfoRD.split("~:~");
-		Map<Long, String> structuredSongsInfo = new HashMap<>();
+		Map<Long, GDSong> result = new HashMap<>();
 
 		for (String songRD : arraySongsRD) {
-			structuredSongsInfo.put(Long.parseLong(songRD.split("~\\|~")[1]), songRD.split("~\\|~")[3]);
+			Map<Integer, String> songMap = Utils.splitToMap(songRD, "~\\|~");
+			long songID = Long.parseLong(songMap.get(Constants.INDEX_SONG_ID));
+			String songTitle = songMap.get(Constants.INDEX_SONG_TITLE);
+			String songAuthor = songMap.get(Constants.INDEX_SONG_AUTHOR);
+			String songSize = songMap.get(Constants.INDEX_SONG_SIZE);
+			String songURL = songMap.get(Constants.INDEX_SONG_URL);
+			try {
+				songURL = URLDecoder.decode(songURL, "UTF-8");
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
+			result.put(songID, new GDSong(songID, songAuthor, songSize, songTitle, songURL, true));
 		}
 
-		return structuredSongsInfo;
+		return result;
 	}
 
 }

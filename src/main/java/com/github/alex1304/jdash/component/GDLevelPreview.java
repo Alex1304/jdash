@@ -18,7 +18,7 @@ public class GDLevelPreview implements GDComponent {
 	private GDLevelDifficulty difficulty;
 	private GDLevelDemonDifficulty demonDifficulty;
 	private int stars;
-	private String songTitle;
+	private GDSong song;
 	private int coinCount;
 	private boolean hasCoinsVerified;
 	private int featuredScore;
@@ -42,8 +42,8 @@ public class GDLevelPreview implements GDComponent {
 	 *            - the level demon difficulty
 	 * @param stars
 	 *            - the number of stars assigned to this level
-	 * @param songTitle
-	 *            - the title of the song used in the level
+	 * @param song
+	 *            - the song used in the level
 	 * @param featuredScore
 	 *            - the featured score of the level. This score is mainly used
 	 *            to sort levels in the Featured section.
@@ -65,7 +65,7 @@ public class GDLevelPreview implements GDComponent {
 	 *            - whether this level is auto
 	 */
 	public GDLevelPreview(long id, String name, String creatorName, GDLevelDifficulty difficulty,
-			GDLevelDemonDifficulty demonDifficulty, int stars, String songTitle, int featuredScore, boolean isEpic, int downloads,
+			GDLevelDemonDifficulty demonDifficulty, int stars, GDSong song, int featuredScore, boolean isEpic, int downloads,
 			int likes, GDLevelLength length, int coinCount, boolean hasCoinsVerified,
 			boolean isDemon, boolean isAuto) {
 		this.id = id;
@@ -74,7 +74,7 @@ public class GDLevelPreview implements GDComponent {
 		this.difficulty = difficulty;
 		this.demonDifficulty = demonDifficulty;
 		this.stars = stars;
-		this.songTitle = songTitle;
+		this.song = song;
 		this.featuredScore = featuredScore;
 		this.isEpic = isEpic;
 		this.downloads = downloads;
@@ -145,8 +145,8 @@ public class GDLevelPreview implements GDComponent {
 	 * 
 	 * @return String
 	 */
-	public String getSongTitle() {
-		return songTitle;
+	public GDSong getSong() {
+		return song;
 	}
 
 	/**
@@ -234,7 +234,7 @@ public class GDLevelPreview implements GDComponent {
 	@Override
 	public String toString() {
 		return "GDLevelPreview [id=" + id + ", name=" + name + ", creatorName=" + creatorName + ", difficulty="
-				+ difficulty + ", demonDifficulty=" + demonDifficulty + ", stars=" + stars + ", songTitle=" + songTitle
+				+ difficulty + ", demonDifficulty=" + demonDifficulty + ", stars=" + stars + ", song=" + song
 				+ ", coinCount=" + coinCount + ", hasCoinsVerified=" + hasCoinsVerified + ", featuredScore="
 				+ featuredScore + ", isEpic=" + isEpic + ", downloads=" + downloads + ", likes=" + likes + ", length="
 				+ length + ", isDemon=" + isDemon + ", isAuto=" + isAuto + "]";

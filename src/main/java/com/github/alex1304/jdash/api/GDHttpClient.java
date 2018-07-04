@@ -97,6 +97,7 @@ public class GDHttpClient {
 			GDHttpResponseBuilder<T> builder = request.getResponseBuilder();
 			return builder.build(result);
 		} catch (IOException | RuntimeException e) {
+			e.printStackTrace();
 			throw new GDAPIException(e.getMessage());
 		}
 	}

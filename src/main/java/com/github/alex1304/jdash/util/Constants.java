@@ -157,6 +157,7 @@ public interface Constants {
 	public static final int INDEX_SONG_TITLE = 2;
 	public static final int INDEX_SONG_AUTHOR = 4;
 	public static final int INDEX_SONG_SIZE = 5;
+	public static final int INDEX_SONG_URL = 10;
 	
 	/* User data */
 	
