@@ -24,7 +24,10 @@ public class GDSong implements GDComponent {
 	 *            - the song author size
 	 * @param songTitle
 	 *            - the song title
-	 * @param downloadURL - link to the song audio file
+	 * @param downloadURL
+	 *            - link to the song audio file
+	 * @param isCustom
+	 *            - whether the song is custom
 	 */
 	public GDSong(long songID, String songAuthorName, String songSize, String songTitle, String downloadURL, boolean isCustom) {
 		this.songID = songID;

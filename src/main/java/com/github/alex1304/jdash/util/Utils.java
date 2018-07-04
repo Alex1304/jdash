@@ -94,8 +94,8 @@ public abstract class Utils {
 	/**
 	 * Gets an audio track by its ID
 	 * 
-	 * @param id
-	 * @return
+	 * @param id - the audio track id
+	 * @return GDSong
 	 */
 	public static GDSong getAudioTrack(int id) {
 		return AUDIO_TRACKS.containsKey(id) ?  AUDIO_TRACKS.get(id) : new GDSong("-", "Unknown");
