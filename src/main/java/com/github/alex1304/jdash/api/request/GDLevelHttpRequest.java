@@ -44,7 +44,7 @@ public class GDLevelHttpRequest extends GDHttpRequest<GDLevel> {
 			else if (mappedLevelData.get(Constants.INDEX_LEVEL_PASS).equals("0"))
 				pass = -1;
 			else
-				pass = Integer.parseInt(RobTopsWeakCrypto.decodeGDAccountPassword(mappedLevelData.get(Constants.INDEX_LEVEL_PASS)));
+				pass = Integer.parseInt(RobTopsWeakCrypto.decodeLevelPass(mappedLevelData.get(Constants.INDEX_LEVEL_PASS)));
 			
 			return new GDLevel(
 				Long.parseLong(mappedLevelData.get(Constants.INDEX_LEVEL_ID)),
