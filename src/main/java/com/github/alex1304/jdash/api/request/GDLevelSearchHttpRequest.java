@@ -132,7 +132,7 @@ public class GDLevelSearchHttpRequest extends GDHttpRequest<GDComponentList<GDLe
 	 */
 	private static Map<Long, String> structureCreatorsInfo(String creatorsInfoRD) {
 		if (creatorsInfoRD.isEmpty())
-			return null;
+			return new HashMap<>();
 		
 		String[] arrayCreatorsRD = creatorsInfoRD.split("\\|");
 		Map<Long, String> structuredCreatorsInfo = new HashMap<>();
