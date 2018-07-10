@@ -1,5 +1,7 @@
 package com.github.alex1304.jdash.util;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -100,4 +102,60 @@ public abstract class Utils {
 	public static GDSong getAudioTrack(int id) {
 		return AUDIO_TRACKS.containsKey(id) ?  AUDIO_TRACKS.get(id) : new GDSong("-", "Unknown");
 	}
+
+	/**
+	 * Parses the String representing level creators into a Map that associates
+	 * the creator ID with their name
+	 * 
+	 * @param creatorsInfoRD
+	 *            - the String representing the creators
+	 * @return a Map of Long, String
+	 */
+	public static Map<Long, String> structureCreatorsInfo(String creatorsInfoRD) {
+		if (creatorsInfoRD.isEmpty())
+			return new HashMap<>();
+		
+		String[] arrayCreatorsRD = creatorsInfoRD.split("\\|");
+		Map<Long, String> structuredCreatorsInfo = new HashMap<>();
+		
+		for (String creatorRD : arrayCreatorsRD) {
+			structuredCreatorsInfo.put(Long.parseLong(creatorRD.split(":")[0]), creatorRD.split(":")[1]);
+		}
+		
+		return structuredCreatorsInfo;
+	}
+	
+	/**
+	 * Parses the String representing level songs into a Map that associates
+	 * the song ID with their title
+	 * 
+	 * @param songsInfoRD
+	 *            - the String representing the songs
+	 * @return a Map of Long, String
+	 */
+	public static Map<Long, GDSong> structureSongsInfo(String songsInfoRD) {
+		if (songsInfoRD.isEmpty())
+			return new HashMap<>();
+
+		String[] arraySongsRD = songsInfoRD.split("~:~");
+		Map<Long, GDSong> result = new HashMap<>();
+
+		for (String songRD : arraySongsRD) {
+			Map<Integer, String> songMap = Utils.splitToMap(songRD, "~\\|~");
+			long songID = Long.parseLong(songMap.get(Constants.INDEX_SONG_ID));
+			String songTitle = songMap.get(Constants.INDEX_SONG_TITLE);
+			String songAuthor = songMap.get(Constants.INDEX_SONG_AUTHOR);
+			String songSize = songMap.get(Constants.INDEX_SONG_SIZE);
+			String songURL = songMap.get(Constants.INDEX_SONG_URL);
+			try {
+				songURL = URLDecoder.decode(songURL, "UTF-8");
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
+			result.put(songID, new GDSong(songID, songAuthor, songSize, songTitle, songURL, true));
+		}
+
+		return result;
+	}
+
 }

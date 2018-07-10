@@ -23,6 +23,9 @@ public class GDUser implements GDComponent {
 	private String twitch;
 	private long globalRank;
 	private GDUserRole role;
+	
+	public GDUser() {
+	}
 
 	/**
 	 * @param name
@@ -200,6 +203,145 @@ public class GDUser implements GDComponent {
 	 */
 	public String getTwitch() {
 		return twitch;
+	}
+
+	/**
+	 * Sets the accountID
+	 *
+	 * @param accountID - long
+	 */
+	public void setAccountID(long accountID) {
+		this.accountID = accountID;
+	}
+
+
+	/**
+	 * Sets the playerID
+	 *
+	 * @param playerID - long
+	 */
+	public void setPlayerID(long playerID) {
+		this.playerID = playerID;
+	}
+
+
+	/**
+	 * Sets the name
+	 *
+	 * @param name - String
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
+
+
+	/**
+	 * Sets the stars
+	 *
+	 * @param stars - int
+	 */
+	public void setStars(int stars) {
+		this.stars = stars;
+	}
+
+
+	/**
+	 * Sets the diamonds
+	 *
+	 * @param diamonds - int
+	 */
+	public void setDiamonds(int diamonds) {
+		this.diamonds = diamonds;
+	}
+
+
+	/**
+	 * Sets the secretCoins
+	 *
+	 * @param secretCoins - int
+	 */
+	public void setSecretCoins(int secretCoins) {
+		this.secretCoins = secretCoins;
+	}
+
+
+	/**
+	 * Sets the userCoins
+	 *
+	 * @param userCoins - int
+	 */
+	public void setUserCoins(int userCoins) {
+		this.userCoins = userCoins;
+	}
+
+
+	/**
+	 * Sets the demons
+	 *
+	 * @param demons - int
+	 */
+	public void setDemons(int demons) {
+		this.demons = demons;
+	}
+
+
+	/**
+	 * Sets the creatorPoints
+	 *
+	 * @param creatorPoints - int
+	 */
+	public void setCreatorPoints(int creatorPoints) {
+		this.creatorPoints = creatorPoints;
+	}
+
+
+	/**
+	 * Sets the youtube
+	 *
+	 * @param youtube - String
+	 */
+	public void setYoutube(String youtube) {
+		this.youtube = youtube;
+	}
+
+
+	/**
+	 * Sets the twitter
+	 *
+	 * @param twitter - String
+	 */
+	public void setTwitter(String twitter) {
+		this.twitter = twitter;
+	}
+
+
+	/**
+	 * Sets the twitch
+	 *
+	 * @param twitch - String
+	 */
+	public void setTwitch(String twitch) {
+		this.twitch = twitch;
+	}
+
+
+	/**
+	 * Sets the globalRank
+	 *
+	 * @param globalRank - long
+	 */
+	public void setGlobalRank(long globalRank) {
+		this.globalRank = globalRank;
+	}
+
+
+	/**
+	 * Sets the role
+	 *
+	 * @param role - GDUserRole
+	 */
+	public void setRole(GDUserRole role) {
+		this.role = role;
 	}
 
 	@Override

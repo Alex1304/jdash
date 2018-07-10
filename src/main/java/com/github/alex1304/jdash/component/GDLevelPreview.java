@@ -15,80 +15,63 @@ public class GDLevelPreview implements GDComponent {
 	private long id;
 	private String name;
 	private String creatorName;
+	private long creatorID;
+	private String description;
 	private GDLevelDifficulty difficulty;
 	private GDLevelDemonDifficulty demonDifficulty;
 	private int stars;
-	private GDSong song;
-	private int coinCount;
-	private boolean hasCoinsVerified;
 	private int featuredScore;
 	private boolean isEpic;
 	private int downloads;
 	private int likes;
 	private GDLevelLength length;
+	private GDSong song;
+	private int coinCount;
+	private boolean hasCoinsVerified;
+	private int levelVersion;
+	private int gameVersion;
+	private int objectCount;
 	private boolean isDemon;
 	private boolean isAuto;
+	private long originalLevelID;
+	private int requestedStars;
 	
-	/**
-	 * @param id
-	 *            - the level ID
-	 * @param name
-	 *            - the level name
-	 * @param creatorName
-	 *            - the name of the creator of this level
-	 * @param difficulty
-	 *            - the level difficulty
-	 * @param demonDifficulty
-	 *            - the level demon difficulty
-	 * @param stars
-	 *            - the number of stars assigned to this level
-	 * @param song
-	 *            - the song used in the level
-	 * @param featuredScore
-	 *            - the featured score of the level. This score is mainly used
-	 *            to sort levels in the Featured section.
-	 * @param isEpic
-	 *            - whether the level is marked as Epic
-	 * @param downloads
-	 *            - the number of downloads of the level
-	 * @param likes
-	 *            - the number of likes the level received
-	 * @param length
-	 *            - the level length
-	 * @param coinCount
-	 *            - the number of coins the level has
-	 * @param hasCoinsVerified
-	 *            - whether the coins are verified
-	 * @param isDemon
-	 *            - whether this level is Demon
-	 * @param isAuto
-	 *            - whether this level is auto
-	 */
-	public GDLevelPreview(long id, String name, String creatorName, GDLevelDifficulty difficulty,
-			GDLevelDemonDifficulty demonDifficulty, int stars, GDSong song, int featuredScore, boolean isEpic, int downloads,
-			int likes, GDLevelLength length, int coinCount, boolean hasCoinsVerified,
-			boolean isDemon, boolean isAuto) {
+	public GDLevelPreview() {
+	}
+	
+	public GDLevelPreview(long id, String name, String creatorName, long creatorID, String description,
+			GDLevelDifficulty difficulty, GDLevelDemonDifficulty demonDifficulty, int stars, int featuredScore,
+			boolean isEpic, int downloads, int likes, GDLevelLength length, GDSong song, int coinCount,
+			boolean hasCoinsVerified, int levelVersion, int gameVersion, int objectCount, boolean isDemon,
+			boolean isAuto, long originalLevelID, int requestedStars) {
 		this.id = id;
 		this.name = name;
 		this.creatorName = creatorName;
+		this.creatorID = creatorID;
+		this.description = description;
 		this.difficulty = difficulty;
 		this.demonDifficulty = demonDifficulty;
 		this.stars = stars;
-		this.song = song;
 		this.featuredScore = featuredScore;
 		this.isEpic = isEpic;
 		this.downloads = downloads;
 		this.likes = likes;
 		this.length = length;
+		this.song = song;
 		this.coinCount = coinCount;
 		this.hasCoinsVerified = hasCoinsVerified;
+		this.levelVersion = levelVersion;
+		this.gameVersion = gameVersion;
+		this.objectCount = objectCount;
 		this.isDemon = isDemon;
 		this.isAuto = isAuto;
+		this.originalLevelID = originalLevelID;
+		this.requestedStars = requestedStars;
 	}
 
 	/**
-	 * Gets the level ID
-	 * 
+	 * Gets the id
+	 *
 	 * @return long
 	 */
 	public long getId() {
@@ -96,8 +79,8 @@ public class GDLevelPreview implements GDComponent {
 	}
 
 	/**
-	 * Gets the level name
-	 * 
+	 * Gets the name
+	 *
 	 * @return String
 	 */
 	public String getName() {
@@ -105,8 +88,8 @@ public class GDLevelPreview implements GDComponent {
 	}
 
 	/**
-	 * Gets the name of the creator of this level
-	 * 
+	 * Gets the creatorName
+	 *
 	 * @return String
 	 */
 	public String getCreatorName() {
@@ -114,8 +97,26 @@ public class GDLevelPreview implements GDComponent {
 	}
 
 	/**
-	 * Gets the level difficulty
-	 * 
+	 * Gets the creatorID
+	 *
+	 * @return long
+	 */
+	public long getCreatorID() {
+		return creatorID;
+	}
+
+	/**
+	 * Gets the description
+	 *
+	 * @return String
+	 */
+	public String getDescription() {
+		return description;
+	}
+
+	/**
+	 * Gets the difficulty
+	 *
 	 * @return GDLevelDifficulty
 	 */
 	public GDLevelDifficulty getDifficulty() {
@@ -123,8 +124,8 @@ public class GDLevelPreview implements GDComponent {
 	}
 
 	/**
-	 * Gets the level demon difficulty
-	 * 
+	 * Gets the demonDifficulty
+	 *
 	 * @return GDLevelDemonDifficulty
 	 */
 	public GDLevelDemonDifficulty getDemonDifficulty() {
@@ -132,8 +133,8 @@ public class GDLevelPreview implements GDComponent {
 	}
 
 	/**
-	 * Gets the number of stars assigned to this level
-	 * 
+	 * Gets the stars
+	 *
 	 * @return int
 	 */
 	public int getStars() {
@@ -141,18 +142,8 @@ public class GDLevelPreview implements GDComponent {
 	}
 
 	/**
-	 * Gets the title of the song used in the level
-	 * 
-	 * @return String
-	 */
-	public GDSong getSong() {
-		return song;
-	}
-
-	/**
-	 * Gets the featured score of the level. This score is mainly used to sort
-	 * levels in the Featured section.
-	 * 
+	 * Gets the featuredScore
+	 *
 	 * @return int
 	 */
 	public int getFeaturedScore() {
@@ -160,8 +151,8 @@ public class GDLevelPreview implements GDComponent {
 	}
 
 	/**
-	 * Gets whether the level is marked as Epic
-	 * 
+	 * Gets the isEpic
+	 *
 	 * @return boolean
 	 */
 	public boolean isEpic() {
@@ -169,7 +160,7 @@ public class GDLevelPreview implements GDComponent {
 	}
 
 	/**
-	 * Gets the number of downloads of the level
+	 * Gets the downloads
 	 *
 	 * @return int
 	 */
@@ -178,8 +169,8 @@ public class GDLevelPreview implements GDComponent {
 	}
 
 	/**
-	 * Gets the number of likes the level received
-	 * 
+	 * Gets the likes
+	 *
 	 * @return int
 	 */
 	public int getLikes() {
@@ -187,8 +178,8 @@ public class GDLevelPreview implements GDComponent {
 	}
 
 	/**
-	 * Gets the level length
-	 * 
+	 * Gets the length
+	 *
 	 * @return GDLevelLength
 	 */
 	public GDLevelLength getLength() {
@@ -196,8 +187,17 @@ public class GDLevelPreview implements GDComponent {
 	}
 
 	/**
-	 * Gets the number of coins the level has
-	 * 
+	 * Gets the song
+	 *
+	 * @return GDSong
+	 */
+	public GDSong getSong() {
+		return song;
+	}
+
+	/**
+	 * Gets the coinCount
+	 *
 	 * @return int
 	 */
 	public int getCoinCount() {
@@ -205,8 +205,8 @@ public class GDLevelPreview implements GDComponent {
 	}
 
 	/**
-	 * Gets whether the coins are verified
-	 * 
+	 * Gets the hasCoinsVerified
+	 *
 	 * @return boolean
 	 */
 	public boolean hasCoinsVerified() {
@@ -214,8 +214,35 @@ public class GDLevelPreview implements GDComponent {
 	}
 
 	/**
-	 * Gets whether this level is Demon
-	 * 
+	 * Gets the levelVersion
+	 *
+	 * @return int
+	 */
+	public int getLevelVersion() {
+		return levelVersion;
+	}
+
+	/**
+	 * Gets the gameVersion
+	 *
+	 * @return int
+	 */
+	public int getGameVersion() {
+		return gameVersion;
+	}
+
+	/**
+	 * Gets the objectCount
+	 *
+	 * @return int
+	 */
+	public int getObjectCount() {
+		return objectCount;
+	}
+
+	/**
+	 * Gets the isDemon
+	 *
 	 * @return boolean
 	 */
 	public boolean isDemon() {
@@ -223,21 +250,237 @@ public class GDLevelPreview implements GDComponent {
 	}
 
 	/**
-	 * Gets whether this level is auto
-	 * 
+	 * Gets the isAuto
+	 *
 	 * @return boolean
 	 */
 	public boolean isAuto() {
 		return isAuto;
 	}
 
-	@Override
-	public String toString() {
-		return "GDLevelPreview [id=" + id + ", name=" + name + ", creatorName=" + creatorName + ", difficulty="
-				+ difficulty + ", demonDifficulty=" + demonDifficulty + ", stars=" + stars + ", song=" + song
-				+ ", coinCount=" + coinCount + ", hasCoinsVerified=" + hasCoinsVerified + ", featuredScore="
-				+ featuredScore + ", isEpic=" + isEpic + ", downloads=" + downloads + ", likes=" + likes + ", length="
-				+ length + ", isDemon=" + isDemon + ", isAuto=" + isAuto + "]";
+	/**
+	 * Gets the originalLevelID
+	 *
+	 * @return long
+	 */
+	public long getOriginalLevelID() {
+		return originalLevelID;
+	}
+
+	/**
+	 * Gets the requestedStars
+	 *
+	 * @return int
+	 */
+	public int getRequestedStars() {
+		return requestedStars;
+	}
+
+	/**
+	 * Sets the id
+	 *
+	 * @param id - long
+	 */
+	public void setId(long id) {
+		this.id = id;
+	}
+
+	/**
+	 * Sets the name
+	 *
+	 * @param name - String
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	/**
+	 * Sets the creatorName
+	 *
+	 * @param creatorName - String
+	 */
+	public void setCreatorName(String creatorName) {
+		this.creatorName = creatorName;
+	}
+
+	/**
+	 * Sets the creatorID
+	 *
+	 * @param creatorID - long
+	 */
+	public void setCreatorID(long creatorID) {
+		this.creatorID = creatorID;
+	}
+
+	/**
+	 * Sets the description
+	 *
+	 * @param description - String
+	 */
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	/**
+	 * Sets the difficulty
+	 *
+	 * @param difficulty - GDLevelDifficulty
+	 */
+	public void setDifficulty(GDLevelDifficulty difficulty) {
+		this.difficulty = difficulty;
+	}
+
+	/**
+	 * Sets the demonDifficulty
+	 *
+	 * @param demonDifficulty - GDLevelDemonDifficulty
+	 */
+	public void setDemonDifficulty(GDLevelDemonDifficulty demonDifficulty) {
+		this.demonDifficulty = demonDifficulty;
+	}
+
+	/**
+	 * Sets the stars
+	 *
+	 * @param stars - int
+	 */
+	public void setStars(int stars) {
+		this.stars = stars;
+	}
+
+	/**
+	 * Sets the featuredScore
+	 *
+	 * @param featuredScore - int
+	 */
+	public void setFeaturedScore(int featuredScore) {
+		this.featuredScore = featuredScore;
+	}
+
+	/**
+	 * Sets the isEpic
+	 *
+	 * @param isEpic - boolean
+	 */
+	public void setEpic(boolean isEpic) {
+		this.isEpic = isEpic;
+	}
+
+	/**
+	 * Sets the downloads
+	 *
+	 * @param downloads - int
+	 */
+	public void setDownloads(int downloads) {
+		this.downloads = downloads;
+	}
+
+	/**
+	 * Sets the likes
+	 *
+	 * @param likes - int
+	 */
+	public void setLikes(int likes) {
+		this.likes = likes;
+	}
+
+	/**
+	 * Sets the length
+	 *
+	 * @param length - GDLevelLength
+	 */
+	public void setLength(GDLevelLength length) {
+		this.length = length;
+	}
+
+	/**
+	 * Sets the song
+	 *
+	 * @param song - GDSong
+	 */
+	public void setSong(GDSong song) {
+		this.song = song;
+	}
+
+	/**
+	 * Sets the coinCount
+	 *
+	 * @param coinCount - int
+	 */
+	public void setCoinCount(int coinCount) {
+		this.coinCount = coinCount;
+	}
+
+	/**
+	 * Sets the hasCoinsVerified
+	 *
+	 * @param hasCoinsVerified - boolean
+	 */
+	public void setHasCoinsVerified(boolean hasCoinsVerified) {
+		this.hasCoinsVerified = hasCoinsVerified;
+	}
+
+	/**
+	 * Sets the levelVersion
+	 *
+	 * @param levelVersion - int
+	 */
+	public void setLevelVersion(int levelVersion) {
+		this.levelVersion = levelVersion;
+	}
+
+	/**
+	 * Sets the gameVersion
+	 *
+	 * @param gameVersion - int
+	 */
+	public void setGameVersion(int gameVersion) {
+		this.gameVersion = gameVersion;
+	}
+
+	/**
+	 * Sets the objectCount
+	 *
+	 * @param objectCount - int
+	 */
+	public void setObjectCount(int objectCount) {
+		this.objectCount = objectCount;
+	}
+
+	/**
+	 * Sets the isDemon
+	 *
+	 * @param isDemon - boolean
+	 */
+	public void setDemon(boolean isDemon) {
+		this.isDemon = isDemon;
+	}
+
+	/**
+	 * Sets the isAuto
+	 *
+	 * @param isAuto - boolean
+	 */
+	public void setAuto(boolean isAuto) {
+		this.isAuto = isAuto;
+	}
+
+	/**
+	 * Sets the originalLevelID
+	 *
+	 * @param originalLevelID - long
+	 */
+	public void setOriginalLevelID(long originalLevelID) {
+		this.originalLevelID = originalLevelID;
+	}
+
+	/**
+	 * Sets the requestedStars
+	 *
+	 * @param requestedStars - int
+	 */
+	public void setRequestedStars(int requestedStars) {
+		this.requestedStars = requestedStars;
 	}
 
 	@Override
@@ -260,5 +503,17 @@ public class GDLevelPreview implements GDComponent {
 		if (id != other.id)
 			return false;
 		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "GDLevelPreview [id=" + id + ", name=" + name + ", creatorName=" + creatorName + ", creatorID="
+				+ creatorID + ", description=" + description + ", difficulty=" + difficulty + ", demonDifficulty="
+				+ demonDifficulty + ", stars=" + stars + ", featuredScore=" + featuredScore + ", isEpic=" + isEpic
+				+ ", downloads=" + downloads + ", likes=" + likes + ", length=" + length + ", song=" + song
+				+ ", coinCount=" + coinCount + ", hasCoinsVerified=" + hasCoinsVerified + ", levelVersion="
+				+ levelVersion + ", gameVersion=" + gameVersion + ", objectCount=" + objectCount + ", isDemon="
+				+ isDemon + ", isAuto=" + isAuto + ", originalLevelID=" + originalLevelID + ", requestedStars="
+				+ requestedStars + "]";
 	}
 }

@@ -14,6 +14,10 @@ public class GDSong implements GDComponent {
 	private String songTitle;
 	private String downloadURL;
 	private boolean isCustom;
+	
+	public GDSong() {
+		
+	}
 
 	/**
 	 * @param songID
@@ -48,6 +52,10 @@ public class GDSong implements GDComponent {
 	 */
 	public GDSong(String songAuthorName, String songTitle) {
 		this(0, songAuthorName, "", songTitle, "", false);
+	}
+	
+	public static GDSong unknownSong(long songID) {
+		return new GDSong(songID, "-", "", "Unknown", "", songID > 0);
 	}
 
 	/**
@@ -102,6 +110,60 @@ public class GDSong implements GDComponent {
 	 */
 	public boolean isCustom() {
 		return isCustom;
+	}
+
+	/**
+	 * Sets the songID
+	 *
+	 * @param songID - long
+	 */
+	public void setSongID(long songID) {
+		this.songID = songID;
+	}
+
+	/**
+	 * Sets the songAuthorName
+	 *
+	 * @param songAuthorName - String
+	 */
+	public void setSongAuthorName(String songAuthorName) {
+		this.songAuthorName = songAuthorName;
+	}
+
+	/**
+	 * Sets the songSize
+	 *
+	 * @param songSize - String
+	 */
+	public void setSongSize(String songSize) {
+		this.songSize = songSize;
+	}
+
+	/**
+	 * Sets the songTitle
+	 *
+	 * @param songTitle - String
+	 */
+	public void setSongTitle(String songTitle) {
+		this.songTitle = songTitle;
+	}
+
+	/**
+	 * Sets the downloadURL
+	 *
+	 * @param downloadURL - String
+	 */
+	public void setDownloadURL(String downloadURL) {
+		this.downloadURL = downloadURL;
+	}
+
+	/**
+	 * Sets the isCustom
+	 *
+	 * @param isCustom - boolean
+	 */
+	public void setCustom(boolean isCustom) {
+		this.isCustom = isCustom;
 	}
 
 	@Override

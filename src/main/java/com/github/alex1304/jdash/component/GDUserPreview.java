@@ -15,6 +15,9 @@ public class GDUserPreview implements GDComponent {
 	private int userCoins;
 	private int demons;
 	private int creatorPoints;
+	
+	public GDUserPreview() {
+	}
 
 	/**
 	 * @param name
@@ -117,6 +120,85 @@ public class GDUserPreview implements GDComponent {
 	 */
 	public long getAccountID() {
 		return accountID;
+	}
+
+	/**
+	 * Sets the accountID
+	 *
+	 * @param accountID - long
+	 */
+	public void setAccountID(long accountID) {
+		this.accountID = accountID;
+	}
+
+
+	/**
+	 * Sets the playerID
+	 *
+	 * @param playerID - long
+	 */
+	public void setPlayerID(long playerID) {
+		this.playerID = playerID;
+	}
+
+
+	/**
+	 * Sets the name
+	 *
+	 * @param name - String
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
+
+
+	/**
+	 * Sets the stars
+	 *
+	 * @param stars - int
+	 */
+	public void setStars(int stars) {
+		this.stars = stars;
+	}
+
+
+	/**
+	 * Sets the secretCoins
+	 *
+	 * @param secretCoins - int
+	 */
+	public void setSecretCoins(int secretCoins) {
+		this.secretCoins = secretCoins;
+	}
+
+
+	/**
+	 * Sets the userCoins
+	 *
+	 * @param userCoins - int
+	 */
+	public void setUserCoins(int userCoins) {
+		this.userCoins = userCoins;
+	}
+
+
+	/**
+	 * Sets the demons
+	 *
+	 * @param demons - int
+	 */
+	public void setDemons(int demons) {
+		this.demons = demons;
+	}
+
+
+	/**
+	 * Sets the creatorPoints
+	 *
+	 * @param creatorPoints - int
+	 */
+	public void setCreatorPoints(int creatorPoints) {
+		this.creatorPoints = creatorPoints;
 	}
 
 	@Override

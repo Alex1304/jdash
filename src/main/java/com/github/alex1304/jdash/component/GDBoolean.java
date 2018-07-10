@@ -8,6 +8,9 @@ package com.github.alex1304.jdash.component;
 public class GDBoolean implements GDComponent {
 
 	private boolean isSuccess;
+	
+	public GDBoolean() {
+	}
 
 	/**
 	 * @param isSuccess
@@ -24,6 +27,15 @@ public class GDBoolean implements GDComponent {
 	 */
 	public boolean isSuccess() {
 		return isSuccess;
+	}
+
+	/**
+	 * Sets the isSuccess
+	 *
+	 * @param isSuccess - boolean
+	 */
+	public void setSuccess(boolean isSuccess) {
+		this.isSuccess = isSuccess;
 	}
 
 	@Override

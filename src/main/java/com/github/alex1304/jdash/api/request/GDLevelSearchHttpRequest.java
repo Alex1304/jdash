@@ -1,9 +1,8 @@
 package com.github.alex1304.jdash.api.request;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.util.HashMap;
+import java.util.Base64;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -82,8 +81,8 @@ public class GDLevelSearchHttpRequest extends GDHttpRequest<GDComponentList<GDLe
 			String creators = split1[1];
 			String songs = split1[2];
 
-			Map<Long, String> structuredCreatorsInfo = structureCreatorsInfo(creators);
-			Map<Long, GDSong> structuredSongsInfo = structureSongsInfo(songs);
+			Map<Long, String> structuredCreatorsInfo = Utils.structureCreatorsInfo(creators);
+			Map<Long, GDSong> structuredSongsInfo = Utils.structureSongsInfo(songs);
 			String[] levelArray = levels.split("\\|");
 
 			for (int i = 0; i < levelArray.length; i++) {
@@ -99,82 +98,31 @@ public class GDLevelSearchHttpRequest extends GDHttpRequest<GDComponentList<GDLe
 						lmap.get(Constants.INDEX_LEVEL_CREATOR_ID)));
 
 				lvlPrevList.add(new GDLevelPreview(Long.parseLong(lmap.get(Constants.INDEX_LEVEL_ID)),
-					lmap.get(Constants.INDEX_LEVEL_NAME),
-					creatorName == null ? "-" : creatorName,
-					Constants.VALUE_TO_DIFFICULTY
-							.apply(Integer.parseInt(lmap.get(Constants.INDEX_LEVEL_DIFFICULTY))),
-					Constants.VALUE_TO_DEMON_DIFFICULTY
-							.apply(Integer.parseInt(lmap.get(Constants.INDEX_LEVEL_DEMON_DIFFICULTY))),
-					Integer.parseInt(lmap.get(Constants.INDEX_LEVEL_STARS)),
-					song,
-					Integer.parseInt(lmap.get(Constants.INDEX_LEVEL_FEATURED_SCORE)),
-					lmap.get(Constants.INDEX_LEVEL_IS_EPIC).equals("1"),
-					Integer.parseInt(lmap.get(Constants.INDEX_LEVEL_DOWNLOADS)),
-					Integer.parseInt(lmap.get(Constants.INDEX_LEVEL_LIKES)),
-					GDLevelLength.values()[Integer.parseInt(lmap.get(Constants.INDEX_LEVEL_LENGTH))],
-					Integer.parseInt(lmap.get(Constants.INDEX_LEVEL_COIN_COUNT)),
-					lmap.get(Constants.INDEX_LEVEL_COIN_VERIFIED).equals("1"),
-					lmap.get(Constants.INDEX_LEVEL_IS_DEMON).equals("1"),
-					lmap.get(Constants.INDEX_LEVEL_IS_AUTO).equals("1")));
+						lmap.get(Constants.INDEX_LEVEL_NAME),
+						creatorName != null ? creatorName : "-",
+						Long.parseLong(lmap.get(Constants.INDEX_LEVEL_CREATOR_ID)),
+						new String(Base64.getUrlDecoder().decode(lmap.get(Constants.INDEX_LEVEL_DESCRIPTION))),
+						Constants.VALUE_TO_DIFFICULTY.apply(Integer.parseInt(lmap.get(Constants.INDEX_LEVEL_DIFFICULTY))),
+						Constants.VALUE_TO_DEMON_DIFFICULTY.apply(Integer.parseInt(lmap.get(Constants.INDEX_LEVEL_DEMON_DIFFICULTY))),
+						Integer.parseInt(lmap.get(Constants.INDEX_LEVEL_STARS)),
+						Integer.parseInt(lmap.get(Constants.INDEX_LEVEL_FEATURED_SCORE)),
+						lmap.get(Constants.INDEX_LEVEL_IS_EPIC).equals("1"),
+						Integer.parseInt(lmap.get(Constants.INDEX_LEVEL_DOWNLOADS)),
+						Integer.parseInt(lmap.get(Constants.INDEX_LEVEL_LIKES)),
+						GDLevelLength.values()[Integer.parseInt(lmap.get(Constants.INDEX_LEVEL_LENGTH))],
+						song,
+						Integer.parseInt(lmap.get(Constants.INDEX_LEVEL_COIN_COUNT)),
+						lmap.get(Constants.INDEX_LEVEL_COIN_VERIFIED).equals("1"),
+						Integer.parseInt(lmap.get(Constants.INDEX_LEVEL_VERSION)),
+						Integer.parseInt(lmap.get(Constants.INDEX_LEVEL_GAME_VERSION)),
+						Integer.parseInt(lmap.get(Constants.INDEX_LEVEL_OBJECT_COUNT)),
+						lmap.get(Constants.INDEX_LEVEL_IS_DEMON).equals("1"),
+						lmap.get(Constants.INDEX_LEVEL_IS_AUTO).equals("1"),
+						Long.parseLong(lmap.get(Constants.INDEX_LEVEL_ORIGINAL)),
+						Integer.parseInt(lmap.get(Constants.INDEX_LEVEL_REQUESTED_STARS))));
 			}
 
 			return lvlPrevList;
 		};
 	}
-	
-	/**
-	 * Parses the String representing level creators into a Map that associates
-	 * the creator ID with their name
-	 * 
-	 * @param creatorsInfoRD
-	 *            - the String representing the creators
-	 * @return a Map of Long, String
-	 */
-	private static Map<Long, String> structureCreatorsInfo(String creatorsInfoRD) {
-		if (creatorsInfoRD.isEmpty())
-			return new HashMap<>();
-		
-		String[] arrayCreatorsRD = creatorsInfoRD.split("\\|");
-		Map<Long, String> structuredCreatorsInfo = new HashMap<>();
-		
-		for (String creatorRD : arrayCreatorsRD) {
-			structuredCreatorsInfo.put(Long.parseLong(creatorRD.split(":")[0]), creatorRD.split(":")[1]);
-		}
-		
-		return structuredCreatorsInfo;
-	}
-	
-	/**
-	 * Parses the String representing level songs into a Map that associates
-	 * the song ID with their title
-	 * 
-	 * @param songsInfoRD
-	 *            - the String representing the songs
-	 * @return a Map of Long, String
-	 */
-	private static Map<Long, GDSong> structureSongsInfo(String songsInfoRD) {
-		if (songsInfoRD.isEmpty())
-			return new HashMap<>();
-
-		String[] arraySongsRD = songsInfoRD.split("~:~");
-		Map<Long, GDSong> result = new HashMap<>();
-
-		for (String songRD : arraySongsRD) {
-			Map<Integer, String> songMap = Utils.splitToMap(songRD, "~\\|~");
-			long songID = Long.parseLong(songMap.get(Constants.INDEX_SONG_ID));
-			String songTitle = songMap.get(Constants.INDEX_SONG_TITLE);
-			String songAuthor = songMap.get(Constants.INDEX_SONG_AUTHOR);
-			String songSize = songMap.get(Constants.INDEX_SONG_SIZE);
-			String songURL = songMap.get(Constants.INDEX_SONG_URL);
-			try {
-				songURL = URLDecoder.decode(songURL, "UTF-8");
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-			}
-			result.put(songID, new GDSong(songID, songAuthor, songSize, songTitle, songURL, true));
-		}
-
-		return result;
-	}
-
 }

@@ -15,6 +15,9 @@ public class GDMessage implements GDComponent {
 	private boolean isRead;
 	private String timestamp;
 	
+	public GDMessage() {
+	}
+	
 	/**
 	 * @param messageID
 	 *            - the unique ID of the message
@@ -105,6 +108,69 @@ public class GDMessage implements GDComponent {
 		return timestamp;
 	}
 
+	/**
+	 * Sets the messageID
+	 *
+	 * @param messageID - long
+	 */
+	public void setMessageID(long messageID) {
+		this.messageID = messageID;
+	}
+
+	/**
+	 * Sets the senderID
+	 *
+	 * @param senderID - long
+	 */
+	public void setSenderID(long senderID) {
+		this.senderID = senderID;
+	}
+
+	/**
+	 * Sets the senderName
+	 *
+	 * @param senderName - String
+	 */
+	public void setSenderName(String senderName) {
+		this.senderName = senderName;
+	}
+
+	/**
+	 * Sets the subject
+	 *
+	 * @param subject - String
+	 */
+	public void setSubject(String subject) {
+		this.subject = subject;
+	}
+
+	/**
+	 * Sets the body
+	 *
+	 * @param body - String
+	 */
+	public void setBody(String body) {
+		this.body = body;
+	}
+
+	/**
+	 * Sets the isRead
+	 *
+	 * @param isRead - boolean
+	 */
+	public void setRead(boolean isRead) {
+		this.isRead = isRead;
+	}
+
+	/**
+	 * Sets the timestamp
+	 *
+	 * @param timestamp - String
+	 */
+	public void setTimestamp(String timestamp) {
+		this.timestamp = timestamp;
+	}
+
 	@Override
 	public String toString() {
 		return "GDMessage [messageID=" + messageID + ", senderID=" + senderID + ", senderName=" + senderName
@@ -132,6 +198,5 @@ public class GDMessage implements GDComponent {
 			return false;
 		return true;
 	}
-	
 	
 }
