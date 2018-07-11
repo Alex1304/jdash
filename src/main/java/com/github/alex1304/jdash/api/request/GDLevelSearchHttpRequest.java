@@ -41,6 +41,26 @@ public class GDLevelSearchHttpRequest extends GDHttpRequest<GDComponentList<GDLe
 			0
 		);
 	}
+	
+	public GDLevelSearchHttpRequest(int type, int page) {
+		this(
+			type,
+			"",
+			new HashSet<>(),
+			new HashSet<>(),
+			page,
+			false,
+			false,
+			false,
+			false,
+			false,
+			false,
+			false,
+			false,
+			0
+		);
+		this.getParams().remove("str");
+	}
 
 	public GDLevelSearchHttpRequest(int type, String keywords, Set<Integer> difficulties, Set<Integer> lengths,
 			int page, boolean uncompleted, boolean onlyCompleted, boolean featured, boolean original,

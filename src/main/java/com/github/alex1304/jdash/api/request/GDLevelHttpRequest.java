@@ -38,8 +38,8 @@ public class GDLevelHttpRequest extends GDHttpRequest<GDLevel> {
 			String levelData = split1[0];
 
 			String creatorName = "-";
-			if (split1.length > 3 && split1[2].split(":").length >= 2)
-				creatorName = split1[2].split(":")[1];
+			if (split1.length > 3 && split1[3].split(":").length >= 2)
+				creatorName = split1[3].split(":")[1];
 			
 			Map<Integer, String> mappedLevelData = Utils.splitToMap(levelData, ":");
 			

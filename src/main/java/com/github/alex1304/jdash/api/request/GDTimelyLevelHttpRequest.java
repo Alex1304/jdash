@@ -17,12 +17,14 @@ public class GDTimelyLevelHttpRequest extends GDHttpRequest<GDTimelyLevel> {
 
 	private GDLevelHttpRequest lvlReq;
 	private GDHttpClient client;
+	private boolean weekly;
 	
 	public GDTimelyLevelHttpRequest(boolean weekly, GDHttpClient client) {
 		super("/getGJDailyLevel.php", false);
 		this.getParams().put("weekly", weekly ? "1" : "0");
 		this.lvlReq = new GDLevelHttpRequest(weekly ? -2 : -1);
 		this.client = client;
+		this.weekly = weekly;
 	}
 
 	@Override
@@ -49,7 +51,13 @@ public class GDTimelyLevelHttpRequest extends GDHttpRequest<GDTimelyLevel> {
 			}
 			
 			String[] split = response.split("\\|");
-			return new GDTimelyLevel(lvl, Long.parseLong(split[1]), Long.parseLong(split[0]));
+			
+			long timelyNumber = Long.parseLong(split[0]);
+			
+			if (weekly)
+				timelyNumber -= 100000;
+			
+			return new GDTimelyLevel(lvl, Long.parseLong(split[1]), timelyNumber);
 		};
 	}
 

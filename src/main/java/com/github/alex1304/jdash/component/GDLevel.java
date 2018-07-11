@@ -22,6 +22,7 @@ public class GDLevel extends GDLevelPreview {
 	public GDLevel(GDLevelPreview lp) {
 		this.setId(lp.getId());
 		this.setName(lp.getName());
+		this.setCreatorName(lp.getCreatorName());
 		this.setCreatorID(lp.getCreatorID());
 		this.setDescription(lp.getDescription());
 		this.setDifficulty(lp.getDifficulty());

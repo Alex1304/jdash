@@ -20,6 +20,7 @@ public class GDTimelyLevel extends GDLevel {
 	public GDTimelyLevel(GDLevel lvl) {
 		this.setId(lvl.getId());
 		this.setName(lvl.getName());
+		this.setCreatorName(lvl.getCreatorName());
 		this.setCreatorID(lvl.getCreatorID());
 		this.setDescription(lvl.getDescription());
 		this.setDifficulty(lvl.getDifficulty());
