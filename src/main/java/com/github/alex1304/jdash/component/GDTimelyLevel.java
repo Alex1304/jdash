@@ -32,7 +32,7 @@ public class GDTimelyLevel extends GDLevel {
 		this.setLength(lvl.getLength());
 		this.setSong(lvl.getSong());
 		this.setCoinCount(lvl.getCoinCount());
-		this.setHasCoinsVerified(lvl.hasCoinsVerified());
+		this.setCoinsVerified(lvl.hasCoinsVerified());
 		this.setLevelVersion(lvl.getLevelVersion());
 		this.setGameVersion(lvl.getGameVersion());
 		this.setObjectCount(lvl.getObjectCount());
@@ -100,5 +100,22 @@ public class GDTimelyLevel extends GDLevel {
 	 */
 	public void setTimelyNumber(long timelyNumber) {
 		this.timelyNumber = timelyNumber;
+	}
+
+	@Override
+	public String toString() {
+		return "GDTimelyLevel [nextTimelyCooldown=" + nextTimelyCooldown + ", timelyNumber=" + timelyNumber
+				+ ", getPass()=" + getPass() + ", getUploadTimestamp()=" + getUploadTimestamp()
+				+ ", getLastUpdatedTimestamp()=" + getLastUpdatedTimestamp() + ", getId()=" + getId() + ", getName()="
+				+ getName() + ", getCreatorName()=" + getCreatorName() + ", getCreatorID()=" + getCreatorID()
+				+ ", getDescription()=" + getDescription() + ", getDifficulty()=" + getDifficulty()
+				+ ", getDemonDifficulty()=" + getDemonDifficulty() + ", getStars()=" + getStars()
+				+ ", getFeaturedScore()=" + getFeaturedScore() + ", isEpic()=" + isEpic() + ", getDownloads()="
+				+ getDownloads() + ", getLikes()=" + getLikes() + ", getLength()=" + getLength() + ", getSong()="
+				+ getSong() + ", getCoinCount()=" + getCoinCount() + ", hasCoinsVerified()=" + hasCoinsVerified()
+				+ ", getLevelVersion()=" + getLevelVersion() + ", getGameVersion()=" + getGameVersion()
+				+ ", getObjectCount()=" + getObjectCount() + ", isDemon()=" + isDemon() + ", isAuto()=" + isAuto()
+				+ ", getOriginalLevelID()=" + getOriginalLevelID() + ", getRequestedStars()=" + getRequestedStars()
+				+ "]";
 	}
 }

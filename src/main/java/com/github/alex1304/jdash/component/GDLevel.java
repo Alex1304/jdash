@@ -34,7 +34,7 @@ public class GDLevel extends GDLevelPreview {
 		this.setLength(lp.getLength());
 		this.setSong(lp.getSong());
 		this.setCoinCount(lp.getCoinCount());
-		this.setHasCoinsVerified(lp.hasCoinsVerified());
+		this.setCoinsVerified(lp.hasCoinsVerified());
 		this.setLevelVersion(lp.getLevelVersion());
 		this.setGameVersion(lp.getGameVersion());
 		this.setObjectCount(lp.getObjectCount());

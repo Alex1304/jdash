@@ -416,7 +416,7 @@ public class GDLevelPreview implements GDComponent {
 	 *
 	 * @param hasCoinsVerified - boolean
 	 */
-	public void setHasCoinsVerified(boolean hasCoinsVerified) {
+	public void setCoinsVerified(boolean hasCoinsVerified) {
 		this.hasCoinsVerified = hasCoinsVerified;
 	}
 

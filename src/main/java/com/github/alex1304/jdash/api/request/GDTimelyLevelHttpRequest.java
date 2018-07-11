@@ -49,7 +49,7 @@ public class GDTimelyLevelHttpRequest extends GDHttpRequest<GDTimelyLevel> {
 			}
 			
 			String[] split = response.split("\\|");
-			return new GDTimelyLevel(lvl, Long.parseLong(split[0]), Long.parseLong(split[1]));
+			return new GDTimelyLevel(lvl, Long.parseLong(split[1]), Long.parseLong(split[0]));
 		};
 	}
 

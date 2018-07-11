@@ -47,10 +47,10 @@ public class GDLevelHttpRequest extends GDHttpRequest<GDLevel> {
 			
 			if (mappedLevelData.get(Constants.INDEX_LEVEL_PASS).equals("Aw=="))
 				pass = -2;
-			else if (mappedLevelData.get(Constants.INDEX_LEVEL_PASS).equals("0"))
+			else if (mappedLevelData.get(Constants.INDEX_LEVEL_PASS).isEmpty() || mappedLevelData.get(Constants.INDEX_LEVEL_PASS).equals("0"))
 				pass = -1;
 			else
-				pass = Integer.parseInt(RobTopsWeakCrypto.decodeLevelPass(mappedLevelData.get(Constants.INDEX_LEVEL_PASS)));
+				pass = Integer.parseInt(RobTopsWeakCrypto.decodeLevelPass(mappedLevelData.get(Constants.INDEX_LEVEL_PASS)).substring(1));
 			
 			GDSong song = GDSong.unknownSong(0);
 			long songID = Long.parseLong(mappedLevelData.get(Constants.INDEX_LEVEL_SONG_ID));
