@@ -129,6 +129,18 @@ public class GDHttpClientTest {
 	}
 	
 	@Test
+	public void test_userSearch_greenUser_fetch() throws Exception {
+		if (skipTests)
+			return;
+		
+		GDUserSearchHttpRequest userSearchReq = new GDUserSearchHttpRequest("f3lixram", 0);
+		GDComponentList<GDUserPreview> userList = client.fetch(userSearchReq);
+		assertNotNull(userList);
+		
+		System.out.println(userList);
+	}
+	
+	@Test
 	public void test_messageList_fetch() throws Exception {
 		if (skipTests)
 			return;

@@ -57,7 +57,7 @@ public class GDTimelyLevelHttpRequest extends GDHttpRequest<GDTimelyLevel> {
 			if (weekly)
 				timelyNumber -= 100000;
 			
-			return new GDTimelyLevel(lvl, Long.parseLong(split[1]), timelyNumber);
+			return new GDTimelyLevel(lvl, Long.parseLong(split[1]), timelyNumber, weekly);
 		};
 	}
 

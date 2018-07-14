@@ -35,15 +35,24 @@ public class GDUserSearchHttpRequest extends GDHttpRequest<GDComponentList<GDUse
 			
 			for (String u : split2) {
 				Map<Integer, String> data = Utils.splitToMap(u, ":");
+				
+				String strPlayerID = data.get(Constants.INDEX_USER_PLAYER_ID);
+				String strSecretCoins = data.get(Constants.INDEX_USER_SECRET_COINS);
+				String strUserCoins = data.get(Constants.INDEX_USER_USER_COINS);
+				String strStars = data.get(Constants.INDEX_USER_STARS);
+				String strDemons = data.get(Constants.INDEX_USER_DEMONS);
+				String strCreatorPoints = data.get(Constants.INDEX_USER_CREATOR_POINTS);
+				String strAccountID = data.get(Constants.INDEX_USER_ACCOUNT_ID);
+				
 				GDUserPreview up = new GDUserPreview(
 					data.get(Constants.INDEX_USER_NAME),
-					Long.parseLong(data.get(Constants.INDEX_USER_PLAYER_ID)),
-					Integer.parseInt(data.get(Constants.INDEX_USER_SECRET_COINS)),
-					Integer.parseInt(data.get(Constants.INDEX_USER_USER_COINS)),
-					Integer.parseInt(data.get(Constants.INDEX_USER_STARS)),
-					Integer.parseInt(data.get(Constants.INDEX_USER_DEMONS)),
-					Integer.parseInt(data.get(Constants.INDEX_USER_CREATOR_POINTS)),
-					Long.parseLong(data.get(Constants.INDEX_USER_ACCOUNT_ID))
+					strPlayerID == null || strPlayerID.isEmpty() ? 0 : Long.parseLong(strPlayerID),
+					strSecretCoins == null || strSecretCoins.isEmpty() ? 0 : Integer.parseInt(strSecretCoins),
+					strUserCoins == null || strUserCoins.isEmpty() ? 0 : Integer.parseInt(strUserCoins),
+					strStars == null || strStars.isEmpty() ? 0 : Integer.parseInt(strStars),
+					strDemons == null || strDemons.isEmpty() ? 0 : Integer.parseInt(strDemons),
+					strCreatorPoints == null || strCreatorPoints.isEmpty() ? 0 : Integer.parseInt(strCreatorPoints),
+					strAccountID == null || strAccountID.isEmpty() ? 0 : Long.parseLong(strAccountID)
 				);
 				result.add(up);
 			}

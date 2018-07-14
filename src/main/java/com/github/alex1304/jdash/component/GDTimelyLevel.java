@@ -13,6 +13,7 @@ public class GDTimelyLevel extends GDLevel {
 
 	private long nextTimelyCooldown;
 	private long timelyNumber;
+	private boolean weekly;
 	
 	public GDTimelyLevel() {
 	}
@@ -46,10 +47,11 @@ public class GDTimelyLevel extends GDLevel {
 		this.setLastUpdatedTimestamp(lvl.getLastUpdatedTimestamp());
 	}
 	
-	public GDTimelyLevel(GDLevel lvl, long nextTimelyCooldown, long timelyNumber) {
+	public GDTimelyLevel(GDLevel lvl, long nextTimelyCooldown, long timelyNumber, boolean weekly) {
 		this(lvl);
 		this.nextTimelyCooldown = nextTimelyCooldown;
 		this.timelyNumber = timelyNumber;
+		this.weekly = weekly;
 	}
 	
 	public GDTimelyLevel(long id, String name, String creatorName, long creatorID, String description,
@@ -57,12 +59,13 @@ public class GDTimelyLevel extends GDLevel {
 			boolean isEpic, int downloads, int likes, GDLevelLength length, GDSong song, int coinCount,
 			boolean hasCoinsVerified, int levelVersion, int gameVersion, int objectCount, boolean isDemon,
 			boolean isAuto, long originalLevelID, int requestedStars, int pass, String uploadTimestamp,
-			String lastUpdatedTimestamp, long nextTimelyCooldown, long timelyNumber) {
+			String lastUpdatedTimestamp, long nextTimelyCooldown, long timelyNumber, boolean weekly) {
 		super(id, name, creatorName, creatorID, description, difficulty, demonDifficulty, stars, featuredScore, isEpic,
 				downloads, likes, length, song, coinCount, hasCoinsVerified, levelVersion, gameVersion, objectCount, isDemon,
 				isAuto, originalLevelID, requestedStars, pass, uploadTimestamp, lastUpdatedTimestamp);
 		this.nextTimelyCooldown = nextTimelyCooldown;
 		this.timelyNumber = timelyNumber;
+		this.weekly = weekly;
 	}
 	
 	
@@ -84,6 +87,14 @@ public class GDTimelyLevel extends GDLevel {
 		return timelyNumber;
 	}
 
+	/**
+	 * Gets the weekly
+	 *
+	 * @return boolean
+	 */
+	public boolean isWeekly() {
+		return weekly;
+	}
 
 	/**
 	 * Sets the nextTimelyCooldown
@@ -106,7 +117,7 @@ public class GDTimelyLevel extends GDLevel {
 	@Override
 	public String toString() {
 		return "GDTimelyLevel [nextTimelyCooldown=" + nextTimelyCooldown + ", timelyNumber=" + timelyNumber
-				+ ", getPass()=" + getPass() + ", getUploadTimestamp()=" + getUploadTimestamp()
+				+ ", weekly=" + weekly + ", getPass()=" + getPass() + ", getUploadTimestamp()=" + getUploadTimestamp()
 				+ ", getLastUpdatedTimestamp()=" + getLastUpdatedTimestamp() + ", getId()=" + getId() + ", getName()="
 				+ getName() + ", getCreatorName()=" + getCreatorName() + ", getCreatorID()=" + getCreatorID()
 				+ ", getDescription()=" + getDescription() + ", getDifficulty()=" + getDifficulty()
@@ -118,5 +129,14 @@ public class GDTimelyLevel extends GDLevel {
 				+ ", getObjectCount()=" + getObjectCount() + ", isDemon()=" + isDemon() + ", isAuto()=" + isAuto()
 				+ ", getOriginalLevelID()=" + getOriginalLevelID() + ", getRequestedStars()=" + getRequestedStars()
 				+ "]";
+	}
+	
+	/**
+	 * Sets the weekly
+	 *
+	 * @param weekly - boolean
+	 */
+	public void setWeekly(boolean weekly) {
+		this.weekly = weekly;
 	}
 }
