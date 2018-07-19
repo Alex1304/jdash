@@ -8,6 +8,12 @@ package com.github.alex1304.jdash.exceptions;
 public class GDAPIException extends Exception {
 
 	private static final long serialVersionUID = 5480251003912770419L;
+	
+	private Exception underlyingException;
+	
+	public GDAPIException(Exception underlyingException) {
+		this.underlyingException = underlyingException;
+	}
 
 	public GDAPIException() {
 		super();
@@ -27,6 +33,15 @@ public class GDAPIException extends Exception {
 
 	public GDAPIException(Throwable arg0) {
 		super(arg0);
+	}
+
+	/**
+	 * Gets the underlyingException
+	 *
+	 * @return Exception
+	 */
+	public Exception getUnderlyingException() {
+		return underlyingException;
 	}
 
 }

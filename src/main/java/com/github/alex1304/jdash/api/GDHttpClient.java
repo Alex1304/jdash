@@ -23,6 +23,7 @@ public class GDHttpClient {
 	private long accountID;
 	private String password;
 	private boolean isAuthenticated;
+	private String host;
 
 	/**
 	 * @param accountID
@@ -34,12 +35,14 @@ public class GDHttpClient {
 		this.accountID = accountID;
 		this.password = password;
 		this.isAuthenticated = true;
+		this.host = Constants.GD_API_URL;
 	}
 	
 	/**
 	 * Constructor that creates an anonymous (logged out) client.
 	 */
 	public GDHttpClient() {
+		this(0, null);
 		this.isAuthenticated = false;
 	}
 	
@@ -63,7 +66,7 @@ public class GDHttpClient {
 	public <T extends GDComponent> T fetch(GDHttpRequest<T> request) throws GDAPIException  {
 		try {
 			HttpURLConnection con;
-			con = (HttpURLConnection) new URL(Constants.GD_API_URL + request.getPath()).openConnection();
+			con = (HttpURLConnection) new URL(host + request.getPath()).openConnection();
 			con.setRequestMethod("POST");
 			con.setDoOutput(true);
 			
@@ -97,8 +100,7 @@ public class GDHttpClient {
 			GDHttpResponseBuilder<T> builder = request.getResponseBuilder();
 			return builder.build(result);
 		} catch (IOException | RuntimeException e) {
-			e.printStackTrace();
-			throw new GDAPIException(e.getMessage());
+			throw new GDAPIException(e);
 		}
 	}
 
@@ -127,5 +129,23 @@ public class GDHttpClient {
 	 */
 	public boolean isAuthenticated() {
 		return isAuthenticated;
+	}
+
+	/**
+	 * Gets the host
+	 *
+	 * @return String
+	 */
+	public String getHost() {
+		return host;
+	}
+
+	/**
+	 * Sets the host
+	 *
+	 * @param host - String
+	 */
+	public void setHost(String host) {
+		this.host = host;
 	}
 }
