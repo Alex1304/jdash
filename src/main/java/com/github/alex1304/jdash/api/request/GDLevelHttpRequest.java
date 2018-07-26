@@ -45,10 +45,11 @@ public class GDLevelHttpRequest extends GDHttpRequest<GDLevel> {
 			
 			int pass;
 			
-			if (mappedLevelData.get(Constants.INDEX_LEVEL_PASS).equals("Aw==") ||
-					mappedLevelData.get(Constants.INDEX_LEVEL_PASS).equals("Ag==")) // Patch for Cvolton GDPS
+			if (mappedLevelData.get(Constants.INDEX_LEVEL_PASS).equals("Aw=="))
 				pass = -2;
-			else if (mappedLevelData.get(Constants.INDEX_LEVEL_PASS).isEmpty() || mappedLevelData.get(Constants.INDEX_LEVEL_PASS).equals("0"))
+			else if (mappedLevelData.get(Constants.INDEX_LEVEL_PASS).isEmpty() ||
+					mappedLevelData.get(Constants.INDEX_LEVEL_PASS).equals("0") ||
+					mappedLevelData.get(Constants.INDEX_LEVEL_PASS).equals("Ag==")) // Patch for Cvolton GDPS
 				pass = -1;
 			else
 				pass = Integer.parseInt(RobTopsWeakCrypto.decodeLevelPass(mappedLevelData.get(Constants.INDEX_LEVEL_PASS)).substring(1));
