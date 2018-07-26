@@ -64,6 +64,9 @@ public class GDHttpClient {
 	 *             describing the error.
 	 */
 	public <T extends GDComponent> T fetch(GDHttpRequest<T> request) throws GDAPIException  {
+		StringBuffer reqBody = new StringBuffer();
+		StringBuffer response = new StringBuffer();
+		
 		try {
 			HttpURLConnection con;
 			con = (HttpURLConnection) new URL(host + request.getPath()).openConnection();
@@ -72,7 +75,6 @@ public class GDHttpClient {
 			
 			// Sending the request to the server
 			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-			StringBuffer reqBody = new StringBuffer();
 			
 			request.getParams().putAll(request.requiresAuthentication()
 					? Constants.globalHttpRequestParamsWithAuthentication(accountID, password)
@@ -88,19 +90,19 @@ public class GDHttpClient {
 			wr.close();
 			
 			// Fetching response
-			String result = "";
 			BufferedReader rd = new BufferedReader(new InputStreamReader(con.getInputStream()));
 			String line;
 			while ((line = rd.readLine()) != null) {
-				result += line + "\n";
+				response.append(line + "\n");
 			}
 			
-			result = result.replaceAll("\n", "");
+			while (response.toString().endsWith("\n"))
+				response.deleteCharAt(response.length() - 1);
 			
 			GDHttpResponseBuilder<T> builder = request.getResponseBuilder();
-			return builder.build(result);
+			return builder.build(response.toString());
 		} catch (IOException | RuntimeException e) {
-			throw new GDAPIException(e);
+			throw new GDAPIException(e, "POST " + request.getPath() + "\n\n" + reqBody.toString().replaceAll("gjp=.*", "gjp=******"), response.toString());
 		}
 	}
 

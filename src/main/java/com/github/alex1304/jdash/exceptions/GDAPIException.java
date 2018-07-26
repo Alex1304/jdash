@@ -10,9 +10,13 @@ public class GDAPIException extends Exception {
 	private static final long serialVersionUID = 5480251003912770419L;
 	
 	private Exception underlyingException;
+	private String request;
+	private String response;
 	
-	public GDAPIException(Exception underlyingException) {
+	public GDAPIException(Exception underlyingException, String request, String response) {
 		this.underlyingException = underlyingException;
+		this.request = request;
+		this.response = response;
 	}
 
 	public GDAPIException() {
@@ -42,6 +46,24 @@ public class GDAPIException extends Exception {
 	 */
 	public Exception getUnderlyingException() {
 		return underlyingException;
+	}
+
+	/**
+	 * Gets the request
+	 *
+	 * @return String
+	 */
+	public String getRequest() {
+		return request;
+	}
+
+	/**
+	 * Gets the response
+	 *
+	 * @return String
+	 */
+	public String getResponse() {
+		return response;
 	}
 
 }
