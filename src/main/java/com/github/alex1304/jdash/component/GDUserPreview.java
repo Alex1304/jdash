@@ -13,6 +13,7 @@ public class GDUserPreview implements GDComponent {
 	private int stars;
 	private int secretCoins;
 	private int userCoins;
+	private int diamonds;
 	private int demons;
 	private int creatorPoints;
 	
@@ -30,6 +31,8 @@ public class GDUserPreview implements GDComponent {
 	 *            - user's user coins
 	 * @param stars
 	 *            - user's stars
+	 * @param diamonds
+	 *            - user's diamonds
 	 * @param demons
 	 *            - user's demons
 	 * @param creatorPoints
@@ -37,18 +40,18 @@ public class GDUserPreview implements GDComponent {
 	 * @param accountID
 	 *            - user's account ID
 	 */
-	public GDUserPreview(String name, long playerID, int secretCoins, int userCoins, int stars, int demons,
+	public GDUserPreview(String name, long playerID, int secretCoins, int userCoins, int stars, int diamonds, int demons,
 			int creatorPoints, long accountID) {
 		this.name = name;
 		this.playerID = playerID;
 		this.secretCoins = secretCoins;
 		this.userCoins = userCoins;
 		this.stars = stars;
+		this.diamonds = diamonds;
 		this.demons = demons;
 		this.creatorPoints = creatorPoints;
 		this.accountID = accountID;
 	}
-	
 
 	/**
 	 * Gets the user's nickname
@@ -96,6 +99,15 @@ public class GDUserPreview implements GDComponent {
 	}
 
 	/**
+	 * Gets the diamonds
+	 *
+	 * @return int
+	 */
+	public int getDiamonds() {
+		return diamonds;
+	}
+
+	/**
 	 * Gets the user's demons
 	 * 
 	 * @return int
@@ -131,7 +143,6 @@ public class GDUserPreview implements GDComponent {
 		this.accountID = accountID;
 	}
 
-
 	/**
 	 * Sets the playerID
 	 *
@@ -140,7 +151,6 @@ public class GDUserPreview implements GDComponent {
 	public void setPlayerID(long playerID) {
 		this.playerID = playerID;
 	}
-
 
 	/**
 	 * Sets the name
@@ -151,7 +161,6 @@ public class GDUserPreview implements GDComponent {
 		this.name = name;
 	}
 
-
 	/**
 	 * Sets the stars
 	 *
@@ -160,7 +169,6 @@ public class GDUserPreview implements GDComponent {
 	public void setStars(int stars) {
 		this.stars = stars;
 	}
-
 
 	/**
 	 * Sets the secretCoins
@@ -171,7 +179,6 @@ public class GDUserPreview implements GDComponent {
 		this.secretCoins = secretCoins;
 	}
 
-
 	/**
 	 * Sets the userCoins
 	 *
@@ -181,6 +188,14 @@ public class GDUserPreview implements GDComponent {
 		this.userCoins = userCoins;
 	}
 
+	/**
+	 * Sets the diamonds
+	 *
+	 * @param diamonds - int
+	 */
+	public void setDiamonds(int diamonds) {
+		this.diamonds = diamonds;
+	}
 
 	/**
 	 * Sets the demons
@@ -228,8 +243,8 @@ public class GDUserPreview implements GDComponent {
 
 	@Override
 	public String toString() {
-		return "GDUserPreview [accountID=" + accountID + ", playerID=" + playerID + ", name=" + name + ", stars=" + stars
-				+ ", secretCoins=" + secretCoins + ", userCoins=" + userCoins + ", demons="
-				+ demons + ", creatorPoints=" + creatorPoints + "]";
+		return "GDUserPreview [accountID=" + accountID + ", playerID=" + playerID + ", name=" + name + ", stars="
+				+ stars + ", secretCoins=" + secretCoins + ", userCoins=" + userCoins + ", diamonds=" + diamonds
+				+ ", demons=" + demons + ", creatorPoints=" + creatorPoints + "]";
 	}
 }

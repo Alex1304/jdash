@@ -7,17 +7,8 @@ import com.github.alex1304.jdash.component.property.GDUserRole;
  * 
  * @author Alex1304
  */
-public class GDUser implements GDComponent {
+public class GDUser extends GDUserPreview {
 	
-	private long accountID;
-	private long playerID;
-	private String name;
-	private int stars;
-	private int diamonds;
-	private int secretCoins;
-	private int userCoins;
-	private int demons;
-	private int creatorPoints;
 	private String youtube;
 	private String twitter;
 	private String twitch;
@@ -25,6 +16,23 @@ public class GDUser implements GDComponent {
 	private GDUserRole role;
 	
 	public GDUser() {
+	}
+	
+	public GDUser(GDUserPreview up, String youtube, String twitter, String twitch, long globalRank, GDUserRole role) {
+		this.setAccountID(up.getAccountID());
+		this.setPlayerID(up.getPlayerID());
+		this.setName(up.getName());
+		this.setStars(up.getStars());
+		this.setSecretCoins(up.getSecretCoins());
+		this.setUserCoins(up.getUserCoins());
+		this.setDiamonds(up.getDiamonds());
+		this.setDemons(up.getDemons());
+		this.setCreatorPoints(up.getCreatorPoints());
+		this.youtube = youtube;
+		this.twitter = twitter;
+		this.twitch = twitch;
+		this.globalRank = globalRank;
+		this.role = role;
 	}
 
 	/**
@@ -61,93 +69,8 @@ public class GDUser implements GDComponent {
 	public GDUser(String name, long playerID, int secretCoins, int userCoins, int stars, int diamonds, int demons,
 			int creatorPoints, String youtube, long globalRank, long accountID, GDUserRole role, String twitter,
 			String twitch) {
-		this.name = name;
-		this.playerID = playerID;
-		this.secretCoins = secretCoins;
-		this.userCoins = userCoins;
-		this.stars = stars;
-		this.diamonds = diamonds;
-		this.demons = demons;
-		this.creatorPoints = creatorPoints;
-		this.youtube = youtube;
-		this.globalRank = globalRank;
-		this.accountID = accountID;
-		this.role = role;
-		this.twitter = twitter;
-		this.twitch = twitch;
-	}
-	
-
-	/**
-	 * Gets the user's nickname
-	 * 
-	 * @return String
-	 */
-	public String getName() {
-		return name;
-	}
-
-	/**
-	 * Gets the user's player ID
-	 * 
-	 * @return long
-	 */
-	public long getPlayerID() {
-		return playerID;
-	}
-
-	/**
-	 * Gets the user's secret coins
-	 * 
-	 * @return int
-	 */
-	public int getSecretCoins() {
-		return secretCoins;
-	}
-
-	/**
-	 * Gets the user's user coins
-	 * 
-	 * @return int
-	 */
-	public int getUserCoins() {
-		return userCoins;
-	}
-
-	/**
-	 * Gets the user's stars
-	 * 
-	 * @return int
-	 */
-	public int getStars() {
-		return stars;
-	}
-
-	/**
-	 * Gets the user's diamonds
-	 * 
-	 * @return int
-	 */
-	public int getDiamonds() {
-		return diamonds;
-	}
-
-	/**
-	 * Gets the user's demons
-	 * 
-	 * @return int
-	 */
-	public int getDemons() {
-		return demons;
-	}
-
-	/**
-	 * Gets the user's creator points
-	 * 
-	 * @return int
-	 */
-	public int getCreatorPoints() {
-		return creatorPoints;
+		this(new GDUserPreview(name, playerID, secretCoins, userCoins, stars, diamonds, demons, creatorPoints,
+				accountID), youtube, twitter, twitch, globalRank, role);
 	}
 
 	/**
@@ -167,15 +90,6 @@ public class GDUser implements GDComponent {
 	 */
 	public long getGlobalRank() {
 		return globalRank;
-	}
-
-	/**
-	 * Gets the user's account ID
-	 * 
-	 * @return long
-	 */
-	public long getAccountID() {
-		return accountID;
 	}
 
 	/**
@@ -206,96 +120,6 @@ public class GDUser implements GDComponent {
 	}
 
 	/**
-	 * Sets the accountID
-	 *
-	 * @param accountID - long
-	 */
-	public void setAccountID(long accountID) {
-		this.accountID = accountID;
-	}
-
-
-	/**
-	 * Sets the playerID
-	 *
-	 * @param playerID - long
-	 */
-	public void setPlayerID(long playerID) {
-		this.playerID = playerID;
-	}
-
-
-	/**
-	 * Sets the name
-	 *
-	 * @param name - String
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
-
-
-	/**
-	 * Sets the stars
-	 *
-	 * @param stars - int
-	 */
-	public void setStars(int stars) {
-		this.stars = stars;
-	}
-
-
-	/**
-	 * Sets the diamonds
-	 *
-	 * @param diamonds - int
-	 */
-	public void setDiamonds(int diamonds) {
-		this.diamonds = diamonds;
-	}
-
-
-	/**
-	 * Sets the secretCoins
-	 *
-	 * @param secretCoins - int
-	 */
-	public void setSecretCoins(int secretCoins) {
-		this.secretCoins = secretCoins;
-	}
-
-
-	/**
-	 * Sets the userCoins
-	 *
-	 * @param userCoins - int
-	 */
-	public void setUserCoins(int userCoins) {
-		this.userCoins = userCoins;
-	}
-
-
-	/**
-	 * Sets the demons
-	 *
-	 * @param demons - int
-	 */
-	public void setDemons(int demons) {
-		this.demons = demons;
-	}
-
-
-	/**
-	 * Sets the creatorPoints
-	 *
-	 * @param creatorPoints - int
-	 */
-	public void setCreatorPoints(int creatorPoints) {
-		this.creatorPoints = creatorPoints;
-	}
-
-
-	/**
 	 * Sets the youtube
 	 *
 	 * @param youtube - String
@@ -303,7 +127,6 @@ public class GDUser implements GDComponent {
 	public void setYoutube(String youtube) {
 		this.youtube = youtube;
 	}
-
 
 	/**
 	 * Sets the twitter
@@ -314,7 +137,6 @@ public class GDUser implements GDComponent {
 		this.twitter = twitter;
 	}
 
-
 	/**
 	 * Sets the twitch
 	 *
@@ -324,7 +146,6 @@ public class GDUser implements GDComponent {
 		this.twitch = twitch;
 	}
 
-
 	/**
 	 * Sets the globalRank
 	 *
@@ -333,7 +154,6 @@ public class GDUser implements GDComponent {
 	public void setGlobalRank(long globalRank) {
 		this.globalRank = globalRank;
 	}
-
 
 	/**
 	 * Sets the role
@@ -345,35 +165,12 @@ public class GDUser implements GDComponent {
 	}
 
 	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + (int) (accountID ^ (accountID >>> 32));
-		return result;
-	}
-	
-	/**
-	 * Two users are equal if and only if they have the same accountID.
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (!(obj instanceof GDUser))
-			return false;
-		GDUser other = (GDUser) obj;
-		if (accountID != other.accountID)
-			return false;
-		return true;
+	public String toString() {
+		return "GDUser [youtube=" + youtube + ", twitter=" + twitter + ", twitch=" + twitch + ", globalRank="
+				+ globalRank + ", role=" + role + ", getName()=" + getName() + ", getPlayerID()=" + getPlayerID()
+				+ ", getSecretCoins()=" + getSecretCoins() + ", getUserCoins()=" + getUserCoins() + ", getStars()="
+				+ getStars() + ", getDiamonds()=" + getDiamonds() + ", getDemons()=" + getDemons()
+				+ ", getCreatorPoints()=" + getCreatorPoints() + ", getAccountID()=" + getAccountID() + "]";
 	}
 
-	@Override
-	public String toString() {
-		return "GDUser [accountID=" + accountID + ", playerID=" + playerID + ", name=" + name + ", stars=" + stars
-				+ ", diamonds=" + diamonds + ", secretCoins=" + secretCoins + ", userCoins=" + userCoins + ", demons="
-				+ demons + ", creatorPoints=" + creatorPoints + ", youtube=" + youtube + ", twitter=" + twitter
-				+ ", twitch=" + twitch + ", globalRank=" + globalRank + ", role=" + role + "]";
-	}
 }

@@ -40,6 +40,7 @@ public class GDUserSearchHttpRequest extends GDHttpRequest<GDComponentList<GDUse
 				String strSecretCoins = data.get(Constants.INDEX_USER_SECRET_COINS);
 				String strUserCoins = data.get(Constants.INDEX_USER_USER_COINS);
 				String strStars = data.get(Constants.INDEX_USER_STARS);
+				String strDiamonds = data.get(Constants.INDEX_USER_DIAMONDS);
 				String strDemons = data.get(Constants.INDEX_USER_DEMONS);
 				String strCreatorPoints = data.get(Constants.INDEX_USER_CREATOR_POINTS);
 				String strAccountID = data.get(Constants.INDEX_USER_ACCOUNT_ID);
@@ -50,6 +51,7 @@ public class GDUserSearchHttpRequest extends GDHttpRequest<GDComponentList<GDUse
 					strSecretCoins == null || strSecretCoins.isEmpty() ? 0 : Integer.parseInt(strSecretCoins),
 					strUserCoins == null || strUserCoins.isEmpty() ? 0 : Integer.parseInt(strUserCoins),
 					strStars == null || strStars.isEmpty() ? 0 : Integer.parseInt(strStars),
+					strDiamonds == null || strDiamonds.isEmpty() ? 0 : Integer.parseInt(strDiamonds),
 					strDemons == null || strDemons.isEmpty() ? 0 : Integer.parseInt(strDemons),
 					strCreatorPoints == null || strCreatorPoints.isEmpty() ? 0 : Integer.parseInt(strCreatorPoints),
 					strAccountID == null || strAccountID.isEmpty() ? 0 : Long.parseLong(strAccountID)

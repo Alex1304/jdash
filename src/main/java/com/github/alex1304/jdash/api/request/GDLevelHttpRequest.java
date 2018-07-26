@@ -45,7 +45,8 @@ public class GDLevelHttpRequest extends GDHttpRequest<GDLevel> {
 			
 			int pass;
 			
-			if (mappedLevelData.get(Constants.INDEX_LEVEL_PASS).equals("Aw=="))
+			if (mappedLevelData.get(Constants.INDEX_LEVEL_PASS).equals("Aw==") ||
+					mappedLevelData.get(Constants.INDEX_LEVEL_PASS).equals("Ag==")) // Patch for Cvolton GDPS
 				pass = -2;
 			else if (mappedLevelData.get(Constants.INDEX_LEVEL_PASS).isEmpty() || mappedLevelData.get(Constants.INDEX_LEVEL_PASS).equals("0"))
 				pass = -1;
