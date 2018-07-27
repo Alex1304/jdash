@@ -1,5 +1,7 @@
 package com.github.alex1304.jdash.api.request;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Map;
 
 import com.github.alex1304.jdash.api.GDHttpRequest;
@@ -10,7 +12,7 @@ import com.github.alex1304.jdash.util.Constants;
 import com.github.alex1304.jdash.util.Utils;
 
 /**
- * HTTP request to search for users
+ * HTTP request to search for users.
  * 
  * @author Alex1304
  *
@@ -19,7 +21,14 @@ public class GDUserSearchHttpRequest extends GDHttpRequest<GDComponentList<GDUse
 
 	public GDUserSearchHttpRequest(String keywords, int page) {
 		super("/getGJUsers20.php", false);
-		this.getParams().put("str", keywords);
+		
+		try {
+			this.getParams().put("str", URLEncoder.encode(keywords, "UTF-8"));
+		} catch (UnsupportedEncodingException e) {
+			this.getParams().put("str", keywords);
+			System.err.println("Unable to URLEncode search terms '" + keywords + "'");
+		}
+		
 		this.getParams().put("page", "" + page);
 	}
 

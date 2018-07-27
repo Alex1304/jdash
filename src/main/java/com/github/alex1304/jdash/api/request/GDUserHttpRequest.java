@@ -30,8 +30,6 @@ public class GDUserHttpRequest extends GDHttpRequest<GDUser> {
 			
 			Map<Integer, String> data = Utils.splitToMap(response, ":");
 			
-
-			
 			String strPlayerID = data.get(Constants.INDEX_USER_PLAYER_ID);
 			String strSecretCoins = data.get(Constants.INDEX_USER_SECRET_COINS);
 			String strUserCoins = data.get(Constants.INDEX_USER_USER_COINS);
