@@ -1,4 +1,4 @@
-package com.github.alex1304.jdash.component;
+package com.github.alex1304.jdash.entity;
 
 /**
  * Represents a song used in GD levels
@@ -6,9 +6,9 @@ package com.github.alex1304.jdash.component;
  * @author Alex1304
  *
  */
-public class GDSong implements GDComponent {
+public class GDSong implements GDEntity {
 
-	private long songID;
+	private long id;
 	private String songAuthorName;
 	private String songSize;
 	private String songTitle;
@@ -20,7 +20,7 @@ public class GDSong implements GDComponent {
 	}
 
 	/**
-	 * @param songID
+	 * @param id
 	 *            - the song ID
 	 * @param songAuthorName
 	 *            - the song author name
@@ -33,8 +33,8 @@ public class GDSong implements GDComponent {
 	 * @param isCustom
 	 *            - whether the song is custom
 	 */
-	public GDSong(long songID, String songAuthorName, String songSize, String songTitle, String downloadURL, boolean isCustom) {
-		this.songID = songID;
+	public GDSong(long id, String songAuthorName, String songSize, String songTitle, String downloadURL, boolean isCustom) {
+		this.id = id;
 		this.songAuthorName = songAuthorName;
 		this.songSize = songSize;
 		this.songTitle = songTitle;
@@ -58,13 +58,9 @@ public class GDSong implements GDComponent {
 		return new GDSong(songID, "-", "", "Unknown", "", songID > 0);
 	}
 
-	/**
-	 * Gets the song ID
-	 * 
-	 * @return long
-	 */
-	public long getSongID() {
-		return songID;
+	@Override
+	public long getId() {
+		return id;
 	}
 
 	/**
@@ -118,7 +114,7 @@ public class GDSong implements GDComponent {
 	 * @param songID - long
 	 */
 	public void setSongID(long songID) {
-		this.songID = songID;
+		this.id = songID;
 	}
 
 	/**
@@ -165,32 +161,24 @@ public class GDSong implements GDComponent {
 	public void setCustom(boolean isCustom) {
 		this.isCustom = isCustom;
 	}
-
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof GDUser)) {
+			return false;
+		}
+		GDSong song = (GDSong) obj;
+		return song.id == id;
+	}
+	
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + (int) (songID ^ (songID >>> 32));
-		return result;
+		return Long.hashCode(id);
 	}
 
 	@Override
 	public String toString() {
-		return "GDSong [songID=" + songID + ", songAuthorName=" + songAuthorName + ", songSize=" + songSize
+		return "GDSong [songID=" + id + ", songAuthorName=" + songAuthorName + ", songSize=" + songSize
 				+ ", songTitle=" + songTitle + ", downloadURL=" + downloadURL + ", isCustom=" + isCustom + "]";
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (!(obj instanceof GDSong))
-			return false;
-		GDSong other = (GDSong) obj;
-		if (songID != other.songID)
-			return false;
-		return true;
 	}
 }

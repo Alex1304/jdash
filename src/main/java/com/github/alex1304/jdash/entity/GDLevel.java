@@ -1,8 +1,4 @@
-package com.github.alex1304.jdash.component;
-
-import com.github.alex1304.jdash.component.property.GDLevelDemonDifficulty;
-import com.github.alex1304.jdash.component.property.GDLevelDifficulty;
-import com.github.alex1304.jdash.component.property.GDLevelLength;
+package com.github.alex1304.jdash.entity;
 
 /**
  * Represents a level in the game.
@@ -12,49 +8,13 @@ import com.github.alex1304.jdash.component.property.GDLevelLength;
  */
 public class GDLevel extends GDLevelPreview {
 
-	private int pass;
-	private String uploadTimestamp;
-	private String lastUpdatedTimestamp;
-	
-	public GDLevel() {
-	}
-	
-	public GDLevel(GDLevelPreview lp) {
-		this.setId(lp.getId());
-		this.setName(lp.getName());
-		this.setCreatorName(lp.getCreatorName());
-		this.setCreatorID(lp.getCreatorID());
-		this.setDescription(lp.getDescription());
-		this.setDifficulty(lp.getDifficulty());
-		this.setDemonDifficulty(lp.getDemonDifficulty());
-		this.setStars(lp.getStars());
-		this.setFeaturedScore(lp.getFeaturedScore());
-		this.setEpic(lp.isEpic());
-		this.setDownloads(lp.getDownloads());
-		this.setLikes(lp.getLikes());
-		this.setLength(lp.getLength());
-		this.setSong(lp.getSong());
-		this.setCoinCount(lp.getCoinCount());
-		this.setCoinsVerified(lp.hasCoinsVerified());
-		this.setLevelVersion(lp.getLevelVersion());
-		this.setGameVersion(lp.getGameVersion());
-		this.setObjectCount(lp.getObjectCount());
-		this.setDemon(lp.isDemon());
-		this.setAuto(lp.isAuto());
-		this.setOriginalLevelID(lp.getOriginalLevelID());
-		this.setRequestedStars(lp.getRequestedStars());
-	}
-	
-	public GDLevel(GDLevelPreview lp, int pass, String uploadTimestamp, String lastUpdatedTimestamp) {
-		this(lp);
-		this.pass = pass;
-		this.uploadTimestamp = uploadTimestamp;
-		this.lastUpdatedTimestamp = lastUpdatedTimestamp;
-	}
+	private final int pass;
+	private final String uploadTimestamp;
+	private final String lastUpdatedTimestamp;
 
 	public GDLevel(long id, String name, String creatorName, long creatorID, String description,
-			GDLevelDifficulty difficulty, GDLevelDemonDifficulty demonDifficulty, int stars, int featuredScore,
-			boolean isEpic, int downloads, int likes, GDLevelLength length, GDSong song, int coinCount,
+			Difficulty difficulty, DemonDifficulty demonDifficulty, int stars, int featuredScore,
+			boolean isEpic, int downloads, int likes, Length length, GDSong song, int coinCount,
 			boolean hasCoinsVerified, int levelVersion, int gameVersion, int objectCount, boolean isDemon,
 			boolean isAuto, long originalLevelID, int requestedStars, int pass, String uploadTimestamp, String lastUpdatedTimestamp) {
 		super(id, name, creatorName, creatorID, description, difficulty, demonDifficulty, stars, featuredScore, isEpic,
@@ -90,33 +50,6 @@ public class GDLevel extends GDLevelPreview {
 	 */
 	public String getLastUpdatedTimestamp() {
 		return lastUpdatedTimestamp;
-	}
-
-	/**
-	 * Sets the pass
-	 *
-	 * @param pass - int
-	 */
-	public void setPass(int pass) {
-		this.pass = pass;
-	}
-
-	/**
-	 * Sets the uploadTimestamp
-	 *
-	 * @param uploadTimestamp - String
-	 */
-	public void setUploadTimestamp(String uploadTimestamp) {
-		this.uploadTimestamp = uploadTimestamp;
-	}
-
-	/**
-	 * Sets the lastUpdatedTimestamp
-	 *
-	 * @param lastUpdatedTimestamp - String
-	 */
-	public void setLastUpdatedTimestamp(String lastUpdatedTimestamp) {
-		this.lastUpdatedTimestamp = lastUpdatedTimestamp;
 	}
 
 	@Override
