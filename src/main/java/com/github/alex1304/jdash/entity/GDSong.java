@@ -1,5 +1,7 @@
 package com.github.alex1304.jdash.entity;
 
+import java.util.Objects;
+
 /**
  * Represents a song used in GD levels
  * 
@@ -8,16 +10,12 @@ package com.github.alex1304.jdash.entity;
  */
 public class GDSong implements GDEntity {
 
-	private long id;
-	private String songAuthorName;
-	private String songSize;
-	private String songTitle;
-	private String downloadURL;
-	private boolean isCustom;
-	
-	public GDSong() {
-		
-	}
+	private final long id;
+	private final String songAuthorName;
+	private final String songSize;
+	private final String songTitle;
+	private final String downloadURL;
+	private final boolean isCustom;
 
 	/**
 	 * @param id
@@ -35,11 +33,11 @@ public class GDSong implements GDEntity {
 	 */
 	public GDSong(long id, String songAuthorName, String songSize, String songTitle, String downloadURL, boolean isCustom) {
 		this.id = id;
-		this.songAuthorName = songAuthorName;
-		this.songSize = songSize;
-		this.songTitle = songTitle;
-		this.downloadURL = downloadURL;
-		this.isCustom = isCustom;
+		this.songAuthorName = Objects.requireNonNull(songAuthorName);
+		this.songSize = Objects.requireNonNull(songSize);
+		this.songTitle = Objects.requireNonNull(songTitle);
+		this.downloadURL = Objects.requireNonNull(downloadURL);
+		this.isCustom = Objects.requireNonNull(isCustom);
 	}
 	
 	/**
@@ -106,60 +104,6 @@ public class GDSong implements GDEntity {
 	 */
 	public boolean isCustom() {
 		return isCustom;
-	}
-
-	/**
-	 * Sets the songID
-	 *
-	 * @param songID - long
-	 */
-	public void setSongID(long songID) {
-		this.id = songID;
-	}
-
-	/**
-	 * Sets the songAuthorName
-	 *
-	 * @param songAuthorName - String
-	 */
-	public void setSongAuthorName(String songAuthorName) {
-		this.songAuthorName = songAuthorName;
-	}
-
-	/**
-	 * Sets the songSize
-	 *
-	 * @param songSize - String
-	 */
-	public void setSongSize(String songSize) {
-		this.songSize = songSize;
-	}
-
-	/**
-	 * Sets the songTitle
-	 *
-	 * @param songTitle - String
-	 */
-	public void setSongTitle(String songTitle) {
-		this.songTitle = songTitle;
-	}
-
-	/**
-	 * Sets the downloadURL
-	 *
-	 * @param downloadURL - String
-	 */
-	public void setDownloadURL(String downloadURL) {
-		this.downloadURL = downloadURL;
-	}
-
-	/**
-	 * Sets the isCustom
-	 *
-	 * @param isCustom - boolean
-	 */
-	public void setCustom(boolean isCustom) {
-		this.isCustom = isCustom;
 	}
 	
 	@Override

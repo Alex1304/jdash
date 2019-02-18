@@ -6,8 +6,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import com.github.alex1304.jdash.entity.GDLevelPreview.DemonDifficulty;
-import com.github.alex1304.jdash.entity.GDLevelPreview.Difficulty;
+import com.github.alex1304.jdash.entity.DemonDifficulty;
+import com.github.alex1304.jdash.entity.Difficulty;
 import com.github.alex1304.jdash.entity.GDSong;
 
 /**

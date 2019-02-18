@@ -3,12 +3,6 @@ package com.github.alex1304.jdash.entity;
 import java.util.Objects;
 
 public class GDUser implements GDEntity {
-	public static enum Role {
-		USER,
-		MODERATOR,
-		ELDER_MODERATOR;
-	}
-
 	private final long id;
 	private final long accountId;
 	private final String name;

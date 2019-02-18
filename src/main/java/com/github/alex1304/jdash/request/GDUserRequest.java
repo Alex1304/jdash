@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.github.alex1304.jdash.client.GDClientException;
 import com.github.alex1304.jdash.entity.GDUser;
+import com.github.alex1304.jdash.entity.Role;
 import com.github.alex1304.jdash.util.Constants;
 import com.github.alex1304.jdash.util.Routes;
 import com.github.alex1304.jdash.util.Utils;
@@ -88,7 +89,7 @@ public class GDUserRequest implements GDRequest<GDUser> {
 				strYoutube,
 				strTwitter,
 				strTwitch,
-				GDUser.Role.values()[Integer.parseInt(strRole)]);
+				Role.values()[Integer.parseInt(strRole)]);
 	}
 
 }

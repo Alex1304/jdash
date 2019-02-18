@@ -6,7 +6,7 @@ package com.github.alex1304.jdash.entity;
  * @author Alex1304
  *
  */
-public class GDLevel extends GDLevelPreview {
+public class GDLevel extends AbstractGDLevel {
 
 	private final int pass;
 	private final String uploadTimestamp;
@@ -50,20 +50,5 @@ public class GDLevel extends GDLevelPreview {
 	 */
 	public String getLastUpdatedTimestamp() {
 		return lastUpdatedTimestamp;
-	}
-
-	@Override
-	public String toString() {
-		return "GDLevel [pass=" + pass + ", uploadTimestamp=" + uploadTimestamp + ", lastUpdatedTimestamp="
-				+ lastUpdatedTimestamp + ", getId()=" + getId() + ", getName()=" + getName() + ", getCreatorName()="
-				+ getCreatorName() + ", getCreatorID()=" + getCreatorID() + ", getDescription()=" + getDescription()
-				+ ", getDifficulty()=" + getDifficulty() + ", getDemonDifficulty()=" + getDemonDifficulty()
-				+ ", getStars()=" + getStars() + ", getFeaturedScore()=" + getFeaturedScore() + ", isEpic()=" + isEpic()
-				+ ", getDownloads()=" + getDownloads() + ", getLikes()=" + getLikes() + ", getLength()=" + getLength()
-				+ ", getSong()=" + getSong() + ", getCoinCount()=" + getCoinCount() + ", hasCoinsVerified()="
-				+ hasCoinsVerified() + ", getLevelVersion()=" + getLevelVersion() + ", getGameVersion()="
-				+ getGameVersion() + ", getObjectCount()=" + getObjectCount() + ", isDemon()=" + isDemon()
-				+ ", isAuto()=" + isAuto() + ", getOriginalLevelID()=" + getOriginalLevelID() + ", getRequestedStars()="
-				+ getRequestedStars() + "]";
 	}
 }
