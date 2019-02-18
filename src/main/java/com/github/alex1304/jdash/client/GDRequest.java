@@ -1,9 +1,7 @@
-package com.github.alex1304.jdash.request;
+package com.github.alex1304.jdash.client;
 
 import java.util.Map;
 
-import com.github.alex1304.jdash.client.GDClientException;
-import com.github.alex1304.jdash.client.GeometryDashClient;
 import com.github.alex1304.jdash.entity.GDEntity;
 
 /**

@@ -79,9 +79,11 @@ public interface Constants {
 	static final int INDEX_USER_STARS = 3;
 	static final int INDEX_USER_DEMONS = 4;
 	static final int INDEX_USER_CREATOR_POINTS = 8;
+	static final int INDEX_USER_ICON = 9;
 	static final int INDEX_USER_COLOR_1 = 10;
 	static final int INDEX_USER_COLOR_2 = 11;
 	static final int INDEX_USER_SECRET_COINS = 13;
+	static final int INDEX_USER_GLOW_OUTLINE = 15;
 	static final int INDEX_USER_ACCOUNT_ID = 16;
 	static final int INDEX_USER_USER_COINS = 17;
 	static final int INDEX_USER_PRIVATE_MESSAGE_POLICY = 18;
@@ -93,7 +95,7 @@ public interface Constants {
 	static final int INDEX_USER_ICON_UFO = 24;
 	static final int INDEX_USER_ICON_WAVE = 25;
 	static final int INDEX_USER_ICON_ROBOT = 26;
-	static final int INDEX_USER_GLOW = 28;
+	static final int INDEX_USER_TRAIL = 28;
 	static final int INDEX_USER_GLOBAL_RANK = 30;
 	static final int INDEX_USER_ICON_SPIDER = 43;
 	static final int INDEX_USER_TWITTER = 44;

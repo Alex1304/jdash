@@ -2,7 +2,7 @@ package com.github.alex1304.jdash.entity;
 
 import java.util.Objects;
 
-class AbstractGDLevel extends AbstractGDEntity {
+abstract class AbstractGDLevel extends AbstractGDEntity {
 	final String name;
 	final String creatorName;
 	final long creatorID;

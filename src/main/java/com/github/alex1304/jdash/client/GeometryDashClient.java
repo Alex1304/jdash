@@ -1,12 +1,14 @@
 package com.github.alex1304.jdash.client;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.StringJoiner;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.github.alex1304.jdash.entity.GDEntity;
-import com.github.alex1304.jdash.request.GDRequest;
-import com.github.alex1304.jdash.util.Routes;
+import com.github.alex1304.jdash.entity.GDUser;
+import com.github.alex1304.jdash.util.Utils;
 import com.github.alex1304.jdash.util.robtopsweakcrypto.RobTopsWeakCrypto;
 
 import reactor.core.publisher.Flux;
@@ -22,32 +24,26 @@ public class GeometryDashClient {
 	public static final String BINARY_VERSION = "34";
 	public static final String SECRET = "Wmfd2893gb7";
 	
-	private long accountID;
-	private String password;
-	private boolean isAuthenticated;
+	private final long accountID;
+	private final String password;
+	private final String passwordEncoded;
+	private final boolean isAuthenticated;
 	private String host;
-	private HttpClient client;
+	private final HttpClient client;
+	private final Map<GDRequest<?>, GDEntity> cache;
+	private final Map<GDRequest<?>, Long> cacheTime;
+	private final long cacheLifetime;
 
-	/**
-	 * @param accountID
-	 *            - The GD account ID
-	 * @param password
-	 *            - The GD account password
-	 */
-	public GeometryDashClient(long accountID, String password) {
+	GeometryDashClient(long accountID, String password, String host, long cacheLifetime) {
 		this.accountID = accountID;
-		this.password = RobTopsWeakCrypto.encodeGDAccountPassword(Objects.requireNonNull(password));
-		this.isAuthenticated = true;
-		this.host = Routes.BASE_URL;
+		this.password = password;
+		this.passwordEncoded = RobTopsWeakCrypto.encodeGDAccountPassword(Objects.requireNonNull(password));
+		this.isAuthenticated = accountID > 0;
+		this.host = host;
 		this.client = HttpClient.create().headers(h -> h.add("Content-Type", "application/x-www-form-urlencoded"));
-	}
-	
-	/**
-	 * Constructor that creates an anonymous (logged out) client.
-	 */
-	public GeometryDashClient() {
-		this(0, "");
-		this.isAuthenticated = false;
+		this.cache = new ConcurrentHashMap<>();
+		this.cacheTime = new ConcurrentHashMap<>();
+		this.cacheLifetime = cacheLifetime;
 	}
 	
 	/**
@@ -56,7 +52,12 @@ public class GeometryDashClient {
 	 * @param request - the request object to send
 	 * @return a Mono emtting the response object. If an error occurs when fetching info to GD servers, it is emitted through the Mono.
 	 */
-	public <E extends GDEntity> Mono<E> fetch(GDRequest<E> request) {
+	<E extends GDEntity> Mono<E> fetch(GDRequest<E> request) {
+		@SuppressWarnings("unchecked")
+		E cached = (E) cache.get(request);
+		if (cached != null && System.currentTimeMillis() - cacheTime.getOrDefault(request, 0L) <= cacheLifetime) {
+			return Mono.just(cached);
+		}
 		StringJoiner sj = new StringJoiner("&");
 		HashMap<String, String> params = new HashMap<>();
 		params.put("gameVersion", GAME_VERSION);
@@ -65,45 +66,57 @@ public class GeometryDashClient {
 		params.put("secret", SECRET);
 		if (isAuthenticated) {
 			params.put("accountID", "" + accountID);
-			params.put("gjp", password);
+			params.put("gjp", passwordEncoded);
 		}
 		params.putAll(request.getParams());
-		params.forEach((k, v) -> sj.add(k + "=" + v));
+		params.forEach((k, v) -> sj.add(k + "=" + Utils.urlEncode(v)));
+		String requestStr = sj.toString();
 		return client.baseUrl(host).post()
 				.uri(request.getPath())
-				.send(ByteBufFlux.fromString(Flux.just(sj.toString())))
+				.send(ByteBufFlux.fromString(Flux.just(requestStr)))
 				.responseContent()
 				.aggregate()
 				.asString()
 				.flatMap(r -> {
 					try {
-						return Mono.just(request.parseResponse(r));
+						System.out.println(requestStr);
+						System.out.println(r);
+						E response = request.parseResponse(r);
+						cache.put(request, response);
+						cacheTime.put(request, System.currentTimeMillis());
+						return Mono.just(response);
 					} catch (Exception e) {
 						return Mono.error(e);
 					}
 				});
 	}
 	
+	public Mono<GDUser> getUserByAccountId(long accountId) {
+		return fetch(new GDUserPart1Request(accountId))
+				.flatMap(u1 -> fetch(new GDUserPart2Request("" + u1.getId(), 0))
+						.map(u2l -> GDUser.aggregate(u1, u2l.get(0))));
+	}
+	
 	/**
-	 * Gets the GD account ID
+	 * Gets the account ID of this client
 	 * 
-	 * @return long
+	 * @return the account ID, or 0 if the client isn't authenticated
 	 */
 	public long getAccountID() {
 		return accountID;
 	}
 
 	/**
-	 * Gets the GD account password
+	 * Gets the GD account password of this client
 	 * 
-	 * @return String
+	 * @return the password, or an empty string if not authenticated
 	 */
 	public String getPassword() {
 		return password;
 	}
 
 	/**
-	 * Gets whether the client is authenticated with a GD account
+	 * Gets whether this client is authenticated with a GD account
 	 * 
 	 * @return boolean
 	 */
@@ -119,13 +132,12 @@ public class GeometryDashClient {
 	public String getHost() {
 		return host;
 	}
-
+	
 	/**
-	 * Sets the host
-	 *
-	 * @param host - String
+	 * Clears the cache of previous requests.
 	 */
-	public void setHost(String host) {
-		this.host = Objects.requireNonNull(host);
+	public void clearCache() {
+		cache.clear();
+		cacheTime.clear();
 	}
 }

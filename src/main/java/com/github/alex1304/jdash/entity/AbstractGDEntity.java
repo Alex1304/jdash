@@ -1,6 +1,6 @@
 package com.github.alex1304.jdash.entity;
 
-public class AbstractGDEntity implements GDEntity {
+abstract class AbstractGDEntity implements GDEntity {
 	
 	final long id;
 	

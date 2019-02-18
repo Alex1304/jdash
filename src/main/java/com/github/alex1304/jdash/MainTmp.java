@@ -1,7 +1,7 @@
 package com.github.alex1304.jdash;
 
+import com.github.alex1304.jdash.client.GDClientBuilder;
 import com.github.alex1304.jdash.client.GeometryDashClient;
-import com.github.alex1304.jdash.request.GDUserRequest;
 
 public class MainTmp {
 	
@@ -15,7 +15,19 @@ public class MainTmp {
 //				.asString()
 //				.block();
 //		System.out.println(res);
-		GeometryDashClient c = new GeometryDashClient();
-		System.out.println(c.fetch(new GDUserRequest(98006)).block());
+		GeometryDashClient c = GDClientBuilder.create().build();
+		System.out.println(System.currentTimeMillis());
+		System.out.println(c.getUserByAccountId(98006).block());
+		System.out.println(System.currentTimeMillis());
+		System.out.println(c.getUserByAccountId(98006).block());
+		System.out.println(System.currentTimeMillis());
+		System.out.println(c.getUserByAccountId(98006).block());
+		System.out.println(System.currentTimeMillis());
+		System.out.println(c.getUserByAccountId(98006).block());
+		System.out.println(System.currentTimeMillis());
+		System.out.println(c.getUserByAccountId(98006).block());
+		System.out.println(System.currentTimeMillis());
+		System.out.println(c.getUserByAccountId(98006).block());
+		System.out.println(System.currentTimeMillis());
 	}
 }

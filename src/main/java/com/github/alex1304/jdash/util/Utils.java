@@ -2,6 +2,7 @@ package com.github.alex1304.jdash.util;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -190,6 +191,19 @@ public class Utils {
 				return DemonDifficulty.EXTREME;  
 			default:
 				return DemonDifficulty.HARD;
+		}
+	}
+	
+	public static String defaultStringIfEmptyOrNull(String str, String fallback) {
+		return str == null || str.isEmpty() ? fallback : str;
+	}
+	
+	public static String urlEncode(String str) {
+		try {
+			return URLEncoder.encode(str, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+			return str;
 		}
 	}
 }
