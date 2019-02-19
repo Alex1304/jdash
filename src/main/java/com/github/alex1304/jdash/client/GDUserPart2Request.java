@@ -4,7 +4,9 @@ import java.util.Map;
 
 import com.github.alex1304.jdash.entity.GDList;
 import com.github.alex1304.jdash.entity.GDUserPart2;
-import com.github.alex1304.jdash.util.Constants;
+import com.github.alex1304.jdash.entity.IconType;
+import com.github.alex1304.jdash.exception.GDClientException;
+import com.github.alex1304.jdash.util.Indexes;
 import com.github.alex1304.jdash.util.Routes;
 import com.github.alex1304.jdash.util.Utils;
 
@@ -36,18 +38,19 @@ class GDUserPart2Request extends AbstractGDRequest<GDList<GDUserPart2>> {
 		String[] split2 = split1[0].split("\\|");
 		for (String u : split2) {
 			Map<Integer, String> data = Utils.splitToMap(u, ":");
-			String strPlayerID = Utils.defaultStringIfEmptyOrNull(data.get(Constants.INDEX_USER_PLAYER_ID), "0");
-			String strAccountID = Utils.defaultStringIfEmptyOrNull(data.get(Constants.INDEX_USER_ACCOUNT_ID), "0");
-			String strStars = Utils.defaultStringIfEmptyOrNull(data.get(Constants.INDEX_USER_STARS), "0");
-			String strDemons = Utils.defaultStringIfEmptyOrNull(data.get(Constants.INDEX_USER_DEMONS), "0");
-			String strSecretCoins = Utils.defaultStringIfEmptyOrNull(data.get(Constants.INDEX_USER_SECRET_COINS), "0");
-			String strUserCoins = Utils.defaultStringIfEmptyOrNull(data.get(Constants.INDEX_USER_USER_COINS), "0");
-			String strCreatorPoints = Utils.defaultStringIfEmptyOrNull(data.get(Constants.INDEX_USER_CREATOR_POINTS), "0");
-			String strColor1 = Utils.defaultStringIfEmptyOrNull(data.get(Constants.INDEX_USER_COLOR_1), "0");
-			String strColor2 = Utils.defaultStringIfEmptyOrNull(data.get(Constants.INDEX_USER_COLOR_2), "0");
-			boolean hasGlowOutline = !Utils.defaultStringIfEmptyOrNull(data.get(Constants.INDEX_USER_GLOW_OUTLINE), "0").equals("0");
-			String strMainIconId = Utils.defaultStringIfEmptyOrNull(data.get(Constants.INDEX_USER_ICON), "0");
-			String strName = Utils.defaultStringIfEmptyOrNull(data.get(Constants.INDEX_USER_NAME), "-");
+			String strPlayerID = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_PLAYER_ID), "0");
+			String strAccountID = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_ACCOUNT_ID), "0");
+			String strStars = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_STARS), "0");
+			String strDemons = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_DEMONS), "0");
+			String strSecretCoins = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_SECRET_COINS), "0");
+			String strUserCoins = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_USER_COINS), "0");
+			String strCreatorPoints = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_CREATOR_POINTS), "0");
+			String strColor1 = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_COLOR_1), "0");
+			String strColor2 = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_COLOR_2), "0");
+			String strHasGlowOutline = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_GLOW_OUTLINE), "0");
+			String strMainIconId = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_ICON), "0");
+			String strName = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_NAME), "-");
+			String strIconType = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_ICON_TYPE), "0");
 			result.add(new GDUserPart2(
 					Long.parseLong(strPlayerID),
 					Integer.parseInt(strSecretCoins),
@@ -59,8 +62,9 @@ class GDUserPart2Request extends AbstractGDRequest<GDList<GDUserPart2>> {
 					Integer.parseInt(strCreatorPoints),
 					Integer.parseInt(strDemons),
 					strName,
-					hasGlowOutline,
-					Integer.parseInt(strMainIconId)));
+					!strHasGlowOutline.equals("0"),
+					Integer.parseInt(strMainIconId),
+					IconType.values()[Integer.parseInt(strIconType)]));
 		}
 		return result;
 	}

@@ -146,11 +146,11 @@ public class Utils {
 
 		for (String songRD : arraySongsRD) {
 			Map<Integer, String> songMap = Utils.splitToMap(songRD, "~\\|~");
-			long songID = Long.parseLong(songMap.get(Constants.INDEX_SONG_ID));
-			String songTitle = songMap.get(Constants.INDEX_SONG_TITLE);
-			String songAuthor = songMap.get(Constants.INDEX_SONG_AUTHOR);
-			String songSize = songMap.get(Constants.INDEX_SONG_SIZE);
-			String songURL = songMap.get(Constants.INDEX_SONG_URL);
+			long songID = Long.parseLong(songMap.get(Indexes.SONG_ID));
+			String songTitle = songMap.get(Indexes.SONG_TITLE);
+			String songAuthor = songMap.get(Indexes.SONG_AUTHOR);
+			String songSize = songMap.get(Indexes.SONG_SIZE);
+			String songURL = songMap.get(Indexes.SONG_URL);
 			try {
 				songURL = URLDecoder.decode(songURL, "UTF-8");
 			} catch (UnsupportedEncodingException e) {

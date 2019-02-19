@@ -21,11 +21,17 @@ public class GDUser extends AbstractGDUser {
 	private final String twitter;
 	private final String twitch;
 	private final Role role;
+	private final boolean hasFriendRequestsEnabled;
+	private final PrivacySetting privateMessagePolicy;
+	private final PrivacySetting commmentHistoryPolicy;
+	private final IconType mainIconType;
 
-	private GDUser(long id, long accountId, String name, int stars, int demons, int diamonds, int secretCoins, int userCoins,
-			int creatorPoints, int globalRank, int cubeIconId, int shipIconId, int ufoIconId, int ballIconId, int waveIconId,
-			int robotIconId, int spiderIconId, int trailId, int deathEffectId, boolean hasIconGlowOutline, int color1Id,
-			int color2Id, int mainIconId, String youtube, String twitter, String twitch, Role role) {
+	private GDUser(long id, long accountId, String name, int stars, int demons, int diamonds, int secretCoins,
+			int userCoins, int creatorPoints, int globalRank, int cubeIconId, int shipIconId, int ufoIconId,
+			int ballIconId, int waveIconId, int robotIconId, int spiderIconId, int trailId, int deathEffectId,
+			boolean hasIconGlowOutline, int color1Id, int color2Id, int mainIconId, String youtube, String twitter,
+			String twitch, Role role, boolean hasFriendRequestsEnabled, PrivacySetting privateMessagePolicy,
+			PrivacySetting commmentHistoryPolicy, IconType mainIconType) {
 		super(id, secretCoins, userCoins, color1Id, color2Id, accountId, stars, creatorPoints, demons);
 		this.name = name;
 		this.diamonds = diamonds;
@@ -45,6 +51,10 @@ public class GDUser extends AbstractGDUser {
 		this.twitter = Objects.requireNonNull(twitter);
 		this.twitch = Objects.requireNonNull(twitch);
 		this.role = Objects.requireNonNull(role);
+		this.hasFriendRequestsEnabled = hasFriendRequestsEnabled;
+		this.privateMessagePolicy = Objects.requireNonNull(privateMessagePolicy);
+		this.commmentHistoryPolicy = Objects.requireNonNull(commmentHistoryPolicy);
+		this.mainIconType = Objects.requireNonNull(mainIconType);
 	}
 	
 	public static GDUser aggregate(GDUserPart1 part1, GDUserPart2 part2) {
@@ -56,7 +66,8 @@ public class GDUser extends AbstractGDUser {
 				part1.getShipIconId(), part1.getUfoIconId(), part1.getBallIconId(), part1.getWaveIconId(),
 				part1.getRobotIconId(), part1.getSpiderIconId(), part1.getTrailId(), part1.getDeathEffectId(),
 				part2.hasGlowOutline(), part1.color1Id, part1.color2Id, part2.getMainIconId(), part1.getYoutube(),
-				part1.getTwitter(), part1.getTwitch(), part1.getRole());
+				part1.getTwitter(), part1.getTwitch(), part1.getRole(), part1.hasFriendRequestsEnabled(),
+				part1.getPrivateMessagePolicy(), part1.getCommmentHistoryPolicy(), part2.getMainIconType());
 	}
 
 	public long getAccountId() {
@@ -163,6 +174,22 @@ public class GDUser extends AbstractGDUser {
 		return role;
 	}
 	
+	public boolean hasFriendRequestsEnabled() {
+		return hasFriendRequestsEnabled;
+	}
+
+	public PrivacySetting getPrivateMessagePolicy() {
+		return privateMessagePolicy;
+	}
+
+	public PrivacySetting getCommmentHistoryPolicy() {
+		return commmentHistoryPolicy;
+	}
+
+	public IconType getMainIconType() {
+		return mainIconType;
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		return obj instanceof GDUser && super.equals(obj);
@@ -180,7 +207,9 @@ public class GDUser extends AbstractGDUser {
 				+ ", waveIconId=" + waveIconId + ", robotIconId=" + robotIconId + ", spiderIconId=" + spiderIconId
 				+ ", trailId=" + trailId + ", deathEffectId=" + deathEffectId + ", hasIconGlowOutline="
 				+ hasIconGlowOutline + ", mainIconId=" + mainIconId + ", youtube=" + youtube + ", twitter=" + twitter
-				+ ", twitch=" + twitch + ", role=" + role + ", secretCoins=" + secretCoins + ", userCoins=" + userCoins
+				+ ", twitch=" + twitch + ", role=" + role + ", hasFriendRequestsEnabled=" + hasFriendRequestsEnabled
+				+ ", privateMessagePolicy=" + privateMessagePolicy + ", commmentHistoryPolicy=" + commmentHistoryPolicy
+				+ ", mainIconType=" + mainIconType + ", secretCoins=" + secretCoins + ", userCoins=" + userCoins
 				+ ", color1Id=" + color1Id + ", color2Id=" + color2Id + ", accountId=" + accountId + ", stars=" + stars
 				+ ", creatorPoints=" + creatorPoints + ", demons=" + demons + ", id=" + id + "]";
 	}

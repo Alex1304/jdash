@@ -18,10 +18,14 @@ public class GDUserPart1 extends AbstractGDUser {
 	private final String twitter;
 	private final String twitch;
 	private final Role role;
+	private final boolean hasFriendRequestsEnabled;
+	private final PrivacySetting privateMessagePolicy;
+	private final PrivacySetting commmentHistoryPolicy;
 
 	public GDUserPart1(long id, int secretCoins, int userCoins, int color1Id, int color2Id, long accountId, int stars,
 			int creatorPoints, int demons, int diamonds, int globalRank, int cubeIconId, int shipIconId, int ufoIconId, int ballIconId, int waveIconId,
-			int robotIconId, int spiderIconId, int trailId, int deathEffectId, String youtube, String twitter, String twitch, Role role) {
+			int robotIconId, int spiderIconId, int trailId, int deathEffectId, String youtube, String twitter, String twitch, Role role,
+			boolean hasFriendRequestsEnabled, PrivacySetting privateMessagePolicy, PrivacySetting commmentHistoryPolicy) {
 		super(id, secretCoins, userCoins, color1Id, color2Id, accountId, stars, creatorPoints, demons);
 		this.diamonds = diamonds;
 		this.globalRank = globalRank;
@@ -38,8 +42,11 @@ public class GDUserPart1 extends AbstractGDUser {
 		this.twitter = Objects.requireNonNull(twitter);
 		this.twitch = Objects.requireNonNull(twitch);
 		this.role = Objects.requireNonNull(role);
+		this.hasFriendRequestsEnabled = hasFriendRequestsEnabled;
+		this.privateMessagePolicy = Objects.requireNonNull(privateMessagePolicy);
+		this.commmentHistoryPolicy = Objects.requireNonNull(commmentHistoryPolicy);
 	}
-	
+
 	public int getDiamonds() {
 		return diamonds;
 	}
@@ -100,6 +107,18 @@ public class GDUserPart1 extends AbstractGDUser {
 		return role;
 	}
 	
+	public boolean hasFriendRequestsEnabled() {
+		return hasFriendRequestsEnabled;
+	}
+
+	public PrivacySetting getPrivateMessagePolicy() {
+		return privateMessagePolicy;
+	}
+
+	public PrivacySetting getCommmentHistoryPolicy() {
+		return commmentHistoryPolicy;
+	}
+	
 	@Override
 	public boolean equals(Object obj) {
 		return obj instanceof GDUserPart1 && super.equals(obj);
@@ -111,7 +130,9 @@ public class GDUserPart1 extends AbstractGDUser {
 				+ ", shipIconId=" + shipIconId + ", ufoIconId=" + ufoIconId + ", ballIconId=" + ballIconId
 				+ ", waveIconId=" + waveIconId + ", robotIconId=" + robotIconId + ", spiderIconId=" + spiderIconId
 				+ ", trailId=" + trailId + ", deathEffectId=" + deathEffectId + ", youtube=" + youtube + ", twitter="
-				+ twitter + ", twitch=" + twitch + ", role=" + role + ", secretCoins=" + secretCoins + ", userCoins="
+				+ twitter + ", twitch=" + twitch + ", role=" + role + ", hasFriendRequestsEnabled="
+				+ hasFriendRequestsEnabled + ", privateMessagePolicy=" + privateMessagePolicy
+				+ ", commmentHistoryPolicy=" + commmentHistoryPolicy + ", secretCoins=" + secretCoins + ", userCoins="
 				+ userCoins + ", color1Id=" + color1Id + ", color2Id=" + color2Id + ", accountId=" + accountId
 				+ ", stars=" + stars + ", creatorPoints=" + creatorPoints + ", demons=" + demons + ", id=" + id + "]";
 	}

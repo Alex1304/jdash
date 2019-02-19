@@ -3,8 +3,10 @@ package com.github.alex1304.jdash.client;
 import java.util.Map;
 
 import com.github.alex1304.jdash.entity.GDUserPart1;
+import com.github.alex1304.jdash.entity.PrivacySetting;
 import com.github.alex1304.jdash.entity.Role;
-import com.github.alex1304.jdash.util.Constants;
+import com.github.alex1304.jdash.exception.GDClientException;
+import com.github.alex1304.jdash.util.Indexes;
 import com.github.alex1304.jdash.util.Routes;
 import com.github.alex1304.jdash.util.Utils;
 
@@ -29,30 +31,33 @@ class GDUserPart1Request extends AbstractGDRequest<GDUserPart1> {
 	@Override
 	GDUserPart1 parseResponse0(String response) throws GDClientException {
 		Map<Integer, String> data = Utils.splitToMap(response, ":");
-		String strPlayerID = Utils.defaultStringIfEmptyOrNull(data.get(Constants.INDEX_USER_PLAYER_ID), "0");
-		String strAccountID = Utils.defaultStringIfEmptyOrNull(data.get(Constants.INDEX_USER_ACCOUNT_ID), "0");
-		String strStars = Utils.defaultStringIfEmptyOrNull(data.get(Constants.INDEX_USER_STARS), "0");
-		String strDemons = Utils.defaultStringIfEmptyOrNull(data.get(Constants.INDEX_USER_DEMONS), "0");
-		String strDiamonds = Utils.defaultStringIfEmptyOrNull(data.get(Constants.INDEX_USER_DIAMONDS), "0");
-		String strSecretCoins = Utils.defaultStringIfEmptyOrNull(data.get(Constants.INDEX_USER_SECRET_COINS), "0");
-		String strUserCoins = Utils.defaultStringIfEmptyOrNull(data.get(Constants.INDEX_USER_USER_COINS), "0");
-		String strCreatorPoints = Utils.defaultStringIfEmptyOrNull(data.get(Constants.INDEX_USER_CREATOR_POINTS), "0");
-		String strGlobalRank = Utils.defaultStringIfEmptyOrNull(data.get(Constants.INDEX_USER_GLOBAL_RANK), "0");
-		String strCube = Utils.defaultStringIfEmptyOrNull(data.get(Constants.INDEX_USER_ICON_CUBE), "0");
-		String strShip = Utils.defaultStringIfEmptyOrNull(data.get(Constants.INDEX_USER_ICON_SHIP), "0");
-		String strUfo = Utils.defaultStringIfEmptyOrNull(data.get(Constants.INDEX_USER_ICON_UFO), "0");
-		String strBall = Utils.defaultStringIfEmptyOrNull(data.get(Constants.INDEX_USER_ICON_BALL), "0");
-		String strWave = Utils.defaultStringIfEmptyOrNull(data.get(Constants.INDEX_USER_ICON_WAVE), "0");
-		String strRobot = Utils.defaultStringIfEmptyOrNull(data.get(Constants.INDEX_USER_ICON_ROBOT), "0");
-		String strSpider = Utils.defaultStringIfEmptyOrNull(data.get(Constants.INDEX_USER_ICON_SPIDER), "0");
-		String strTrail = Utils.defaultStringIfEmptyOrNull(data.get(Constants.INDEX_USER_TRAIL), "0");
-		String strDeathEffect = Utils.defaultStringIfEmptyOrNull(data.get(Constants.INDEX_USER_DEATH_EFFECT), "0");
-		String strColor1 = Utils.defaultStringIfEmptyOrNull(data.get(Constants.INDEX_USER_COLOR_1), "0");
-		String strColor2 = Utils.defaultStringIfEmptyOrNull(data.get(Constants.INDEX_USER_COLOR_2), "0");
-		String strRole = Utils.defaultStringIfEmptyOrNull(data.get(Constants.INDEX_USER_ROLE), "0");
-		String strYoutube = Utils.defaultStringIfEmptyOrNull(data.get(Constants.INDEX_USER_YOUTUBE), "");
-		String strTwitter = Utils.defaultStringIfEmptyOrNull(data.get(Constants.INDEX_USER_TWITTER), "");
-		String strTwitch = Utils.defaultStringIfEmptyOrNull(data.get(Constants.INDEX_USER_TWITCH), "");
+		String strPlayerID = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_PLAYER_ID), "0");
+		String strAccountID = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_ACCOUNT_ID), "0");
+		String strStars = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_STARS), "0");
+		String strDemons = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_DEMONS), "0");
+		String strDiamonds = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_DIAMONDS), "0");
+		String strSecretCoins = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_SECRET_COINS), "0");
+		String strUserCoins = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_USER_COINS), "0");
+		String strCreatorPoints = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_CREATOR_POINTS), "0");
+		String strGlobalRank = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_GLOBAL_RANK), "0");
+		String strCube = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_ICON_CUBE), "0");
+		String strShip = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_ICON_SHIP), "0");
+		String strUfo = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_ICON_UFO), "0");
+		String strBall = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_ICON_BALL), "0");
+		String strWave = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_ICON_WAVE), "0");
+		String strRobot = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_ICON_ROBOT), "0");
+		String strSpider = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_ICON_SPIDER), "0");
+		String strTrail = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_TRAIL), "0");
+		String strDeathEffect = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_DEATH_EFFECT), "0");
+		String strColor1 = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_COLOR_1), "0");
+		String strColor2 = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_COLOR_2), "0");
+		String strRole = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_ROLE), "0");
+		String strYoutube = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_YOUTUBE), "");
+		String strTwitter = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_TWITTER), "");
+		String strTwitch = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_TWITCH), "0");
+		String strFriendRequest = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_FRIEND_REQUEST_POLICY), "0");
+		String strPrivateMessage = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_PRIVATE_MESSAGE_POLICY), "0");
+		String strCommentHistory = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_COMMENT_HISTORY_POLICY), "0");
 		return new GDUserPart1(
 				Long.parseLong(strPlayerID),
 				Integer.parseInt(strSecretCoins),
@@ -77,7 +82,10 @@ class GDUserPart1Request extends AbstractGDRequest<GDUserPart1> {
 				strYoutube,
 				strTwitter,
 				strTwitch,
-				Role.values()[Integer.parseInt(strRole)]);
+				Role.values()[Integer.parseInt(strRole)],
+				!strFriendRequest.equals("0"),
+				PrivacySetting.values()[Integer.parseInt(strPrivateMessage)],
+				PrivacySetting.values()[Integer.parseInt(strCommentHistory)]);
 	}
 	
 	@Override

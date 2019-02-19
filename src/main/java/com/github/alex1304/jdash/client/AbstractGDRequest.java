@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.github.alex1304.jdash.entity.GDEntity;
+import com.github.alex1304.jdash.exception.GDClientException;
+import com.github.alex1304.jdash.exception.MissingAccessException;
 
 abstract class AbstractGDRequest<E extends GDEntity> implements GDRequest<E> {
 

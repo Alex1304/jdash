@@ -3,6 +3,7 @@ package com.github.alex1304.jdash.client;
 import java.util.Map;
 
 import com.github.alex1304.jdash.entity.GDEntity;
+import com.github.alex1304.jdash.exception.GDClientException;
 
 /**
  * A request is what is sent to a {@link GeometryDashClient} in order to perform
