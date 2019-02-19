@@ -1,6 +1,5 @@
 package com.github.alex1304.jdash.client;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import com.github.alex1304.jdash.entity.GDUserPart1;
@@ -9,7 +8,7 @@ import com.github.alex1304.jdash.util.Constants;
 import com.github.alex1304.jdash.util.Routes;
 import com.github.alex1304.jdash.util.Utils;
 
-class GDUserPart1Request implements GDRequest<GDUserPart1> {
+class GDUserPart1Request extends AbstractGDRequest<GDUserPart1> {
 	
 	private final long targetAccountID;
 
@@ -23,20 +22,13 @@ class GDUserPart1Request implements GDRequest<GDUserPart1> {
 	}
 
 	@Override
-	public Map<String, String> getParams() {
-		Map<String, String> map = new HashMap<>();
-		map.put("targetAccountID", "" + targetAccountID);
-		return map;
+	void putParams(Map<String, String> params) {
+		params.put("targetAccountID", "" + targetAccountID);
 	}
 
 	@Override
-	public GDUserPart1 parseResponse(String response) throws GDClientException {
-		if (response.startsWith("-1")) {
-			throw new GDClientException(-1);
-		}
-		
+	GDUserPart1 parseResponse0(String response) throws GDClientException {
 		Map<Integer, String> data = Utils.splitToMap(response, ":");
-		
 		String strPlayerID = Utils.defaultStringIfEmptyOrNull(data.get(Constants.INDEX_USER_PLAYER_ID), "0");
 		String strAccountID = Utils.defaultStringIfEmptyOrNull(data.get(Constants.INDEX_USER_ACCOUNT_ID), "0");
 		String strStars = Utils.defaultStringIfEmptyOrNull(data.get(Constants.INDEX_USER_STARS), "0");
@@ -61,7 +53,6 @@ class GDUserPart1Request implements GDRequest<GDUserPart1> {
 		String strYoutube = Utils.defaultStringIfEmptyOrNull(data.get(Constants.INDEX_USER_YOUTUBE), "");
 		String strTwitter = Utils.defaultStringIfEmptyOrNull(data.get(Constants.INDEX_USER_TWITTER), "");
 		String strTwitch = Utils.defaultStringIfEmptyOrNull(data.get(Constants.INDEX_USER_TWITCH), "");
-		
 		return new GDUserPart1(
 				Long.parseLong(strPlayerID),
 				Integer.parseInt(strSecretCoins),

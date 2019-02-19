@@ -79,14 +79,14 @@ public class GeometryDashClient {
 				.asString()
 				.flatMap(r -> {
 					try {
-						System.out.println(requestStr);
-						System.out.println(r);
 						E response = request.parseResponse(r);
 						cache.put(request, response);
 						cacheTime.put(request, System.currentTimeMillis());
 						return Mono.just(response);
-					} catch (Exception e) {
+					} catch (GDClientException e) {
 						return Mono.error(e);
+					} catch (RuntimeException e) {
+						return Mono.error(new GDClientException(e));
 					}
 				});
 	}

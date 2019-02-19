@@ -1,6 +1,5 @@
 package com.github.alex1304.jdash.client;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import com.github.alex1304.jdash.entity.GDList;
@@ -9,7 +8,7 @@ import com.github.alex1304.jdash.util.Constants;
 import com.github.alex1304.jdash.util.Routes;
 import com.github.alex1304.jdash.util.Utils;
 
-class GDUserPart2Request implements GDRequest<GDList<GDUserPart2>> {
+class GDUserPart2Request extends AbstractGDRequest<GDList<GDUserPart2>> {
 	
 	private final String query;
 	private final int page;
@@ -25,26 +24,18 @@ class GDUserPart2Request implements GDRequest<GDList<GDUserPart2>> {
 	}
 
 	@Override
-	public Map<String, String> getParams() {
-		Map<String, String> map = new HashMap<>();
-		map.put("str", query);
-		map.put("page", "" + page);
-		return map;
+	void putParams(Map<String, String> params) {
+		params.put("str", query);
+		params.put("page", "" + page);
 	}
 
 	@Override
-	public GDList<GDUserPart2> parseResponse(String response) throws GDClientException {
-		if (response.equals("-1"))
-			throw new GDClientException(-1);
-		
+	GDList<GDUserPart2> parseResponse0(String response) throws GDClientException {
 		GDList<GDUserPart2> result = new GDList<>();
-
 		String[] split1 = response.split("#");
 		String[] split2 = split1[0].split("\\|");
-
 		for (String u : split2) {
 			Map<Integer, String> data = Utils.splitToMap(u, ":");
-			
 			String strPlayerID = Utils.defaultStringIfEmptyOrNull(data.get(Constants.INDEX_USER_PLAYER_ID), "0");
 			String strAccountID = Utils.defaultStringIfEmptyOrNull(data.get(Constants.INDEX_USER_ACCOUNT_ID), "0");
 			String strStars = Utils.defaultStringIfEmptyOrNull(data.get(Constants.INDEX_USER_STARS), "0");
@@ -57,7 +48,6 @@ class GDUserPart2Request implements GDRequest<GDList<GDUserPart2>> {
 			boolean hasGlowOutline = !Utils.defaultStringIfEmptyOrNull(data.get(Constants.INDEX_USER_GLOW_OUTLINE), "0").equals("0");
 			String strMainIconId = Utils.defaultStringIfEmptyOrNull(data.get(Constants.INDEX_USER_ICON), "0");
 			String strName = Utils.defaultStringIfEmptyOrNull(data.get(Constants.INDEX_USER_NAME), "-");
-			
 			result.add(new GDUserPart2(
 					Long.parseLong(strPlayerID),
 					Integer.parseInt(strSecretCoins),
@@ -72,7 +62,6 @@ class GDUserPart2Request implements GDRequest<GDList<GDUserPart2>> {
 					hasGlowOutline,
 					Integer.parseInt(strMainIconId)));
 		}
-		
 		return result;
 	}
 	
