@@ -21,6 +21,11 @@ public class TestMain {
 			.doOnSuccess(System.out::println)
 			.subscribe();
 		
+		client.downloadLevel(52637920)
+			.doOnError(Throwable::printStackTrace)
+			.doOnSuccess(System.out::println)
+			.subscribe();
+		
 		System.out.println("Press Enter to end the program...");
 		Scanner sc = new Scanner(System.in);
 		sc.nextLine();

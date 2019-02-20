@@ -7,6 +7,7 @@ import java.util.StringJoiner;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.github.alex1304.jdash.entity.GDEntity;
+import com.github.alex1304.jdash.entity.GDLevelPart1;
 import com.github.alex1304.jdash.entity.GDUser;
 import com.github.alex1304.jdash.exception.BadResponseException;
 import com.github.alex1304.jdash.exception.CorruptedResponseContentException;
@@ -150,6 +151,10 @@ public class GeometryDashClient {
 				.flatMapMany(Flux::fromIterable)
 				.flatMap(u2 -> fetch(new GDUserPart1Request(u2.getAccountId()))
 						.map(u1 -> GDUser.aggregate(u1, u2)));
+	}
+	
+	public Mono<GDLevelPart1> downloadLevel(long levelId) {
+		return fetch(new GDLevelPart1Request(levelId));
 	}
 	
 	/**

@@ -3,6 +3,7 @@ package com.github.alex1304.jdash.util;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -205,5 +206,26 @@ public class Utils {
 			e.printStackTrace();
 			return str;
 		}
+	}
+	
+	public static byte[] b64DecodeToBytes(String str) {
+		byte[] result = null;
+		StringBuilder buf = new StringBuilder(str);
+		while (result == null && buf.length() > 0) {
+			try {
+				result = Base64.getUrlDecoder().decode(buf.toString());
+			} catch (IllegalArgumentException e) {
+				buf.deleteCharAt(buf.length() - 1);
+			}
+		}
+		return result == null ? new byte[0] : result;
+	}
+	
+	public static String b64Decode(String str) {
+		return new String(b64DecodeToBytes(str));
+	}
+	
+	public static String b64Encode(String str) {
+		return Base64.getUrlEncoder().encodeToString(str.getBytes());
 	}
 }
