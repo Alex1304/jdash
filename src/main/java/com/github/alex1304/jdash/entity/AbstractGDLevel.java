@@ -5,6 +5,7 @@ import java.util.Objects;
 abstract class AbstractGDLevel extends AbstractGDEntity {
 	final String name;
 	final long creatorID;
+	final String creatorName;
 	final String description;
 	final Difficulty difficulty;
 	final DemonDifficulty demonDifficulty;
@@ -25,13 +26,14 @@ abstract class AbstractGDLevel extends AbstractGDEntity {
 	final long originalLevelID;
 	final int requestedStars;
 	
-	AbstractGDLevel(long id, String name, long creatorID, String description,
+	AbstractGDLevel(long id, String name, String creatorName, long creatorID, String description,
 			Difficulty difficulty, DemonDifficulty demonDifficulty, int stars, int featuredScore,
 			boolean isEpic, int downloads, int likes, Length length, GDSong song, int coinCount,
 			boolean hasCoinsVerified, int levelVersion, int gameVersion, int objectCount, boolean isDemon,
 			boolean isAuto, long originalLevelID, int requestedStars) {
 		super(id);
 		this.name = Objects.requireNonNull(name);
+		this.creatorName = Objects.requireNonNull(creatorName);
 		this.creatorID = creatorID;
 		this.description = Objects.requireNonNull(description);
 		this.difficulty =  Objects.requireNonNull(difficulty);
@@ -56,6 +58,10 @@ abstract class AbstractGDLevel extends AbstractGDEntity {
 
 	public String getName() {
 		return name;
+	}
+	
+	public String getCreatorName() {
+		return creatorName;
 	}
 
 	public long getCreatorID() {

@@ -20,7 +20,7 @@ public class GDLevelPart1 extends AbstractGDLevel {
 			int downloads, int likes, Length length, GDSong song, int coinCount, boolean hasCoinsVerified,
 			int levelVersion, int gameVersion, int objectCount, boolean isDemon, boolean isAuto, long originalLevelID,
 			int requestedStars, int pass, String uploadTimestamp, String lastUpdatedTimestamp, byte[] data) {
-		super(id, name, creatorID, description, difficulty, demonDifficulty, stars, featuredScore, isEpic, downloads,
+		super(id, name, creatorName, creatorID, description, difficulty, demonDifficulty, stars, featuredScore, isEpic, downloads,
 				likes, length, song, coinCount, hasCoinsVerified, levelVersion, gameVersion, objectCount, isDemon,
 				isAuto, originalLevelID, requestedStars);
 		this.pass = pass;

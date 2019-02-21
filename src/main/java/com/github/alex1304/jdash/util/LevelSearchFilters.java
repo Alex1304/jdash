@@ -111,7 +111,7 @@ public class LevelSearchFilters {
 		return demon;
 	}
 
-	public Optional<GDSong> getSong() {
+	public Optional<GDSong> getSongFilter() {
 		return song;
 	}
 

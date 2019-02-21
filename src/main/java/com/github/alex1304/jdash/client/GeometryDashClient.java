@@ -7,11 +7,12 @@ import java.util.StringJoiner;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.github.alex1304.jdash.entity.GDEntity;
-import com.github.alex1304.jdash.entity.GDLevelPart1;
+import com.github.alex1304.jdash.entity.GDLevel;
 import com.github.alex1304.jdash.entity.GDUser;
 import com.github.alex1304.jdash.exception.BadResponseException;
 import com.github.alex1304.jdash.exception.CorruptedResponseContentException;
 import com.github.alex1304.jdash.exception.GDClientException;
+import com.github.alex1304.jdash.util.LevelSearchFilters;
 import com.github.alex1304.jdash.util.Utils;
 import com.github.alex1304.jdash.util.robtopsweakcrypto.RobTopsWeakCrypto;
 
@@ -153,8 +154,17 @@ public class GeometryDashClient {
 						.map(u1 -> GDUser.aggregate(u1, u2)));
 	}
 	
-	public Mono<GDLevelPart1> downloadLevel(long levelId) {
-		return fetch(new GDLevelPart1Request(levelId));
+	public Mono<GDLevel> getLevelByID(long levelId) {
+		return fetch(new GDLevelPart1Request(levelId))
+				.flatMap(l1 -> fetch(new GDLevelPart2Request("" + levelId, LevelSearchFilters.create(), 0))
+						.map(l2 -> GDLevel.aggregate(l1, l2.get(0))));
+	}
+	
+	public Flux<GDLevel> searchLevels(String query, LevelSearchFilters filters, int page) {
+		return fetch(new GDLevelPart2Request(query, filters, page))
+				.flatMapMany(Flux::fromIterable)
+				.flatMap(l2 -> fetch(new GDLevelPart1Request(l2.getId()))
+						.map(l1 -> GDLevel.aggregate(l1, l2)));
 	}
 	
 	/**
