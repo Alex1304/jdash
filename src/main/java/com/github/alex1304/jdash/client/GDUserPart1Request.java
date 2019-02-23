@@ -7,6 +7,7 @@ import com.github.alex1304.jdash.entity.PrivacySetting;
 import com.github.alex1304.jdash.entity.Role;
 import com.github.alex1304.jdash.exception.GDClientException;
 import com.github.alex1304.jdash.util.Indexes;
+import com.github.alex1304.jdash.util.ParseUtils;
 import com.github.alex1304.jdash.util.Routes;
 import com.github.alex1304.jdash.util.Utils;
 
@@ -30,7 +31,7 @@ class GDUserPart1Request extends AbstractGDRequest<GDUserPart1> {
 
 	@Override
 	GDUserPart1 parseResponse0(String response) throws GDClientException {
-		Map<Integer, String> data = Utils.splitToMap(response, ":");
+		Map<Integer, String> data = ParseUtils.splitToMap(response, ":");
 		String strPlayerID = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_PLAYER_ID), "0");
 		String strAccountID = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_ACCOUNT_ID), "0");
 		String strStars = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_STARS), "0");

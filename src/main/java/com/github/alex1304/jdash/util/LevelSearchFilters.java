@@ -122,4 +122,21 @@ public class LevelSearchFilters {
 	public Collection<? extends GDUser> getFollowed() {
 		return Collections.unmodifiableCollection(followed);
 	}
+	
+	@Override
+	public int hashCode() {
+		return toggles.hashCode() ^ lengths.hashCode() ^ difficulties.hashCode() ^ demon.hashCode() ^ song.hashCode()
+				^ completedLevels.hashCode() ^ followed.hashCode();
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof LevelSearchFilters)) {
+			return false;
+		}
+		LevelSearchFilters o = (LevelSearchFilters) obj;
+		return o.toggles.equals(toggles) && o.lengths.equals(lengths) && o.difficulties.equals(difficulties)
+				&& o.demon.equals(demon) && o.song.equals(song) && o.completedLevels.equals(completedLevels)
+				&& o.followed.equals(followed);
+	}
 }

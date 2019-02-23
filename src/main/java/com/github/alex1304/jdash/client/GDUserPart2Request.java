@@ -7,6 +7,7 @@ import com.github.alex1304.jdash.entity.GDUserPart2;
 import com.github.alex1304.jdash.entity.IconType;
 import com.github.alex1304.jdash.exception.GDClientException;
 import com.github.alex1304.jdash.util.Indexes;
+import com.github.alex1304.jdash.util.ParseUtils;
 import com.github.alex1304.jdash.util.Routes;
 import com.github.alex1304.jdash.util.Utils;
 
@@ -37,7 +38,7 @@ class GDUserPart2Request extends AbstractGDRequest<GDList<GDUserPart2>> {
 		String[] split1 = response.split("#");
 		String[] split2 = split1[0].split("\\|");
 		for (String u : split2) {
-			Map<Integer, String> data = Utils.splitToMap(u, ":");
+			Map<Integer, String> data = ParseUtils.splitToMap(u, ":");
 			String strPlayerID = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_PLAYER_ID), "0");
 			String strAccountID = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_ACCOUNT_ID), "0");
 			String strStars = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_STARS), "0");

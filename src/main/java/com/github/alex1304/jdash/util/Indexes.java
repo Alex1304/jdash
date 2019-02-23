@@ -40,34 +40,6 @@ public class Indexes {
 	public static final int LEVEL_DEMON_DIFFICULTY = 43;
 	public static final int LEVEL_OBJECT_COUNT = 45;
 
-	/* Level search type property */
-
-	public static final int LEVEL_SEARCH_TYPE_REGULAR = 0;
-	public static final int LEVEL_SEARCH_TYPE_RECENT = 4;
-	public static final int LEVEL_SEARCH_TYPE_TRENDING = 3;
-	public static final int LEVEL_SEARCH_TYPE_MOST_DOWNLOADED = 1;
-	public static final int LEVEL_SEARCH_TYPE_MOST_LIKED = 2;
-	public static final int LEVEL_SEARCH_TYPE_FEATURED = 6;
-	public static final int LEVEL_SEARCH_TYPE_MAGIC = 6;
-	public static final int LEVEL_SEARCH_TYPE_AWARDED = 11;
-	public static final int LEVEL_SEARCH_TYPE_HALL_OF_FAME = 16;
-
-	/* Level search diff property */
-
-	public static final int LEVEL_SEARCH_DIFF_ALL = 0;
-	public static final int LEVEL_SEARCH_DIFF_NA = -1;
-	public static final int LEVEL_SEARCH_DIFF_EASY = 1;
-	public static final int LEVEL_SEARCH_DIFF_NORMAL = 2;
-	public static final int LEVEL_SEARCH_DIFF_HARD = 3;
-	public static final int LEVEL_SEARCH_DIFF_HARDER = 4;
-	public static final int LEVEL_SEARCH_DIFF_INSANE = 5;
-	public static final int LEVEL_SEARCH_DIFF_DEMON = -2;
-	public static final int LEVEL_SEARCH_DIFF_EASY_DEMON = 1;
-	public static final int LEVEL_SEARCH_DIFF_MEDIUM_DEMON = 2;
-	public static final int LEVEL_SEARCH_DIFF_HARD_DEMON = 3;
-	public static final int LEVEL_SEARCH_DIFF_INSANE_DEMON = 4;
-	public static final int LEVEL_SEARCH_DIFF_EXTREME_DEMON = 5;
-
 	/* Song data */
 
 	public static final int SONG_ID = 1;

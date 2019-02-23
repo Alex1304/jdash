@@ -1,57 +1,159 @@
 package com.github.alex1304.jdash.entity;
 
 import java.util.Objects;
+import java.util.function.Supplier;
 
-public class GDLevel extends AbstractGDLevel {
+import com.github.alex1304.jdash.util.LazyProperty;
 
+import reactor.core.publisher.Mono;
+
+public class GDLevel extends AbstractGDEntity {
+
+	private final String name;
+	private final long creatorID;
 	private final String creatorName;
-	private final int pass;
-	private final String uploadTimestamp;
-	private final String lastUpdatedTimestamp;
-	private final byte[] data;
+	private final String description;
+	private final Difficulty difficulty;
+	private final DemonDifficulty demonDifficulty;
+	private final int stars;
+	private final int featuredScore;
+	private final boolean isEpic;
+	private final int downloads;
+	private final int likes;
+	private final Length length;
+	private final LazyProperty<GDSong> song;
+	private final int coinCount;
+	private final boolean hasCoinsVerified;
+	private final int levelVersion;
+	private final int gameVersion;
+	private final int objectCount;
+	private final boolean isDemon;
+	private final boolean isAuto;
+	private final long originalLevelID;
+	private final int requestedStars;
+	private final LazyProperty<GDLevelData> downloader;
 
-	GDLevel(long id, String name, long creatorID, String description, Difficulty difficulty,
+	public GDLevel(long id, String name, long creatorID, String description, Difficulty difficulty,
 			DemonDifficulty demonDifficulty, int stars, int featuredScore, boolean isEpic, int downloads, int likes,
-			Length length, GDSong song, int coinCount, boolean hasCoinsVerified, int levelVersion, int gameVersion,
+			Length length, Supplier<Mono<GDSong>> song, int coinCount, boolean hasCoinsVerified, int levelVersion, int gameVersion,
 			int objectCount, boolean isDemon, boolean isAuto, long originalLevelID, int requestedStars,
-			String creatorName, int pass, String uploadTimestamp, String lastUpdatedTimestamp, byte[] data) {
-		super(id, name, creatorName, creatorID, description, difficulty, demonDifficulty, stars, featuredScore, isEpic, downloads,
-				likes, length, song, coinCount, hasCoinsVerified, levelVersion, gameVersion, objectCount, isDemon,
-				isAuto, originalLevelID, requestedStars);
+			String creatorName, Supplier<Mono<GDLevelData>> downloader) {
+		super(id);
+		this.name = Objects.requireNonNull(name);
 		this.creatorName = Objects.requireNonNull(creatorName);
-		this.pass = pass;
-		this.uploadTimestamp = Objects.requireNonNull(uploadTimestamp);
-		this.lastUpdatedTimestamp = Objects.requireNonNull(lastUpdatedTimestamp);
-		this.data = Objects.requireNonNull(data);
+		this.creatorID = creatorID;
+		this.description = Objects.requireNonNull(description);
+		this.difficulty =  Objects.requireNonNull(difficulty);
+		this.demonDifficulty = Objects.requireNonNull(demonDifficulty);
+		this.stars = stars;
+		this.featuredScore = featuredScore;
+		this.isEpic = isEpic;
+		this.downloads = downloads;
+		this.likes = likes;
+		this.length = length;
+		this.song = new LazyProperty<>(Objects.requireNonNull(song));
+		this.coinCount = coinCount;
+		this.hasCoinsVerified = hasCoinsVerified;
+		this.levelVersion = levelVersion;
+		this.gameVersion = gameVersion;
+		this.objectCount = objectCount;
+		this.isDemon = isDemon;
+		this.isAuto = isAuto;
+		this.originalLevelID = originalLevelID;
+		this.requestedStars = requestedStars;
+		this.downloader = new LazyProperty<>(Objects.requireNonNull(downloader));
 	}
 
-	public static GDLevel aggregate(GDLevelPart1 part1, GDLevelPart2 part2) {
-		return new GDLevel(part1.id, part1.name, part1.creatorID, part1.description, part1.difficulty,
-				part1.demonDifficulty, part1.stars, part1.featuredScore, part1.isEpic, part1.downloads, part1.likes,
-				part1.length, part2.song, part1.coinCount, part1.hasCoinsVerified, part1.levelVersion,
-				part1.gameVersion, part1.objectCount, part1.isDemon, part1.isAuto, part1.originalLevelID,
-				part1.requestedStars, part2.getCreatorName(), part1.getPass(), part1.getUploadTimestamp(),
-				part1.getLastUpdatedTimestamp(), part1.getData());
+	public String getName() {
+		return name;
 	}
-
+	
 	public String getCreatorName() {
 		return creatorName;
 	}
 
-	public int getPass() {
-		return pass;
+	public long getCreatorID() {
+		return creatorID;
 	}
 
-	public String getUploadTimestamp() {
-		return uploadTimestamp;
+	public String getDescription() {
+		return description;
 	}
 
-	public String getLastUpdatedTimestamp() {
-		return lastUpdatedTimestamp;
+	public Difficulty getDifficulty() {
+		return difficulty;
 	}
 
-	public byte[] getData() {
-		return data;
+	public DemonDifficulty getDemonDifficulty() {
+		return demonDifficulty;
+	}
+
+	public int getStars() {
+		return stars;
+	}
+
+	public int getFeaturedScore() {
+		return featuredScore;
+	}
+
+	public boolean isEpic() {
+		return isEpic;
+	}
+
+	public int getDownloads() {
+		return downloads;
+	}
+
+	public int getLikes() {
+		return likes;
+	}
+
+	public Length getLength() {
+		return length;
+	}
+	
+	public Mono<GDSong> getSong() {
+		return song.getValue();
+	}
+
+	public int getCoinCount() {
+		return coinCount;
+	}
+
+	public boolean hasCoinsVerified() {
+		return hasCoinsVerified;
+	}
+
+	public int getLevelVersion() {
+		return levelVersion;
+	}
+
+	public int getGameVersion() {
+		return gameVersion;
+	}
+
+	public int getObjectCount() {
+		return objectCount;
+	}
+
+	public boolean isDemon() {
+		return isDemon;
+	}
+
+	public boolean isAuto() {
+		return isAuto;
+	}
+
+	public long getOriginalLevelID() {
+		return originalLevelID;
+	}
+
+	public int getRequestedStars() {
+		return requestedStars;
+	}
+
+	public Mono<GDLevelData> download() {
+		return downloader.getValue();
 	}
 	
 	@Override
@@ -61,14 +163,12 @@ public class GDLevel extends AbstractGDLevel {
 
 	@Override
 	public String toString() {
-		return "GDLevel [creatorName=" + creatorName + ", pass=" + pass + ", uploadTimestamp=" + uploadTimestamp
-				+ ", lastUpdatedTimestamp=" + lastUpdatedTimestamp + ", data={" + data.length + " Bytes}, name="
-				+ name + ", creatorID=" + creatorID + ", description=" + description + ", difficulty=" + difficulty
-				+ ", demonDifficulty=" + demonDifficulty + ", stars=" + stars + ", featuredScore=" + featuredScore
-				+ ", isEpic=" + isEpic + ", downloads=" + downloads + ", likes=" + likes + ", length=" + length
-				+ ", song=" + song + ", coinCount=" + coinCount + ", hasCoinsVerified=" + hasCoinsVerified
-				+ ", levelVersion=" + levelVersion + ", gameVersion=" + gameVersion + ", objectCount=" + objectCount
-				+ ", isDemon=" + isDemon + ", isAuto=" + isAuto + ", originalLevelID=" + originalLevelID
-				+ ", requestedStars=" + requestedStars + ", id=" + id + "]";
+		return "GDLevel [name=" + name + ", creatorID=" + creatorID + ", creatorName=" + creatorName + ", description="
+				+ description + ", difficulty=" + difficulty + ", demonDifficulty=" + demonDifficulty + ", stars="
+				+ stars + ", featuredScore=" + featuredScore + ", isEpic=" + isEpic + ", downloads=" + downloads
+				+ ", likes=" + likes + ", length=" + length + ", coinCount=" + coinCount
+				+ ", hasCoinsVerified=" + hasCoinsVerified + ", levelVersion=" + levelVersion + ", gameVersion="
+				+ gameVersion + ", objectCount=" + objectCount + ", isDemon=" + isDemon + ", isAuto=" + isAuto
+				+ ", originalLevelID=" + originalLevelID + ", requestedStars=" + requestedStars + "]";
 	}
 }

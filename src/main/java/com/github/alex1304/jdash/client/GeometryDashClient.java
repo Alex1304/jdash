@@ -12,7 +12,9 @@ import com.github.alex1304.jdash.entity.GDUser;
 import com.github.alex1304.jdash.exception.BadResponseException;
 import com.github.alex1304.jdash.exception.CorruptedResponseContentException;
 import com.github.alex1304.jdash.exception.GDClientException;
+import com.github.alex1304.jdash.util.Indexes;
 import com.github.alex1304.jdash.util.LevelSearchFilters;
+import com.github.alex1304.jdash.util.LevelSearchStrategy;
 import com.github.alex1304.jdash.util.Utils;
 import com.github.alex1304.jdash.util.robtopsweakcrypto.RobTopsWeakCrypto;
 
@@ -20,17 +22,18 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.netty.ByteBufFlux;
 import reactor.netty.http.client.HttpClient;
+import reactor.netty.http.client.PrematureCloseException;
 
 /**
- * An HTTP client specifically designed to make requests to Geometry Dash servers.
- * To create an instance of this class, use {@link GDClientBuilder}.
+ * An HTTP client specifically designed to make requests to Geometry Dash
+ * servers. To create an instance of this class, use {@link GDClientBuilder}.
  */
 public class GeometryDashClient {
 	public static final String GAME_VERSION = "21";
 	public static final String BINARY_VERSION = "34";
 	public static final String SECRET = "Wmfd2893gb7";
 	public static final int CLEANUP_CACHE_EVERY = 50;
-	
+
 	private final long accountID;
 	private final String password;
 	private final String passwordEncoded;
@@ -54,12 +57,14 @@ public class GeometryDashClient {
 		this.cacheLifetime = cacheLifetime;
 		this.totalNumberOfRequestsMade = 0;
 	}
-	
+
 	/**
-	 * Sends the given request through the client and returns a Mono emtting the response object.
+	 * Sends the given request through the client and returns a Mono emtting the
+	 * response object.
 	 * 
-	 * @param request - the request object to send
-	 * @return a Mono emtting the response object. If an error occurs when fetching info to GD servers, it is emitted through the Mono.
+	 * @param request the request object to send
+	 * @return a Mono emtting the response object. If an error occurs when fetching
+	 *         info to GD servers, it is emitted through the Mono.
 	 */
 	<E extends GDEntity> Mono<E> fetch(GDRequest<E> request) {
 		@SuppressWarnings("unchecked")
@@ -80,11 +85,10 @@ public class GeometryDashClient {
 		params.putAll(request.getParams());
 		params.forEach((k, v) -> sj.add(k + "=" + Utils.urlEncode(v)));
 		String requestStr = sj.toString();
-		return client.baseUrl(host).post()
-				.uri(request.getPath())
-				.send(ByteBufFlux.fromString(Flux.just(requestStr)))
-				.responseSingle((response, content) -> response.status().code() >= 400 && response.status().code() < 600 ?
-						Mono.error(new BadResponseException(response)) : content.asString())
+		return client.baseUrl(host).post().uri(request.getPath()).send(ByteBufFlux.fromString(Flux.just(requestStr)))
+				.responseSingle((response, content) -> response.status().code() >= 400 && response.status().code() < 600
+						? Mono.error(new BadResponseException(response))
+						: content.asString())
 				.flatMap(r -> {
 					try {
 						E entity = request.parseResponse(r);
@@ -100,19 +104,21 @@ public class GeometryDashClient {
 					} catch (RuntimeException e) {
 						return Mono.error(new CorruptedResponseContentException(e));
 					}
-				});
+				})
+				.retry(5, PrematureCloseException.class::isInstance);
 	}
-	
+
 	private void cleanUpExpiredCacheEntries() {
-		final long now = System.currentTimeMillis();
-		new HashMap<>(cacheTime).forEach((k, v) -> {
-			if (now - v < cacheLifetime) {
-				cacheTime.remove(k);
-				cache.remove(k);
-			}
-		});
+		Mono.just(System.currentTimeMillis()).doOnNext(now -> {
+			new HashMap<>(cacheTime).forEach((k, v) -> {
+				if (now - v < cacheLifetime) {
+					cacheTime.remove(k);
+					cache.remove(k);
+				}
+			});
+		}).subscribe();
 	}
-	
+
 	/**
 	 * Gets a Geometry Dash user from their accountID
 	 * 
@@ -125,9 +131,8 @@ public class GeometryDashClient {
 		if (accountId < 1) {
 			throw new IllegalArgumentException("Account ID must be greater than 0");
 		}
-		return fetch(new GDUserPart1Request(accountId))
-				.flatMap(u1 -> fetch(new GDUserPart2Request("" + u1.getId(), 0))
-						.map(u2l -> GDUser.aggregate(u1, u2l.get(0))));
+		return fetch(new GDUserPart1Request(accountId)).flatMap(
+				u1 -> fetch(new GDUserPart2Request("" + u1.getId(), 0)).map(u2l -> GDUser.aggregate(u1, u2l.get(0))));
 	}
 
 	/**
@@ -148,30 +153,223 @@ public class GeometryDashClient {
 		if (page < 0) {
 			throw new IllegalArgumentException("Page parameter must not be negative");
 		}
-		return fetch(new GDUserPart2Request(searchQuery, page))
-				.flatMapMany(Flux::fromIterable)
-				.flatMap(u2 -> fetch(new GDUserPart1Request(u2.getAccountId()))
-						.map(u1 -> GDUser.aggregate(u1, u2)));
+		return fetch(new GDUserPart2Request(searchQuery, page)).flatMapMany(Flux::fromIterable)
+				.flatMap(u2 -> fetch(new GDUserPart1Request(u2.getAccountId())).map(u1 -> GDUser.aggregate(u1, u2)));
 	}
-	
-	public Mono<GDLevel> getLevelByID(long levelId) {
-		return fetch(new GDLevelPart1Request(levelId))
-				.flatMap(l1 -> fetch(new GDLevelPart2Request("" + levelId, LevelSearchFilters.create(), 0))
-						.map(l2 -> GDLevel.aggregate(l1, l2.get(0))));
+
+	/**
+	 * Gets a Geometry Dash level from its ID.
+	 * 
+	 * @param levelId the ID of the level to get
+	 * @return a Mono emitting the level with the corresponding ID, or an error if
+	 *         not found or something went wrong.
+	 */
+	public Mono<GDLevel> getLevelById(long levelId) {
+		if (levelId < 1) {
+			throw new IllegalArgumentException("Level ID must be greater than 0");
+		}
+		return fetch(new GDLevelRequest(this, "" + levelId, LevelSearchFilters.create(), 0)).map(list -> list.get(0));
 	}
-	
+
+	/**
+	 * Gets the current Daily Level on Geometry Dash.
+	 * 
+	 * @return a Mono emitting the Daily level, or an error if not found or
+	 *         something went wrong.
+	 */
+	public Mono<GDLevel> getDailyLevel() {
+		return fetch(new GDLevelSingleRequest(this, Indexes.DAILY_LEVEL_ID));
+	}
+
+	/**
+	 * Gets the current Weekly Demon on Geometry Dash.
+	 * 
+	 * @return a Mono emitting the Daily level, or an error if not found or
+	 *         something went wrong.
+	 */
+	public Mono<GDLevel> getWeeklyDemon() {
+		return fetch(new GDLevelSingleRequest(this, Indexes.WEEKLY_DEMON_ID));
+	}
+
+	/**
+	 * Search for levels in Geometry Dash.
+	 * 
+	 * @param query   the search query
+	 * @param filters the search filters
+	 * @param page    the page number
+	 * @return a Flux emitting all levels found. Note that if no levels are found,
+	 *         it will return a Flux emitting an error instead of just an empty
+	 *         Flux. This is because the Geometry Dash API returns the same response
+	 *         when the search produces no results and when an actual error occurs
+	 *         while processing the request (blame RobTop for that!).
+	 */
 	public Flux<GDLevel> searchLevels(String query, LevelSearchFilters filters, int page) {
-		return fetch(new GDLevelPart2Request(query, filters, page))
-				.flatMapMany(Flux::fromIterable)
-				.flatMap(l2 -> fetch(new GDLevelPart1Request(l2.getId()))
-						.map(l1 -> GDLevel.aggregate(l1, l2)));
+		return fetch(new GDLevelRequest(this, query, filters, page)).flatMapMany(Flux::fromIterable);
+	}
+
+	/**
+	 * Gets levels uploaded by a specific user in Geometry Dash.
+	 * 
+	 * @param user the user
+	 * @param page the page number
+	 * @return a Flux emitting all levels found. Note that if no levels are found,
+	 *         it will return a Flux emitting an error instead of just an empty
+	 *         Flux. This is because the Geometry Dash API returns the same response
+	 *         when the search produces no results and when an actual error occurs
+	 *         while processing the request (blame RobTop for that!).
+	 */
+	public Flux<GDLevel> getLevelsByUser(GDUser user, int page) {
+		return fetch(new GDLevelRequest(this, user, page)).flatMapMany(Flux::fromIterable);
 	}
 	
+	private Flux<GDLevel> browseSection(LevelSearchStrategy strategy, LevelSearchFilters filters, int page) {
+		return fetch(new GDLevelRequest(this, strategy, filters, page)).flatMapMany(Flux::fromIterable);
+	}
+
+	/**
+	 * Browse levels in the Awarded section of Geometry Dash.
+	 * 
+	 * @param filters the search filters
+	 * @param page    the page number
+	 * @return a Flux emitting all levels found. Note that if no levels are found,
+	 *         it will return a Flux emitting an error instead of just an empty
+	 *         Flux. This is because the Geometry Dash API returns the same response
+	 *         when the search produces no results and when an actual error occurs
+	 *         while processing the request (blame RobTop for that!).
+	 */
+	public Flux<GDLevel> browseAwardedLevels(LevelSearchFilters filters, int page) {
+		return browseSection(LevelSearchStrategy.AWARDED, filters, page);
+	}
+
+	/**
+	 * Browse levels in the Recent section of Geometry Dash.
+	 * 
+	 * @param filters the search filters
+	 * @param page    the page number
+	 * @return a Flux emitting all levels found. Note that if no levels are found,
+	 *         it will return a Flux emitting an error instead of just an empty
+	 *         Flux. This is because the Geometry Dash API returns the same response
+	 *         when the search produces no results and when an actual error occurs
+	 *         while processing the request (blame RobTop for that!).
+	 */
+	public Flux<GDLevel> browseRecentLevels(LevelSearchFilters filters, int page) {
+		return browseSection(LevelSearchStrategy.RECENT, filters, page);
+	}
+
+	/**
+	 * Browse levels in the Featured section of Geometry Dash.
+	 * 
+	 * @param page    the page number
+	 * @return a Flux emitting all levels found. Note that if no levels are found,
+	 *         it will return a Flux emitting an error instead of just an empty
+	 *         Flux. This is because the Geometry Dash API returns the same response
+	 *         when the search produces no results and when an actual error occurs
+	 *         while processing the request (blame RobTop for that!).
+	 */
+	public Flux<GDLevel> browseFeaturedLevels(int page) {
+		return browseSection(LevelSearchStrategy.FEATURED, LevelSearchFilters.create(), page);
+	}
+
+	/**
+	 * Browse levels in the Hall of Fame section of Geometry Dash.
+	 * 
+	 * @param page    the page number
+	 * @return a Flux emitting all levels found. Note that if no levels are found,
+	 *         it will return a Flux emitting an error instead of just an empty
+	 *         Flux. This is because the Geometry Dash API returns the same response
+	 *         when the search produces no results and when an actual error occurs
+	 *         while processing the request (blame RobTop for that!).
+	 */
+	public Flux<GDLevel> browseHallOfFameLevels(int page) {
+		return browseSection(LevelSearchStrategy.HALL_OF_FAME, LevelSearchFilters.create(), page);
+	}
+
+	/**
+	 * Browse levels in the Most Downloaded section of Geometry Dash.
+	 * 
+	 * @param filters the search filters
+	 * @param page    the page number
+	 * @return a Flux emitting all levels found. Note that if no levels are found,
+	 *         it will return a Flux emitting an error instead of just an empty
+	 *         Flux. This is because the Geometry Dash API returns the same response
+	 *         when the search produces no results and when an actual error occurs
+	 *         while processing the request (blame RobTop for that!).
+	 */
+	public Flux<GDLevel> browseMostDownloadedLevels(LevelSearchFilters filters, int page) {
+		return browseSection(LevelSearchStrategy.MOST_DOWNLOADED, filters, page);
+	}
+
+	/**
+	 * Browse levels in the Most Liked section of Geometry Dash.
+	 * 
+	 * @param filters the search filters
+	 * @param page    the page number
+	 * @return a Flux emitting all levels found. Note that if no levels are found,
+	 *         it will return a Flux emitting an error instead of just an empty
+	 *         Flux. This is because the Geometry Dash API returns the same response
+	 *         when the search produces no results and when an actual error occurs
+	 *         while processing the request (blame RobTop for that!).
+	 */
+	public Flux<GDLevel> browseMostLikedLevels(LevelSearchFilters filters, int page) {
+		return browseSection(LevelSearchStrategy.MOST_LIKED, filters, page);
+	}
+
+	/**
+	 * Browse levels in the Trending section of Geometry Dash.
+	 * 
+	 * @param filters the search filters
+	 * @param page    the page number
+	 * @return a Flux emitting all levels found. Note that if no levels are found,
+	 *         it will return a Flux emitting an error instead of just an empty
+	 *         Flux. This is because the Geometry Dash API returns the same response
+	 *         when the search produces no results and when an actual error occurs
+	 *         while processing the request (blame RobTop for that!).
+	 */
+	public Flux<GDLevel> browseTrendingLevels(LevelSearchFilters filters, int page) {
+		return browseSection(LevelSearchStrategy.TRENDING, filters, page);
+	}
+
+	/**
+	 * Browse levels in the Magic section of Geometry Dash.
+	 * 
+	 * @param filters the search filters
+	 * @param page    the page number
+	 * @return a Flux emitting all levels found. Note that if no levels are found,
+	 *         it will return a Flux emitting an error instead of just an empty
+	 *         Flux. This is because the Geometry Dash API returns the same response
+	 *         when the search produces no results and when an actual error occurs
+	 *         while processing the request (blame RobTop for that!).
+	 */
+	public Flux<GDLevel> browseMagicLevels(LevelSearchFilters filters, int page) {
+		return browseSection(LevelSearchStrategy.MAGIC, filters, page);
+	}
+
+	/**
+	 * Browse levels in the Followed section of Geometry Dash. The list of followed
+	 * users needs to be supplied to the level search filters using
+	 * {@link LevelSearchFilters#withFollowedUsers(java.util.Collection)}
+	 * 
+	 * @param filters the search filters
+	 * @param page    the page number
+	 * @return a Flux emitting all levels found. Note that if no levels are found,
+	 *         it will return a Flux emitting an error instead of just an empty
+	 *         Flux. This is because the Geometry Dash API returns the same response
+	 *         when the search produces no results and when an actual error occurs
+	 *         while processing the request (blame RobTop for that!).
+	 */
+	public Flux<GDLevel> browseFollowedLevels(LevelSearchFilters filters, int page) {
+		if (filters.getFollowed().isEmpty()) {
+			throw new IllegalArgumentException("Please provide a non-empty list of followed users in the search filters");
+		}
+		return browseSection(LevelSearchStrategy.FOLLOWED, filters, page);
+	}
+
 	/**
 	 * Gets the account ID of this client
 	 * 
 	 * @return the account ID
-	 * @throws IllegalStateException if this client was built with no account ID specified
+	 * @throws IllegalStateException if this client was built with no account ID
+	 *                               specified
 	 */
 	public long getAccountID() {
 		if (accountID == 0) {
@@ -184,7 +382,8 @@ public class GeometryDashClient {
 	 * Gets the GD account password of this client
 	 * 
 	 * @return the password
-	 * @throws IllegalStateException if this client was built with no password specified
+	 * @throws IllegalStateException if this client was built with no password
+	 *                               specified
 	 */
 	public String getPassword() {
 		if (password.isEmpty()) {
@@ -210,7 +409,7 @@ public class GeometryDashClient {
 	public String getHost() {
 		return host;
 	}
-	
+
 	/**
 	 * Clears the cache of previous requests.
 	 */
