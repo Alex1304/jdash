@@ -9,6 +9,7 @@ import com.github.alex1304.jdash.client.GDClientBuilder;
 import com.github.alex1304.jdash.client.GeometryDashClient;
 import com.github.alex1304.jdash.entity.Difficulty;
 import com.github.alex1304.jdash.entity.GDLevel;
+import com.github.alex1304.jdash.entity.GDMessage;
 import com.github.alex1304.jdash.entity.GDPaginator;
 import com.github.alex1304.jdash.util.LevelSearchFilters;
 
@@ -17,7 +18,11 @@ import reactor.core.publisher.Mono;
 public class TestMain {
 	
 	public static void main(String[] args) {
-		GeometryDashClient client = GDClientBuilder.create().build();
+		if (args.length == 0) {
+			System.err.println("Please give account password in arguments");
+			return;
+		}
+		GeometryDashClient client = GDClientBuilder.create().withAuthenticationDetails(98006, args[0]).build();
 		
 		client.getUserByAccountId(98006)
 			.doOnError(TestMain::printError)
@@ -117,6 +122,18 @@ public class TestMain {
 		client.browseFollowedLevels(LevelSearchFilters.create(), new ArrayList<>(Arrays.asList(client.searchUser("Alex1304").block(), client.searchUser("RobTop").block())), 0)
 			.doOnError(TestMain::printError)
 			.doOnSuccess(o -> printResult("Following Alex1304 and RobTop", o))
+			.subscribe();
+		
+		client.getPrivateMessages(0)
+			.doOnError(TestMain::printError)
+			.doOnSuccess(o -> printResult("Alex1304's private messages", o))
+			.subscribe();
+		
+		client.getPrivateMessages(0)
+			.map(paginator -> paginator.asList().get(0))
+			.flatMap(GDMessage::getContent)
+			.doOnError(TestMain::printError)
+			.doOnSuccess(o -> printResult("Alex1304's first private message content", o))
 			.subscribe();
 		
 		Mono.delay(Duration.ofSeconds(8)).block();

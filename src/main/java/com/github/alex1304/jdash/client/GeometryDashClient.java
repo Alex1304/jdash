@@ -9,6 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.github.alex1304.jdash.entity.GDEntity;
 import com.github.alex1304.jdash.entity.GDLevel;
+import com.github.alex1304.jdash.entity.GDMessage;
 import com.github.alex1304.jdash.entity.GDPaginator;
 import com.github.alex1304.jdash.entity.GDUser;
 import com.github.alex1304.jdash.exception.BadResponseException;
@@ -102,7 +103,7 @@ public class GeometryDashClient {
 				}).publishOn(Schedulers.elastic()).subscribeOn(Schedulers.elastic())
 				.flatMap(r -> {
 					try {
-						System.out.println(requestStr);
+//						System.out.println(requestStr);
 						E entity = request.parseResponse(r);
 						cache.put(request, entity);
 						cacheTime.put(request, System.currentTimeMillis());
@@ -360,6 +361,29 @@ public class GeometryDashClient {
 	 */
 	public Mono<GDPaginator<GDLevel>> browseFollowedLevels(LevelSearchFilters filters, Collection<? extends GDUser> followed, int page) {
 		return fetch(new GDLevelSearchRequest(this, filters, followed, page));
+	}
+	
+	private void checkLogin() {
+		if (!isAuthenticated) {
+			throw new UnsupportedOperationException("This client must be logged in to a GD account in order to perform this operation");
+		}
+	}
+	
+	/**
+	 * Gets the private messages of the account that this client is logged on.
+	 * 
+	 * @param page the page number
+	 * @return a Mono emitting a paginator containing all messages found. Note that
+	 *         if no messages are found, it will emit an error instead of just an
+	 *         empty paginator. This is because the Geometry Dash API returns the
+	 *         same response when nothing is found and when an actual error occurs
+	 *         while processing the request (blame RobTop for that!).
+	 * @throws UnsupportedOperationException if this client is not logged it to any
+	 *                                       account
+	 */
+	public Mono<GDPaginator<GDMessage>> getPrivateMessages(int page) {
+		checkLogin();
+		return fetch(new GDMessageInboxRequest(this, page));
 	}
 
 	/**
