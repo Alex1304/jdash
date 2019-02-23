@@ -15,7 +15,8 @@ class GDUserPart1Request extends AbstractGDRequest<GDUserPart1> {
 	
 	private final long targetAccountID;
 
-	GDUserPart1Request(long targetAccountID) {
+	GDUserPart1Request(GeometryDashClient client, long targetAccountID) {
+		super(client);
 		this.targetAccountID = targetAccountID;
 	}
 

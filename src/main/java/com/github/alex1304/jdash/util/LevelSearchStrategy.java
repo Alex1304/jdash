@@ -10,7 +10,7 @@ public enum LevelSearchStrategy {
 	FEATURED(6),
 	MAGIC(7),
 	AWARDED(11),
-	FOLLOWED(11),
+	FOLLOWED(12),
 	HALL_OF_FAME(16);
 	
 	private final int val;

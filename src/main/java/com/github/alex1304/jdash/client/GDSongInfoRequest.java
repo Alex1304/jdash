@@ -9,11 +9,12 @@ import com.github.alex1304.jdash.exception.SongNotAllowedForUseException;
 import com.github.alex1304.jdash.util.ParseUtils;
 import com.github.alex1304.jdash.util.Routes;
 
-public class GDSongInfoRequest extends AbstractGDRequest<GDSong> {
+class GDSongInfoRequest extends AbstractGDRequest<GDSong> {
 	
 	private final long songId;
 	
-	GDSongInfoRequest(long songId) {
+	GDSongInfoRequest(GeometryDashClient client, long songId) {
+		super(client);
 		this.songId = songId;
 	}
 

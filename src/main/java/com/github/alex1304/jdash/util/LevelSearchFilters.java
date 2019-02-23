@@ -10,7 +10,6 @@ import com.github.alex1304.jdash.entity.DemonDifficulty;
 import com.github.alex1304.jdash.entity.Difficulty;
 import com.github.alex1304.jdash.entity.GDLevel;
 import com.github.alex1304.jdash.entity.GDSong;
-import com.github.alex1304.jdash.entity.GDUser;
 import com.github.alex1304.jdash.entity.Length;
 
 public class LevelSearchFilters {
@@ -32,7 +31,6 @@ public class LevelSearchFilters {
 	private Optional<DemonDifficulty> demon;
 	private Optional<GDSong> song;
 	private Collection<? extends GDLevel> completedLevels;
-	private Collection<? extends GDUser> followed;
 	
 	private LevelSearchFilters(EnumSet<Toggle> toggles, EnumSet<Length> lengths, EnumSet<Difficulty> difficulties,
 			Optional<DemonDifficulty> demon, Optional<GDSong> song) {
@@ -42,7 +40,6 @@ public class LevelSearchFilters {
 		this.demon = demon;
 		this.song = song;
 		this.completedLevels = Collections.emptySet();
-		this.followed = Collections.emptySet();
 	}
 	
 	public static LevelSearchFilters create() {
@@ -89,11 +86,6 @@ public class LevelSearchFilters {
 		this.completedLevels = Objects.requireNonNull(completedLevels);
 		return this;
 	}
-	
-	public LevelSearchFilters withFollowedUsers(Collection<? extends GDUser> followed) {
-		this.followed = Objects.requireNonNull(followed);
-		return this;
-	}
 
 	public EnumSet<Toggle> getToggles() {
 		return toggles;
@@ -114,19 +106,19 @@ public class LevelSearchFilters {
 	public Optional<GDSong> getSongFilter() {
 		return song;
 	}
+	
+	public boolean hasToggle(Toggle t) {
+		return toggles.contains(t);
+	}
 
 	public Collection<? extends GDLevel> getCompletedLevels() {
 		return Collections.unmodifiableCollection(completedLevels);
-	}
-
-	public Collection<? extends GDUser> getFollowed() {
-		return Collections.unmodifiableCollection(followed);
 	}
 	
 	@Override
 	public int hashCode() {
 		return toggles.hashCode() ^ lengths.hashCode() ^ difficulties.hashCode() ^ demon.hashCode() ^ song.hashCode()
-				^ completedLevels.hashCode() ^ followed.hashCode();
+				^ completedLevels.hashCode();
 	}
 	
 	@Override
@@ -135,8 +127,6 @@ public class LevelSearchFilters {
 			return false;
 		}
 		LevelSearchFilters o = (LevelSearchFilters) obj;
-		return o.toggles.equals(toggles) && o.lengths.equals(lengths) && o.difficulties.equals(difficulties)
-				&& o.demon.equals(demon) && o.song.equals(song) && o.completedLevels.equals(completedLevels)
-				&& o.followed.equals(followed);
+		return o.toggles.equals(toggles) && o.lengths.equals(lengths) && o.difficulties.equals(difficulties);
 	}
 }

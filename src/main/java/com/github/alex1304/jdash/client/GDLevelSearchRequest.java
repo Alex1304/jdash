@@ -1,11 +1,14 @@
 package com.github.alex1304.jdash.client;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.github.alex1304.jdash.entity.GDLevel;
-import com.github.alex1304.jdash.entity.GDList;
+import com.github.alex1304.jdash.entity.GDPaginator;
 import com.github.alex1304.jdash.entity.GDSong;
 import com.github.alex1304.jdash.entity.GDUser;
 import com.github.alex1304.jdash.entity.Length;
@@ -21,33 +24,38 @@ import com.github.alex1304.jdash.util.ParseUtils;
 import com.github.alex1304.jdash.util.Routes;
 import com.github.alex1304.jdash.util.Utils;
 
-class GDLevelRequest extends AbstractGDRequest<GDList<GDLevel>> {
+class GDLevelSearchRequest extends AbstractGDRequest<GDPaginator<GDLevel>> {
 	
-	private final GeometryDashClient client;
 	private final int page;
 	private final String query;
 	private final LevelSearchFilters filters;
 	private final LevelSearchStrategy strategy;
+	private Collection<? extends GDUser> followed;
 	
-	private GDLevelRequest(GeometryDashClient client, int page, String query, LevelSearchFilters filters,
-			LevelSearchStrategy strategy) {
-		this.client = Objects.requireNonNull(client);
+	private GDLevelSearchRequest(GeometryDashClient client, int page, String query, LevelSearchFilters filters,
+			LevelSearchStrategy strategy, Collection<? extends GDUser> followed) {
+		super(client);
 		this.page = page;
 		this.query = Objects.requireNonNull(query);
 		this.filters = Objects.requireNonNull(filters);
 		this.strategy = Objects.requireNonNull(strategy);
+		this.followed = Objects.requireNonNull(followed);
 	}
 
-	GDLevelRequest(GeometryDashClient client, String query, LevelSearchFilters filters, int page) {
-		this(client, page, query, filters, LevelSearchStrategy.REGULAR);
+	GDLevelSearchRequest(GeometryDashClient client, String query, LevelSearchFilters filters, int page) {
+		this(client, page, query, filters, LevelSearchStrategy.REGULAR, Collections.emptySet());
 	}
 	
-	GDLevelRequest(GeometryDashClient client, GDUser byUser, int page) {
-		this(client, page, "" + byUser.getId(), LevelSearchFilters.create(), LevelSearchStrategy.BY_USER);
+	GDLevelSearchRequest(GeometryDashClient client, GDUser byUser, int page) {
+		this(client, page, "" + byUser.getId(), LevelSearchFilters.create(), LevelSearchStrategy.BY_USER, Collections.emptySet());
 	}
 	
-	GDLevelRequest(GeometryDashClient client, LevelSearchStrategy strategy, LevelSearchFilters filters, int page) {
-		this(client, page, "", filters, strategy);
+	GDLevelSearchRequest(GeometryDashClient client, LevelSearchStrategy strategy, LevelSearchFilters filters, int page) {
+		this(client, page, "", filters, strategy, Collections.emptySet());
+	}
+	
+	GDLevelSearchRequest(GeometryDashClient client, LevelSearchFilters filters, Collection<? extends GDUser> followed, int page) {
+		this(client, page, "", filters, LevelSearchStrategy.FOLLOWED, followed);
 	}
 
 	@Override
@@ -58,7 +66,7 @@ class GDLevelRequest extends AbstractGDRequest<GDList<GDLevel>> {
 	@Override
 	void putParams(Map<String, String> params) {
 		params.put("type", "" + strategy.getVal());
-		params.put("str", query);
+		params.put("str", Utils.urlEncode(query));
 		if (!filters.getDifficulties().isEmpty()) {
 			params.put("diff", String.join(",", filters.getDifficulties().stream()
 					.map(d -> "" + d.getVal()).collect(Collectors.toList())));
@@ -68,15 +76,15 @@ class GDLevelRequest extends AbstractGDRequest<GDList<GDLevel>> {
 					.map(d -> "" + d.ordinal()).collect(Collectors.toList())));
 		}
 		params.put("page", "" + page);
-		params.put("uncompleted", filters.getToggles().contains(Toggle.UNCOMPLETED) ? "1" : "0");
-		params.put("onlyCompleted", filters.getToggles().contains(Toggle.ONLY_COMPLETED) ? "1" : "0");
-		params.put("featured", filters.getToggles().contains(Toggle.FEATURED) ? "1" : "0");
-		params.put("original", filters.getToggles().contains(Toggle.ORIGINAL) ? "1" : "0");
-		params.put("twoPlayer", filters.getToggles().contains(Toggle.TWO_PLAYER) ? "1" : "0");
-		params.put("coins", filters.getToggles().contains(Toggle.COINS) ? "1" : "0");
-		params.put("epic", filters.getToggles().contains(Toggle.EPIC) ? "1" : "0");
-		params.put("star", filters.getToggles().contains(Toggle.STAR) ? "1" : "0");
-		if (filters.getToggles().contains(Toggle.NO_STAR)) {
+		params.put("uncompleted", filters.hasToggle(Toggle.UNCOMPLETED) ? "1" : "0");
+		params.put("onlyCompleted", filters.hasToggle(Toggle.ONLY_COMPLETED) ? "1" : "0");
+		params.put("featured", filters.hasToggle(Toggle.FEATURED) ? "1" : "0");
+		params.put("original", filters.hasToggle(Toggle.ORIGINAL) ? "1" : "0");
+		params.put("twoPlayer", filters.hasToggle(Toggle.TWO_PLAYER) ? "1" : "0");
+		params.put("coins", filters.hasToggle(Toggle.COINS) ? "1" : "0");
+		params.put("epic", filters.hasToggle(Toggle.EPIC) ? "1" : "0");
+		params.put("star", filters.hasToggle(Toggle.STAR) ? "1" : "0");
+		if (filters.hasToggle(Toggle.NO_STAR)) {
 			params.put("noStar", "1");
 		}
 		if (filters.getSongFilter().isPresent()) {
@@ -86,19 +94,19 @@ class GDLevelRequest extends AbstractGDRequest<GDList<GDLevel>> {
 		if (filters.getDemon().isPresent()) {
 			params.put("demonFilter", "" + (filters.getDemon().get().ordinal() + 1));
 		}
-		if (!filters.getCompletedLevels().isEmpty()) {
+		if ((filters.hasToggle(Toggle.ONLY_COMPLETED) || filters.hasToggle(Toggle.UNCOMPLETED)) && !filters.getCompletedLevels().isEmpty()) {
 			params.put("completedLevels", "(" + String.join(",", filters.getCompletedLevels().stream()
 					.map(GDLevel::getId).map(String::valueOf).collect(Collectors.toSet())) + ")");
 		}
-		if (!filters.getFollowed().isEmpty()) {
-			params.put("followed", String.join(",", filters.getFollowed().stream()
-					.map(GDUser::getId).map(String::valueOf).collect(Collectors.toSet())));
+		if (!followed.isEmpty()) {
+			params.put("followed", String.join(",", followed.stream()
+					.map(GDUser::getAccountId).map(String::valueOf).collect(Collectors.toSet())));
 		}
 	}
 
 	@Override
-	GDList<GDLevel> parseResponse0(String response) throws GDClientException {
-		GDList<GDLevel> result = new GDList<>();
+	GDPaginator<GDLevel> parseResponse0(String response) throws GDClientException {
+		ArrayList<GDLevel> list = new ArrayList<>();
 		String[] split1 = response.split("#");
 		String levels = split1[0];
 		String creators = split1[1];
@@ -116,7 +124,7 @@ class GDLevelRequest extends AbstractGDRequest<GDList<GDLevel>> {
 			String creatorName = structuredCreatorsInfo.getOrDefault(Long.parseLong(
 					Utils.defaultStringIfEmptyOrNull(lmap.get(Indexes.LEVEL_CREATOR_ID), "0")), "-");
 			long levelId = Long.parseLong(Utils.defaultStringIfEmptyOrNull(lmap.get(Indexes.LEVEL_ID), "0"));
-			result.add(new GDLevel(
+			list.add(new GDLevel(
 					levelId,
 					Utils.defaultStringIfEmptyOrNull(lmap.get(Indexes.LEVEL_NAME), "-"),
 					Long.parseLong(Utils.defaultStringIfEmptyOrNull(lmap.get(Indexes.LEVEL_CREATOR_ID), "0")),
@@ -140,23 +148,25 @@ class GDLevelRequest extends AbstractGDRequest<GDList<GDLevel>> {
 					Long.parseLong(Utils.defaultStringIfEmptyOrNull(lmap.get(Indexes.LEVEL_ORIGINAL), "0")),
 					Integer.parseInt(Utils.defaultStringIfEmptyOrNull(lmap.get(Indexes.LEVEL_REQUESTED_STARS), "0")),
 					creatorName,
-					() -> client.fetch(new GDLevelDataRequest(levelId))
+					() -> client.fetch(new GDLevelDataRequest(client, levelId))
 			));
 		}
-		return result;
+		int[] pageInfo = ParseUtils.extractPageInfo(split1[3]);
+		return new GDPaginator<>(list, page, pageInfo[2], pageInfo[0], newPage ->
+				client.fetch(new GDLevelSearchRequest(client, newPage, query, filters, strategy, followed)));
 	}
 	
 	@Override
 	public boolean equals(Object obj) {
-		if (!(obj instanceof GDLevelRequest)) {
+		if (!(obj instanceof GDLevelSearchRequest)) {
 			return false;
 		}
-		GDLevelRequest r = (GDLevelRequest) obj;
-		return r.page == page && r.query.equalsIgnoreCase(query) && r.filters.equals(filters) && r.strategy == strategy;
+		GDLevelSearchRequest r = (GDLevelSearchRequest) obj;
+		return r.page == page && r.query.equalsIgnoreCase(query) && r.filters.equals(filters) && r.strategy == strategy && r.followed.equals(followed);
 	}
 	
 	@Override
 	public int hashCode() {
-		return page ^ query.hashCode() ^ filters.hashCode() ^ strategy.hashCode();
+		return page ^ query.hashCode() ^ filters.hashCode() ^ strategy.hashCode() ^ followed.hashCode();
 	}
 }

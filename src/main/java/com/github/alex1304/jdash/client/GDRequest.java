@@ -11,7 +11,7 @@ import com.github.alex1304.jdash.exception.GDClientException;
  * 
  * @param <E> the type of entity this request is dealing with
  */
-public interface GDRequest<E extends GDEntity> {
+interface GDRequest<E extends GDEntity> {
 	/**
 	 * Gets the path of the request.
 	 * 

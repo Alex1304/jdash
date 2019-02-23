@@ -1,5 +1,6 @@
 package com.github.alex1304.jdash.client;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -8,6 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.github.alex1304.jdash.entity.GDEntity;
 import com.github.alex1304.jdash.entity.GDLevel;
+import com.github.alex1304.jdash.entity.GDPaginator;
 import com.github.alex1304.jdash.entity.GDUser;
 import com.github.alex1304.jdash.exception.BadResponseException;
 import com.github.alex1304.jdash.exception.CorruptedResponseContentException;
@@ -15,14 +17,15 @@ import com.github.alex1304.jdash.exception.GDClientException;
 import com.github.alex1304.jdash.util.Indexes;
 import com.github.alex1304.jdash.util.LevelSearchFilters;
 import com.github.alex1304.jdash.util.LevelSearchStrategy;
-import com.github.alex1304.jdash.util.Utils;
 import com.github.alex1304.jdash.util.robtopsweakcrypto.RobTopsWeakCrypto;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 import reactor.netty.ByteBufFlux;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.http.client.PrematureCloseException;
+import reactor.netty.resources.ConnectionProvider;
 
 /**
  * An HTTP client specifically designed to make requests to Geometry Dash
@@ -51,7 +54,7 @@ public class GeometryDashClient {
 		this.passwordEncoded = RobTopsWeakCrypto.encodeGDAccountPassword(Objects.requireNonNull(password));
 		this.isAuthenticated = accountID > 0;
 		this.host = host;
-		this.client = HttpClient.create().headers(h -> h.add("Content-Type", "application/x-www-form-urlencoded"));
+		this.client = HttpClient.create(ConnectionProvider.newConnection()).headers(h -> h.add("Content-Type", "application/x-www-form-urlencoded"));
 		this.cache = new ConcurrentHashMap<>();
 		this.cacheTime = new ConcurrentHashMap<>();
 		this.cacheLifetime = cacheLifetime;
@@ -67,11 +70,13 @@ public class GeometryDashClient {
 	 *         info to GD servers, it is emitted through the Mono.
 	 */
 	<E extends GDEntity> Mono<E> fetch(GDRequest<E> request) {
+		// Returning immediately if the value is cached already
 		@SuppressWarnings("unchecked")
 		E cached = (E) cache.get(request);
 		if (cached != null && System.currentTimeMillis() - cacheTime.getOrDefault(request, 0L) <= cacheLifetime) {
 			return Mono.just(cached);
 		}
+		// Building the request string
 		StringJoiner sj = new StringJoiner("&");
 		HashMap<String, String> params = new HashMap<>();
 		params.put("gameVersion", GAME_VERSION);
@@ -83,14 +88,21 @@ public class GeometryDashClient {
 			params.put("gjp", passwordEncoded);
 		}
 		params.putAll(request.getParams());
-		params.forEach((k, v) -> sj.add(k + "=" + Utils.urlEncode(v)));
+		params.forEach((k, v) -> sj.add(k + "=" + v));
 		String requestStr = sj.toString();
-		return client.baseUrl(host).post().uri(request.getPath()).send(ByteBufFlux.fromString(Flux.just(requestStr)))
-				.responseSingle((response, content) -> response.status().code() >= 400 && response.status().code() < 600
-						? Mono.error(new BadResponseException(response))
-						: content.asString())
+		// Parsing, caching and returning the response
+		return client.baseUrl(host).post().uri(request.getPath())
+				.send(ByteBufFlux.fromString(Flux.just(requestStr)))
+				.responseSingle((response, content) -> {
+					if (response.status().code() >= 400 && response.status().code() < 600) {
+						return Mono.error(new BadResponseException(response));
+					} else {
+						return content.asString();
+					}
+				}).publishOn(Schedulers.elastic()).subscribeOn(Schedulers.elastic())
 				.flatMap(r -> {
 					try {
+						System.out.println(requestStr);
 						E entity = request.parseResponse(r);
 						cache.put(request, entity);
 						cacheTime.put(request, System.currentTimeMillis());
@@ -104,8 +116,7 @@ public class GeometryDashClient {
 					} catch (RuntimeException e) {
 						return Mono.error(new CorruptedResponseContentException(e));
 					}
-				})
-				.retry(5, PrematureCloseException.class::isInstance);
+				}).retry(PrematureCloseException.class::isInstance);
 	}
 
 	private void cleanUpExpiredCacheEntries() {
@@ -131,30 +142,21 @@ public class GeometryDashClient {
 		if (accountId < 1) {
 			throw new IllegalArgumentException("Account ID must be greater than 0");
 		}
-		return fetch(new GDUserPart1Request(accountId)).flatMap(
-				u1 -> fetch(new GDUserPart2Request("" + u1.getId(), 0)).map(u2l -> GDUser.aggregate(u1, u2l.get(0))));
+		return fetch(new GDUserPart1Request(this, accountId)).flatMap(
+				u1 -> fetch(new GDUserPart2Request(this, "" + u1.getId(), 0)).map(u2l -> GDUser.aggregate(u1, u2l.asList().get(0))));
 	}
 
 	/**
-	 * Submits a search query and returns the users found at the given page.
+	 * Submits a search query and returns the corresponding user.
 	 * 
-	 * @param searchQuery the users to search for
-	 * @param page        the page of the search results to look at. The page number
-	 *                    is zero-indexed, meaning that the first page corresponds
-	 *                    to page 0.
-	 * @return a Flux emitting all users found. Note that if no users are found, it
-	 *         will return a Flux emitting an error instead of just an empty Flux.
-	 *         This is because the Geometry Dash API returns the same response when
-	 *         a user is not found and when an actual error occurs while processing
-	 *         the request (blame RobTop for that!).
+	 * @param searchQuery the user to search for
+	 * @return a Mono emitting the user found, or an error if not found.
 	 */
-	public Flux<GDUser> searchUsers(String searchQuery, int page) {
+	public Mono<GDUser> searchUser(String searchQuery) {
 		Objects.requireNonNull(searchQuery);
-		if (page < 0) {
-			throw new IllegalArgumentException("Page parameter must not be negative");
-		}
-		return fetch(new GDUserPart2Request(searchQuery, page)).flatMapMany(Flux::fromIterable)
-				.flatMap(u2 -> fetch(new GDUserPart1Request(u2.getAccountId())).map(u1 -> GDUser.aggregate(u1, u2)));
+		return fetch(new GDUserPart2Request(this, searchQuery, 0)).map(paginator -> paginator.asList().get(0))
+				.flatMap(u2 -> fetch(new GDUserPart1Request(this, u2.getAccountId()))
+						.map(u1 -> GDUser.aggregate(u1, u2)));
 	}
 
 	/**
@@ -168,7 +170,7 @@ public class GeometryDashClient {
 		if (levelId < 1) {
 			throw new IllegalArgumentException("Level ID must be greater than 0");
 		}
-		return fetch(new GDLevelRequest(this, "" + levelId, LevelSearchFilters.create(), 0)).map(list -> list.get(0));
+		return fetch(new GDLevelSearchRequest(this, "" + levelId, LevelSearchFilters.create(), 0)).map(list -> list.asList().get(0));
 	}
 
 	/**
@@ -197,14 +199,14 @@ public class GeometryDashClient {
 	 * @param query   the search query
 	 * @param filters the search filters
 	 * @param page    the page number
-	 * @return a Flux emitting all levels found. Note that if no levels are found,
-	 *         it will return a Flux emitting an error instead of just an empty
-	 *         Flux. This is because the Geometry Dash API returns the same response
-	 *         when the search produces no results and when an actual error occurs
-	 *         while processing the request (blame RobTop for that!).
+	 * @return a Mono emitting a paginator containing all levels found. Note that if
+	 *         no levels are found, it will emit an error instead of just an empty
+	 *         paginator. This is because the Geometry Dash API returns the same
+	 *         response when the search produces no results and when an actual error
+	 *         occurs while processing the request (blame RobTop for that!).
 	 */
-	public Flux<GDLevel> searchLevels(String query, LevelSearchFilters filters, int page) {
-		return fetch(new GDLevelRequest(this, query, filters, page)).flatMapMany(Flux::fromIterable);
+	public Mono<GDPaginator<GDLevel>> searchLevels(String query, LevelSearchFilters filters, int page) {
+		return fetch(new GDLevelSearchRequest(this, query, filters, page));
 	}
 
 	/**
@@ -212,18 +214,18 @@ public class GeometryDashClient {
 	 * 
 	 * @param user the user
 	 * @param page the page number
-	 * @return a Flux emitting all levels found. Note that if no levels are found,
-	 *         it will return a Flux emitting an error instead of just an empty
-	 *         Flux. This is because the Geometry Dash API returns the same response
-	 *         when the search produces no results and when an actual error occurs
-	 *         while processing the request (blame RobTop for that!).
+	 * @return a Mono emitting a paginator containing all levels found. Note that if
+	 *         no levels are found, it will emit an error instead of just an empty
+	 *         paginator. This is because the Geometry Dash API returns the same
+	 *         response when the search produces no results and when an actual error
+	 *         occurs while processing the request (blame RobTop for that!).
 	 */
-	public Flux<GDLevel> getLevelsByUser(GDUser user, int page) {
-		return fetch(new GDLevelRequest(this, user, page)).flatMapMany(Flux::fromIterable);
+	public Mono<GDPaginator<GDLevel>> getLevelsByUser(GDUser user, int page) {
+		return fetch(new GDLevelSearchRequest(this, user, page));
 	}
 	
-	private Flux<GDLevel> browseSection(LevelSearchStrategy strategy, LevelSearchFilters filters, int page) {
-		return fetch(new GDLevelRequest(this, strategy, filters, page)).flatMapMany(Flux::fromIterable);
+	private Mono<GDPaginator<GDLevel>> browseSection(LevelSearchStrategy strategy, LevelSearchFilters filters, int page) {
+		return fetch(new GDLevelSearchRequest(this, strategy, filters, page));
 	}
 
 	/**
@@ -231,13 +233,13 @@ public class GeometryDashClient {
 	 * 
 	 * @param filters the search filters
 	 * @param page    the page number
-	 * @return a Flux emitting all levels found. Note that if no levels are found,
-	 *         it will return a Flux emitting an error instead of just an empty
-	 *         Flux. This is because the Geometry Dash API returns the same response
-	 *         when the search produces no results and when an actual error occurs
-	 *         while processing the request (blame RobTop for that!).
+	 * @return a Mono emitting a paginator containing all levels found. Note that if
+	 *         no levels are found, it will emit an error instead of just an empty
+	 *         paginator. This is because the Geometry Dash API returns the same
+	 *         response when the search produces no results and when an actual error
+	 *         occurs while processing the request (blame RobTop for that!).
 	 */
-	public Flux<GDLevel> browseAwardedLevels(LevelSearchFilters filters, int page) {
+	public Mono<GDPaginator<GDLevel>> browseAwardedLevels(LevelSearchFilters filters, int page) {
 		return browseSection(LevelSearchStrategy.AWARDED, filters, page);
 	}
 
@@ -246,13 +248,13 @@ public class GeometryDashClient {
 	 * 
 	 * @param filters the search filters
 	 * @param page    the page number
-	 * @return a Flux emitting all levels found. Note that if no levels are found,
-	 *         it will return a Flux emitting an error instead of just an empty
-	 *         Flux. This is because the Geometry Dash API returns the same response
-	 *         when the search produces no results and when an actual error occurs
-	 *         while processing the request (blame RobTop for that!).
+	 * @return a Mono emitting a paginator containing all levels found. Note that if
+	 *         no levels are found, it will emit an error instead of just an empty
+	 *         paginator. This is because the Geometry Dash API returns the same
+	 *         response when the search produces no results and when an actual error
+	 *         occurs while processing the request (blame RobTop for that!).
 	 */
-	public Flux<GDLevel> browseRecentLevels(LevelSearchFilters filters, int page) {
+	public Mono<GDPaginator<GDLevel>> browseRecentLevels(LevelSearchFilters filters, int page) {
 		return browseSection(LevelSearchStrategy.RECENT, filters, page);
 	}
 
@@ -260,13 +262,13 @@ public class GeometryDashClient {
 	 * Browse levels in the Featured section of Geometry Dash.
 	 * 
 	 * @param page    the page number
-	 * @return a Flux emitting all levels found. Note that if no levels are found,
-	 *         it will return a Flux emitting an error instead of just an empty
-	 *         Flux. This is because the Geometry Dash API returns the same response
-	 *         when the search produces no results and when an actual error occurs
-	 *         while processing the request (blame RobTop for that!).
+	 * @return a Mono emitting a paginator containing all levels found. Note that if
+	 *         no levels are found, it will emit an error instead of just an empty
+	 *         paginator. This is because the Geometry Dash API returns the same
+	 *         response when the search produces no results and when an actual error
+	 *         occurs while processing the request (blame RobTop for that!).
 	 */
-	public Flux<GDLevel> browseFeaturedLevels(int page) {
+	public Mono<GDPaginator<GDLevel>> browseFeaturedLevels(int page) {
 		return browseSection(LevelSearchStrategy.FEATURED, LevelSearchFilters.create(), page);
 	}
 
@@ -274,13 +276,13 @@ public class GeometryDashClient {
 	 * Browse levels in the Hall of Fame section of Geometry Dash.
 	 * 
 	 * @param page    the page number
-	 * @return a Flux emitting all levels found. Note that if no levels are found,
-	 *         it will return a Flux emitting an error instead of just an empty
-	 *         Flux. This is because the Geometry Dash API returns the same response
-	 *         when the search produces no results and when an actual error occurs
-	 *         while processing the request (blame RobTop for that!).
+	 * @return a Mono emitting a paginator containing all levels found. Note that if
+	 *         no levels are found, it will emit an error instead of just an empty
+	 *         paginator. This is because the Geometry Dash API returns the same
+	 *         response when the search produces no results and when an actual error
+	 *         occurs while processing the request (blame RobTop for that!).
 	 */
-	public Flux<GDLevel> browseHallOfFameLevels(int page) {
+	public Mono<GDPaginator<GDLevel>> browseHallOfFameLevels(int page) {
 		return browseSection(LevelSearchStrategy.HALL_OF_FAME, LevelSearchFilters.create(), page);
 	}
 
@@ -289,13 +291,13 @@ public class GeometryDashClient {
 	 * 
 	 * @param filters the search filters
 	 * @param page    the page number
-	 * @return a Flux emitting all levels found. Note that if no levels are found,
-	 *         it will return a Flux emitting an error instead of just an empty
-	 *         Flux. This is because the Geometry Dash API returns the same response
-	 *         when the search produces no results and when an actual error occurs
-	 *         while processing the request (blame RobTop for that!).
+	 * @return a Mono emitting a paginator containing all levels found. Note that if
+	 *         no levels are found, it will emit an error instead of just an empty
+	 *         paginator. This is because the Geometry Dash API returns the same
+	 *         response when the search produces no results and when an actual error
+	 *         occurs while processing the request (blame RobTop for that!).
 	 */
-	public Flux<GDLevel> browseMostDownloadedLevels(LevelSearchFilters filters, int page) {
+	public Mono<GDPaginator<GDLevel>> browseMostDownloadedLevels(LevelSearchFilters filters, int page) {
 		return browseSection(LevelSearchStrategy.MOST_DOWNLOADED, filters, page);
 	}
 
@@ -304,13 +306,13 @@ public class GeometryDashClient {
 	 * 
 	 * @param filters the search filters
 	 * @param page    the page number
-	 * @return a Flux emitting all levels found. Note that if no levels are found,
-	 *         it will return a Flux emitting an error instead of just an empty
-	 *         Flux. This is because the Geometry Dash API returns the same response
-	 *         when the search produces no results and when an actual error occurs
-	 *         while processing the request (blame RobTop for that!).
+	 * @return a Mono emitting a paginator containing all levels found. Note that if
+	 *         no levels are found, it will emit an error instead of just an empty
+	 *         paginator. This is because the Geometry Dash API returns the same
+	 *         response when the search produces no results and when an actual error
+	 *         occurs while processing the request (blame RobTop for that!).
 	 */
-	public Flux<GDLevel> browseMostLikedLevels(LevelSearchFilters filters, int page) {
+	public Mono<GDPaginator<GDLevel>> browseMostLikedLevels(LevelSearchFilters filters, int page) {
 		return browseSection(LevelSearchStrategy.MOST_LIKED, filters, page);
 	}
 
@@ -319,13 +321,13 @@ public class GeometryDashClient {
 	 * 
 	 * @param filters the search filters
 	 * @param page    the page number
-	 * @return a Flux emitting all levels found. Note that if no levels are found,
-	 *         it will return a Flux emitting an error instead of just an empty
-	 *         Flux. This is because the Geometry Dash API returns the same response
-	 *         when the search produces no results and when an actual error occurs
-	 *         while processing the request (blame RobTop for that!).
+	 * @return a Mono emitting a paginator containing all levels found. Note that if
+	 *         no levels are found, it will emit an error instead of just an empty
+	 *         paginator. This is because the Geometry Dash API returns the same
+	 *         response when the search produces no results and when an actual error
+	 *         occurs while processing the request (blame RobTop for that!).
 	 */
-	public Flux<GDLevel> browseTrendingLevels(LevelSearchFilters filters, int page) {
+	public Mono<GDPaginator<GDLevel>> browseTrendingLevels(LevelSearchFilters filters, int page) {
 		return browseSection(LevelSearchStrategy.TRENDING, filters, page);
 	}
 
@@ -334,34 +336,30 @@ public class GeometryDashClient {
 	 * 
 	 * @param filters the search filters
 	 * @param page    the page number
-	 * @return a Flux emitting all levels found. Note that if no levels are found,
-	 *         it will return a Flux emitting an error instead of just an empty
-	 *         Flux. This is because the Geometry Dash API returns the same response
-	 *         when the search produces no results and when an actual error occurs
-	 *         while processing the request (blame RobTop for that!).
+	 * @return a Mono emitting a paginator containing all levels found. Note that if
+	 *         no levels are found, it will emit an error instead of just an empty
+	 *         paginator. This is because the Geometry Dash API returns the same
+	 *         response when the search produces no results and when an actual error
+	 *         occurs while processing the request (blame RobTop for that!).
 	 */
-	public Flux<GDLevel> browseMagicLevels(LevelSearchFilters filters, int page) {
+	public Mono<GDPaginator<GDLevel>> browseMagicLevels(LevelSearchFilters filters, int page) {
 		return browseSection(LevelSearchStrategy.MAGIC, filters, page);
 	}
 
 	/**
-	 * Browse levels in the Followed section of Geometry Dash. The list of followed
-	 * users needs to be supplied to the level search filters using
-	 * {@link LevelSearchFilters#withFollowedUsers(java.util.Collection)}
+	 * Browse levels in the Followed section of Geometry Dash.
 	 * 
 	 * @param filters the search filters
+	 * @param followed the collection containing followed users
 	 * @param page    the page number
-	 * @return a Flux emitting all levels found. Note that if no levels are found,
-	 *         it will return a Flux emitting an error instead of just an empty
-	 *         Flux. This is because the Geometry Dash API returns the same response
-	 *         when the search produces no results and when an actual error occurs
-	 *         while processing the request (blame RobTop for that!).
+	 * @return a Mono emitting a paginator containing all levels found. Note that if
+	 *         no levels are found, it will emit an error instead of just an empty
+	 *         paginator. This is because the Geometry Dash API returns the same
+	 *         response when the search produces no results and when an actual error
+	 *         occurs while processing the request (blame RobTop for that!).
 	 */
-	public Flux<GDLevel> browseFollowedLevels(LevelSearchFilters filters, int page) {
-		if (filters.getFollowed().isEmpty()) {
-			throw new IllegalArgumentException("Please provide a non-empty list of followed users in the search filters");
-		}
-		return browseSection(LevelSearchStrategy.FOLLOWED, filters, page);
+	public Mono<GDPaginator<GDLevel>> browseFollowedLevels(LevelSearchFilters filters, Collection<? extends GDUser> followed, int page) {
+		return fetch(new GDLevelSearchRequest(this, filters, followed, page));
 	}
 
 	/**

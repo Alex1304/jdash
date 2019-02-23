@@ -1,12 +1,15 @@
 package com.github.alex1304.jdash;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumSet;
 
 import com.github.alex1304.jdash.client.GDClientBuilder;
 import com.github.alex1304.jdash.client.GeometryDashClient;
 import com.github.alex1304.jdash.entity.Difficulty;
 import com.github.alex1304.jdash.entity.GDLevel;
+import com.github.alex1304.jdash.entity.GDPaginator;
 import com.github.alex1304.jdash.util.LevelSearchFilters;
 
 import reactor.core.publisher.Mono;
@@ -21,9 +24,8 @@ public class TestMain {
 			.doOnSuccess(o -> printResult("Get user 98006", o))
 			.subscribe();
 		
-		client.searchUsers("RobTop", 0)
+		client.searchUser("RobTop")
 			.doOnError(TestMain::printError)
-			.collectList()
 			.doOnSuccess(o -> printResult("Search user RobTop", o))
 			.subscribe();
 		
@@ -34,13 +36,11 @@ public class TestMain {
 		
 		client.searchLevels("bloodbath", LevelSearchFilters.create(), 0)
 			.doOnError(TestMain::printError)
-			.collectList()
 			.doOnSuccess(o -> printResult("Search levels Bloodbath", o))
 			.subscribe();
 		
 		client.searchLevels("sonic wave", LevelSearchFilters.create().withDifficulties(EnumSet.of(Difficulty.HARD)), 0)
 			.doOnError(TestMain::printError)
-			.collectList()
 			.doOnSuccess(o -> printResult("Search levels Sonic wave, filter: Difficulty.HARD", o))
 			.subscribe();
 		
@@ -74,45 +74,49 @@ public class TestMain {
 		
 		client.browseAwardedLevels(LevelSearchFilters.create(), 0)
 			.doOnError(TestMain::printError)
-			.collectList()
 			.doOnSuccess(o -> printResult("Browse Awarded section", o))
 			.subscribe();
 		
 		client.browseRecentLevels(LevelSearchFilters.create(), 0)
 			.doOnError(TestMain::printError)
-			.collectList()
 			.doOnSuccess(o -> printResult("Browse Recent section", o))
 			.subscribe();
 		
 		client.browseMagicLevels(LevelSearchFilters.create(), 0)
 			.doOnError(TestMain::printError)
-			.collectList()
 			.doOnSuccess(o -> printResult("Browse Magic section", o))
 			.subscribe();
 		
 		client.browseTrendingLevels(LevelSearchFilters.create(), 0)
 			.doOnError(TestMain::printError)
-			.collectList()
 			.doOnSuccess(o -> printResult("Browse Trending section", o))
 			.subscribe();
 		
 		
 		client.browseFeaturedLevels(0)
 			.doOnError(TestMain::printError)
-			.collectList()
 			.doOnSuccess(o -> printResult("Browse Featured section", o))
 			.subscribe();
 		
 		client.browseHallOfFameLevels(0)
 			.doOnError(TestMain::printError)
-			.collectList()
 			.doOnSuccess(o -> printResult("Browse Hall of Fame", o))
 			.subscribe();
 		
 		client.getLevelsByUser(client.getUserByAccountId(98006).block(), 0)
 			.doOnError(TestMain::printError)
-			.collectList()
 			.doOnSuccess(o -> printResult("Get levels from Alex1304", o))
+			.subscribe();
+		
+		client.browseAwardedLevels(LevelSearchFilters.create(), 0)
+			.flatMap(GDPaginator::goToNextPage)
+			.doOnError(TestMain::printError)
+			.doOnSuccess(o -> printResult("Browse second page of Awarded section", o))
+			.subscribe();
+		
+		client.browseFollowedLevels(LevelSearchFilters.create(), new ArrayList<>(Arrays.asList(client.searchUser("Alex1304").block(), client.searchUser("RobTop").block())), 0)
+			.doOnError(TestMain::printError)
+			.doOnSuccess(o -> printResult("Following Alex1304 and RobTop", o))
 			.subscribe();
 		
 		Mono.delay(Duration.ofSeconds(8)).block();

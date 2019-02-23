@@ -17,11 +17,10 @@ import reactor.core.publisher.Mono;
 
 class GDLevelSingleRequest extends AbstractGDRequest<GDLevel> {
 	
-	private final GeometryDashClient client;
 	private final long levelId;
 	
 	GDLevelSingleRequest(GeometryDashClient client, long levelId) {
-		this.client = client;
+		super(client);
 		this.levelId = levelId;
 	} 
 
@@ -69,7 +68,7 @@ class GDLevelSingleRequest extends AbstractGDRequest<GDLevel> {
 				Integer.parseInt(Utils.defaultStringIfEmptyOrNull(dataMap.get(Indexes.LEVEL_DOWNLOADS), "0")),
 				Integer.parseInt(Utils.defaultStringIfEmptyOrNull(dataMap.get(Indexes.LEVEL_LIKES), "0")),
 				Length.values()[Integer.parseInt(Utils.defaultStringIfEmptyOrNull(dataMap.get(Indexes.LEVEL_LENGTH), "0"))],
-				() -> song.isCustom() ? client.fetch(new GDSongInfoRequest(song.getId())) : Mono.just(song),
+				() -> song.isCustom() ? client.fetch(new GDSongInfoRequest(client, song.getId())) : Mono.just(song),
 				Integer.parseInt(Utils.defaultStringIfEmptyOrNull(dataMap.get(Indexes.LEVEL_COIN_COUNT), "0")),
 				Utils.defaultStringIfEmptyOrNull(dataMap.get(Indexes.LEVEL_COIN_VERIFIED), "0").equals("1"),
 				Integer.parseInt(Utils.defaultStringIfEmptyOrNull(dataMap.get(Indexes.LEVEL_VERSION), "0")),

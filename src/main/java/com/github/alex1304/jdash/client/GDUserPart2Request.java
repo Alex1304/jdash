@@ -1,8 +1,9 @@
 package com.github.alex1304.jdash.client;
 
+import java.util.ArrayList;
 import java.util.Map;
 
-import com.github.alex1304.jdash.entity.GDList;
+import com.github.alex1304.jdash.entity.GDPaginator;
 import com.github.alex1304.jdash.entity.GDUserPart2;
 import com.github.alex1304.jdash.entity.IconType;
 import com.github.alex1304.jdash.exception.GDClientException;
@@ -11,12 +12,13 @@ import com.github.alex1304.jdash.util.ParseUtils;
 import com.github.alex1304.jdash.util.Routes;
 import com.github.alex1304.jdash.util.Utils;
 
-class GDUserPart2Request extends AbstractGDRequest<GDList<GDUserPart2>> {
-	
+class GDUserPart2Request extends AbstractGDRequest<GDPaginator<GDUserPart2>> {
+
 	private final String query;
 	private final int page;
 
-	GDUserPart2Request(String query, int page) {
+	GDUserPart2Request(GeometryDashClient client, String query, int page) {
+		super(client);
 		this.query = query;
 		this.page = page;
 	}
@@ -28,13 +30,13 @@ class GDUserPart2Request extends AbstractGDRequest<GDList<GDUserPart2>> {
 
 	@Override
 	void putParams(Map<String, String> params) {
-		params.put("str", query);
+		params.put("str", Utils.urlEncode(query));
 		params.put("page", "" + page);
 	}
 
 	@Override
-	GDList<GDUserPart2> parseResponse0(String response) throws GDClientException {
-		GDList<GDUserPart2> result = new GDList<>();
+	GDPaginator<GDUserPart2> parseResponse0(String response) throws GDClientException {
+		ArrayList<GDUserPart2> list = new ArrayList<>();
 		String[] split1 = response.split("#");
 		String[] split2 = split1[0].split("\\|");
 		for (String u : split2) {
@@ -52,7 +54,7 @@ class GDUserPart2Request extends AbstractGDRequest<GDList<GDUserPart2>> {
 			String strMainIconId = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_ICON), "0");
 			String strName = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_NAME), "-");
 			String strIconType = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_ICON_TYPE), "0");
-			result.add(new GDUserPart2(
+			list.add(new GDUserPart2(
 					Long.parseLong(strPlayerID),
 					Integer.parseInt(strSecretCoins),
 					Integer.parseInt(strUserCoins),
@@ -67,7 +69,9 @@ class GDUserPart2Request extends AbstractGDRequest<GDList<GDUserPart2>> {
 					Integer.parseInt(strMainIconId),
 					IconType.values()[Integer.parseInt(strIconType)]));
 		}
-		return result;
+		int[] pageInfo = ParseUtils.extractPageInfo(split1[1]);
+		return new GDPaginator<>(list, page, pageInfo[2], pageInfo[0], newPage ->
+				client.fetch(new GDUserPart2Request(client, query, newPage)));
 	}
 	
 	@Override
