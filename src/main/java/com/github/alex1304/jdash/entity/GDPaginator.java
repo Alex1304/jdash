@@ -178,6 +178,21 @@ public class GDPaginator<E extends GDEntity> implements GDEntity, Iterable<E> {
 	public Stream<E> stream() {
 		return list.stream();
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof GDPaginator)) {
+			return false;
+		}
+		GDPaginator<?> p = (GDPaginator<?>) obj;
+		return p.list.equals(list) && p.pageNumber == pageNumber && p.maxSizePerPage == maxSizePerPage
+				&& p.totalSize == totalSize;
+	}
+	
+	@Override
+	public int hashCode() {
+		return list.hashCode() ^ pageNumber ^ maxSizePerPage ^ totalSize;
+	}
 
 	@Override
 	public String toString() {

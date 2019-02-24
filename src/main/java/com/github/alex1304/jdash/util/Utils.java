@@ -1,6 +1,7 @@
 package com.github.alex1304.jdash.util;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.Base64;
 import java.util.HashMap;
@@ -96,6 +97,15 @@ public class Utils {
 	public static String urlEncode(String str) {
 		try {
 			return URLEncoder.encode(str, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+			return str;
+		}
+	}
+	
+	public static String urlDecode(String str) {
+		try {
+			return URLDecoder.decode(str, "UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 			return str;

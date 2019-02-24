@@ -100,7 +100,10 @@ public class GeometryDashClient {
 					} else {
 						return content.asString();
 					}
-				}).publishOn(Schedulers.elastic()).subscribeOn(Schedulers.elastic())
+				})
+				.publishOn(Schedulers.elastic())
+				.subscribeOn(Schedulers.elastic())
+				.retry(PrematureCloseException.class::isInstance)
 				.flatMap(r -> {
 					try {
 //						System.out.println(requestStr);
@@ -117,7 +120,7 @@ public class GeometryDashClient {
 					} catch (RuntimeException e) {
 						return Mono.error(new CorruptedResponseContentException(e));
 					}
-				}).retry(PrematureCloseException.class::isInstance);
+				});
 	}
 
 	private void cleanUpExpiredCacheEntries() {
@@ -455,5 +458,31 @@ public class GeometryDashClient {
 	 */
 	public long getTotalNumberOfRequestsMade() {
 		return totalNumberOfRequestsMade;
+	}
+
+	/**
+	 * Two clients are considered equal if they are authenticated with the same GD
+	 * account.
+	 * 
+	 * If one of them is authenticated and the other is not, <code>false</code> is
+	 * always returned.
+	 * 
+	 * If they are both unauthenticated, <code>true</code> is always returned.
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof GeometryDashClient)) {
+			return false;
+		}
+		GeometryDashClient c = (GeometryDashClient) obj;
+		if (!c.isAuthenticated && !isAuthenticated) {
+			return true;
+		}
+		return c.isAuthenticated && isAuthenticated && c.accountID == accountID;
+	}
+	
+	@Override
+	public int hashCode() {
+		return isAuthenticated ? Long.hashCode(accountID) : 0;
 	}
 }

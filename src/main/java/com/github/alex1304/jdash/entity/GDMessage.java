@@ -21,6 +21,14 @@ public class GDMessage extends AbstractGDEntity {
 		public String toString() {
 			return "Content [body=" + body + ", id=" + id + "]";
 		}
+		@Override
+		public boolean equals(Object obj) {
+			return obj instanceof Content && ((Content) obj).body.equals(body);
+		}
+		@Override
+		public int hashCode() {
+			return body.hashCode();
+		}
 	}
 	private final long senderID;
 	private final String senderName;
@@ -62,6 +70,11 @@ public class GDMessage extends AbstractGDEntity {
 
 	public String getTimestamp() {
 		return timestamp;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		return obj instanceof GDMessage && super.equals(obj);
 	}
 
 	@Override

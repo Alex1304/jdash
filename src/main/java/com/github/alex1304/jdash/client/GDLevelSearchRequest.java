@@ -151,7 +151,7 @@ class GDLevelSearchRequest extends AbstractGDRequest<GDPaginator<GDLevel>> {
 					() -> client.fetch(new GDLevelDataRequest(client, levelId))
 			));
 		}
-		int[] pageInfo = ParseUtils.extractPageInfo(split1[3]);
+		int[] pageInfo = ParseUtils.extractTriplet(split1[3]);
 		return new GDPaginator<>(list, page, pageInfo[2], pageInfo[0], newPage ->
 				client.fetch(new GDLevelSearchRequest(client, newPage, query, filters, strategy, followed)));
 	}

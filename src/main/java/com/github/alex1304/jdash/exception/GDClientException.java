@@ -1,6 +1,6 @@
 package com.github.alex1304.jdash.exception;
 
-public class GDClientException extends Exception {
+public class GDClientException extends RuntimeException {
 	private static final long serialVersionUID = 4838833104661299105L;
 
 	public GDClientException() {

@@ -69,7 +69,7 @@ class GDUserPart2Request extends AbstractGDRequest<GDPaginator<GDUserPart2>> {
 					Integer.parseInt(strMainIconId),
 					IconType.values()[Integer.parseInt(strIconType)]));
 		}
-		int[] pageInfo = ParseUtils.extractPageInfo(split1[1]);
+		int[] pageInfo = ParseUtils.extractTriplet(split1[1]);
 		return new GDPaginator<>(list, page, pageInfo[2], pageInfo[0], newPage ->
 				client.fetch(new GDUserPart2Request(client, query, newPage)));
 	}

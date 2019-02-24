@@ -48,9 +48,22 @@ public class GDMessageInboxRequest extends AbstractGDRequest<GDPaginator<GDMessa
 					Utils.defaultStringIfEmptyOrNull(data.get(Indexes.MESSAGE_IS_READ), "0").equals("1"),
 					Utils.defaultStringIfEmptyOrNull(data.get(Indexes.MESSAGE_TIMESTAMP), "0")));
 		}
-		int[] pageInfo = ParseUtils.extractPageInfo(split1[1]);
+		int[] pageInfo = ParseUtils.extractTriplet(split1[1]);
 		return new GDPaginator<>(messageList, page, pageInfo[2], pageInfo[0], newPage ->
 				client.fetch(new GDMessageInboxRequest(client, newPage)));
 	}
-
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof GDMessageInboxRequest)) {
+			return false;
+		}
+		GDMessageInboxRequest r = (GDMessageInboxRequest) obj;
+		return r.client.getAccountID() == client.getAccountID() && r.page == page;
+	}
+	
+	@Override
+	public int hashCode() {
+		return Long.hashCode(client.getAccountID()) ^ page;
+	}
 }

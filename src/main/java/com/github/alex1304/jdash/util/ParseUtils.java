@@ -1,7 +1,6 @@
 package com.github.alex1304.jdash.util;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,7 +37,7 @@ public class ParseUtils {
 		for (int i = 0; i < splitted.length - 1; i += 2)
 			map.put(Integer.parseInt(splitted[i]), splitted[i + 1]);
 
-		return map;
+		return map.isEmpty() ? Collections.emptyMap() : map;
 	}
 
 	/**
@@ -50,7 +49,7 @@ public class ParseUtils {
 	 */
 	public static Map<Long, String> structureCreatorsInfo(String creatorsInfoRD) {
 		if (creatorsInfoRD.isEmpty())
-			return new HashMap<>();
+			return Collections.emptyMap();
 
 		String[] arrayCreatorsRD = creatorsInfoRD.split("\\|");
 		Map<Long, String> structuredCreatorsInfo = new HashMap<>();
@@ -71,23 +70,18 @@ public class ParseUtils {
 	 */
 	public static Map<Long, GDSong> structureSongsInfo(String songsInfoRD) {
 		if (songsInfoRD.isEmpty())
-			return new HashMap<>();
+			return Collections.emptyMap();
 
 		String[] arraySongsRD = songsInfoRD.split("~:~");
 		Map<Long, GDSong> result = new HashMap<>();
 
 		for (String songRD : arraySongsRD) {
 			Map<Integer, String> songMap = splitToMap(songRD, "~\\|~");
-			long songID = Long.parseLong(songMap.get(Indexes.SONG_ID));
-			String songTitle = songMap.get(Indexes.SONG_TITLE);
-			String songAuthor = songMap.get(Indexes.SONG_AUTHOR);
-			String songSize = songMap.get(Indexes.SONG_SIZE);
-			String songURL = songMap.get(Indexes.SONG_URL);
-			try {
-				songURL = URLDecoder.decode(songURL, "UTF-8");
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-			}
+			long songID = Long.parseLong(Utils.defaultStringIfEmptyOrNull(songMap.get(Indexes.SONG_ID), "0"));
+			String songTitle = Utils.defaultStringIfEmptyOrNull(songMap.get(Indexes.SONG_TITLE), "");
+			String songAuthor = Utils.defaultStringIfEmptyOrNull(songMap.get(Indexes.SONG_AUTHOR), "");
+			String songSize = Utils.defaultStringIfEmptyOrNull(songMap.get(Indexes.SONG_SIZE), "");
+			String songURL = Utils.urlDecode(Utils.defaultStringIfEmptyOrNull(songMap.get(Indexes.SONG_URL), ""));
 			result.put(songID, new GDSong(songID, songAuthor, songSize, songTitle, songURL, true));
 		}
 
@@ -95,22 +89,21 @@ public class ParseUtils {
 	}
 
 	/**
-	 * Extracts the page info from the given raw data string. The string is expected
-	 * to match the regex:
+	 * Extracts a triplet (a set of exactly 3 integer values) from the given raw
+	 * data string. The string is expected to match the regex:
 	 * 
 	 * <pre>
 	 * [0-9]+:[0-9]+:[0-9]+
 	 * </pre>
 	 * 
-	 * @param pageInfoRD the String containing the info on the pagination.
-	 * @return an int array of length 3 which [0] is the total element count, [1] is
-	 *         the page number and [2] is the number of elements per page.
+	 * @param raw the String to parse
+	 * @return an int array of length 3 containing the three values of the triplet.
 	 */
-	public static int[] extractPageInfo(String pageInfoRD) {
-		if (!pageInfoRD.matches("[0-9]+:[0-9]+:[0-9]+")) {
+	public static int[] extractTriplet(String raw) {
+		if (!raw.matches("[0-9]+:[0-9]+:[0-9]+")) {
 			throw new IllegalArgumentException("Malformed page info string");
 		}
-		String[] pageInfo = pageInfoRD.split(":");
+		String[] pageInfo = raw.split(":");
 		return new int[] { 
 			Integer.parseInt(pageInfo[0]),
 			Integer.parseInt(pageInfo[1]),

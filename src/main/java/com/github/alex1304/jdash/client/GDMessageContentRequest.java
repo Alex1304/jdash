@@ -34,5 +34,14 @@ public class GDMessageContentRequest extends AbstractGDRequest<Content> {
 		Map<Integer, String> data = ParseUtils.splitToMap(response, ":");
 		return new Content(messageId, RobTopsWeakCrypto.decodeGDMessageBody(Utils.defaultStringIfEmptyOrNull(data.get(Indexes.MESSAGE_BODY), "0")));
 	}
-
+	
+	@Override
+	public boolean equals(Object obj) {
+		return obj instanceof GDMessageContentRequest && ((GDMessageContentRequest) obj).messageId == messageId;
+	}
+	
+	@Override
+	public int hashCode() {
+		return Long.hashCode(messageId);
+	}
 }
