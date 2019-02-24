@@ -7,8 +7,6 @@ package com.github.alex1304.jdash.util.robtopsweakcrypto;
  * message and a key.
  * 
  * See https://en.wikipedia.org/wiki/XOR_cipher
- * 
- * @author Alex1304
  */
 public class XORCipher {
 	

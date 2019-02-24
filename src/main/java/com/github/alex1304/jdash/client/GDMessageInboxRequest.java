@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.github.alex1304.jdash.entity.GDMessage;
-import com.github.alex1304.jdash.entity.GDPaginator;
 import com.github.alex1304.jdash.exception.GDClientException;
+import com.github.alex1304.jdash.util.GDPaginator;
 import com.github.alex1304.jdash.util.Indexes;
 import com.github.alex1304.jdash.util.ParseUtils;
 import com.github.alex1304.jdash.util.Routes;

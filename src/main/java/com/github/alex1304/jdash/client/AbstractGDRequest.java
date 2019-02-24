@@ -4,11 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import com.github.alex1304.jdash.entity.GDEntity;
 import com.github.alex1304.jdash.exception.GDClientException;
 import com.github.alex1304.jdash.exception.MissingAccessException;
 
-abstract class AbstractGDRequest<E extends GDEntity> implements GDRequest<E> {
+abstract class AbstractGDRequest<E> implements GDRequest<E> {
 
 	final GeometryDashClient client;
 	
@@ -34,4 +33,9 @@ abstract class AbstractGDRequest<E extends GDEntity> implements GDRequest<E> {
 	}
 	
 	abstract E parseResponse0(String response) throws GDClientException;
+	
+	@Override
+	public boolean cacheable() {
+		return true;
+	}
 }

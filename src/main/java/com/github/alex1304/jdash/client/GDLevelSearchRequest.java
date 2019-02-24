@@ -8,11 +8,11 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.github.alex1304.jdash.entity.GDLevel;
-import com.github.alex1304.jdash.entity.GDPaginator;
 import com.github.alex1304.jdash.entity.GDSong;
 import com.github.alex1304.jdash.entity.GDUser;
 import com.github.alex1304.jdash.entity.Length;
 import com.github.alex1304.jdash.exception.GDClientException;
+import com.github.alex1304.jdash.util.GDPaginator;
 import com.github.alex1304.jdash.util.Indexes;
 import com.github.alex1304.jdash.util.LevelSearchFilters;
 import com.github.alex1304.jdash.util.LevelSearchFilters.Toggle;

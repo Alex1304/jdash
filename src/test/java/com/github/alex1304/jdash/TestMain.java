@@ -10,7 +10,8 @@ import com.github.alex1304.jdash.client.GeometryDashClient;
 import com.github.alex1304.jdash.entity.Difficulty;
 import com.github.alex1304.jdash.entity.GDLevel;
 import com.github.alex1304.jdash.entity.GDMessage;
-import com.github.alex1304.jdash.entity.GDPaginator;
+import com.github.alex1304.jdash.entity.GDTimelyLevel;
+import com.github.alex1304.jdash.util.GDPaginator;
 import com.github.alex1304.jdash.util.LevelSearchFilters;
 
 import reactor.core.publisher.Mono;
@@ -22,7 +23,7 @@ public class TestMain {
 			System.err.println("Please give account password in arguments");
 			return;
 		}
-		GeometryDashClient client = GDClientBuilder.create().withAuthenticationDetails(98006, args[0]).build();
+		GeometryDashClient client = GDClientBuilder.create().withAuthenticationDetails(7753855, args[0]).build();
 		
 		client.getUserByAccountId(98006)
 			.doOnError(TestMain::printError)
@@ -57,24 +58,24 @@ public class TestMain {
 		
 		client.getDailyLevel()
 			.doOnError(TestMain::printError)
-			.doOnSuccess(o -> printResult("Get Daily level", o))
+			.doOnSuccess(o -> printResult("Get Daily level info", o))
 			.subscribe();
 		
 		client.getWeeklyDemon()
 			.doOnError(TestMain::printError)
-			.doOnSuccess(o -> printResult("Get Weekly demon", o))
+			.doOnSuccess(o -> printResult("Get Weekly demon info", o))
 			.subscribe();
 		
 		client.getDailyLevel()
+			.flatMap(GDTimelyLevel::getLevel)
 			.doOnError(TestMain::printError)
-			.flatMap(GDLevel::getSong)
-			.doOnSuccess(o -> printResult("Get Daily level's song info", o))
+			.doOnSuccess(o -> printResult("Get Daily level download", o))
 			.subscribe();
 		
 		client.getWeeklyDemon()
+			.flatMap(GDTimelyLevel::getLevel)
 			.doOnError(TestMain::printError)
-			.flatMap(GDLevel::getSong)
-			.doOnSuccess(o -> printResult("Get Weekly demon's song info", o))
+			.doOnSuccess(o -> printResult("Get Weekly demon download", o))
 			.subscribe();
 		
 		client.browseAwardedLevels(LevelSearchFilters.create(), 0)
@@ -126,17 +127,22 @@ public class TestMain {
 		
 		client.getPrivateMessages(0)
 			.doOnError(TestMain::printError)
-			.doOnSuccess(o -> printResult("Alex1304's private messages", o))
+			.doOnSuccess(o -> printResult("Private messages", o))
 			.subscribe();
 		
 		client.getPrivateMessages(0)
 			.map(paginator -> paginator.asList().get(0))
 			.flatMap(GDMessage::getContent)
 			.doOnError(TestMain::printError)
-			.doOnSuccess(o -> printResult("Alex1304's first private message content", o))
+			.doOnSuccess(o -> printResult("First private message content", o))
+			.subscribe();
+		
+		client.sendPrivateMessage(client.searchUser("Alex1304").block(), "Test", "Hello world!")
+			.doAfterTerminate(() -> printResult("Send message", "Message sent!"))
 			.subscribe();
 		
 		Mono.delay(Duration.ofSeconds(8)).block();
+		System.out.println("Requests made: " + client.getTotalNumberOfRequestsMade());
 		System.out.println("End program");
 	}
 	

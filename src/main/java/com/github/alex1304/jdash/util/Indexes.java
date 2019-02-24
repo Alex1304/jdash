@@ -1,10 +1,8 @@
 package com.github.alex1304.jdash.util;
 
 /**
- * Useful constants to be uses anywhere in the project.
- * 
- * @author Alex1304
- *
+ * Index values used by the parser or the client to retrieve info on various
+ * things in Geometry Dash.
  */
 public class Indexes {
 	private Indexes() {

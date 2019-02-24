@@ -1,4 +1,4 @@
-package com.github.alex1304.jdash.entity;
+package com.github.alex1304.jdash.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.IntFunction;
 import java.util.stream.Stream;
+
+import com.github.alex1304.jdash.entity.GDEntity;
 
 import reactor.core.publisher.Mono;
 
@@ -20,7 +22,7 @@ import reactor.core.publisher.Mono;
  *
  * @param <E> the type of GD entity contained in the list
  */
-public class GDPaginator<E extends GDEntity> implements GDEntity, Iterable<E> {
+public class GDPaginator<E> implements Iterable<E> {
 
 	private final List<E> list;
 	private final int pageNumber;
@@ -160,14 +162,6 @@ public class GDPaginator<E extends GDEntity> implements GDEntity, Iterable<E> {
 			throw new IllegalArgumentException("Page number out of range");
 		}
 		return pageLoader.apply(pageNumber);
-	}
-
-	@Override
-	public long getId() {
-		if (list.isEmpty()) {
-			return 0;
-		}
-		return list.get(0).getId();
 	}
 
 	@Override

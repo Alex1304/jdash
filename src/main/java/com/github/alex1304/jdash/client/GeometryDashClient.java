@@ -7,22 +7,21 @@ import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.github.alex1304.jdash.entity.GDEntity;
 import com.github.alex1304.jdash.entity.GDLevel;
 import com.github.alex1304.jdash.entity.GDMessage;
-import com.github.alex1304.jdash.entity.GDPaginator;
+import com.github.alex1304.jdash.entity.GDTimelyLevel;
+import com.github.alex1304.jdash.entity.GDTimelyLevel.TimelyType;
 import com.github.alex1304.jdash.entity.GDUser;
 import com.github.alex1304.jdash.exception.BadResponseException;
 import com.github.alex1304.jdash.exception.CorruptedResponseContentException;
 import com.github.alex1304.jdash.exception.GDClientException;
-import com.github.alex1304.jdash.util.Indexes;
+import com.github.alex1304.jdash.util.GDPaginator;
 import com.github.alex1304.jdash.util.LevelSearchFilters;
 import com.github.alex1304.jdash.util.LevelSearchStrategy;
 import com.github.alex1304.jdash.util.robtopsweakcrypto.RobTopsWeakCrypto;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
 import reactor.netty.ByteBufFlux;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.http.client.PrematureCloseException;
@@ -44,7 +43,7 @@ public class GeometryDashClient {
 	private final boolean isAuthenticated;
 	private String host;
 	private final HttpClient client;
-	private final Map<GDRequest<?>, GDEntity> cache;
+	private final Map<GDRequest<?>, Object> cache;
 	private final Map<GDRequest<?>, Long> cacheTime;
 	private final long cacheLifetime;
 	private long totalNumberOfRequestsMade;
@@ -55,7 +54,8 @@ public class GeometryDashClient {
 		this.passwordEncoded = RobTopsWeakCrypto.encodeGDAccountPassword(Objects.requireNonNull(password));
 		this.isAuthenticated = accountID > 0;
 		this.host = host;
-		this.client = HttpClient.create(ConnectionProvider.newConnection()).headers(h -> h.add("Content-Type", "application/x-www-form-urlencoded"));
+		this.client = HttpClient.create(ConnectionProvider.elastic("gd-client-conn-pool"))
+				.headers(h -> h.add("Content-Type", "application/x-www-form-urlencoded"));
 		this.cache = new ConcurrentHashMap<>();
 		this.cacheTime = new ConcurrentHashMap<>();
 		this.cacheLifetime = cacheLifetime;
@@ -70,12 +70,14 @@ public class GeometryDashClient {
 	 * @return a Mono emtting the response object. If an error occurs when fetching
 	 *         info to GD servers, it is emitted through the Mono.
 	 */
-	<E extends GDEntity> Mono<E> fetch(GDRequest<E> request) {
+	<E> Mono<E> fetch(GDRequest<E> request) {
 		// Returning immediately if the value is cached already
-		@SuppressWarnings("unchecked")
-		E cached = (E) cache.get(request);
-		if (cached != null && System.currentTimeMillis() - cacheTime.getOrDefault(request, 0L) <= cacheLifetime) {
-			return Mono.just(cached);
+		if (request.cacheable()) {
+			@SuppressWarnings("unchecked")
+			E cached = (E) cache.get(request);
+			if (cached != null && System.currentTimeMillis() - cacheTime.getOrDefault(request, 0L) <= cacheLifetime) {
+				return Mono.just(cached);
+			}
 		}
 		// Building the request string
 		StringJoiner sj = new StringJoiner("&");
@@ -101,18 +103,21 @@ public class GeometryDashClient {
 						return content.asString();
 					}
 				})
-				.publishOn(Schedulers.elastic())
-				.subscribeOn(Schedulers.elastic())
 				.retry(PrematureCloseException.class::isInstance)
 				.flatMap(r -> {
 					try {
 //						System.out.println(requestStr);
 						E entity = request.parseResponse(r);
-						cache.put(request, entity);
-						cacheTime.put(request, System.currentTimeMillis());
-						totalNumberOfRequestsMade++;
-						if (totalNumberOfRequestsMade % CLEANUP_CACHE_EVERY == 0) {
-							cleanUpExpiredCacheEntries();
+						if (entity == null) {
+							return Mono.empty();
+						}
+						if (request.cacheable()) {
+							cache.put(request, entity);
+							cacheTime.put(request, System.currentTimeMillis());
+							totalNumberOfRequestsMade++;
+							if (totalNumberOfRequestsMade % CLEANUP_CACHE_EVERY == 0) {
+								cleanUpExpiredCacheEntries();
+							}
 						}
 						return Mono.just(entity);
 					} catch (GDClientException e) {
@@ -183,18 +188,18 @@ public class GeometryDashClient {
 	 * @return a Mono emitting the Daily level, or an error if not found or
 	 *         something went wrong.
 	 */
-	public Mono<GDLevel> getDailyLevel() {
-		return fetch(new GDLevelSingleRequest(this, Indexes.DAILY_LEVEL_ID));
+	public Mono<GDTimelyLevel> getDailyLevel() {
+		return fetch(new GDTimelyRequest(this, TimelyType.DAILY));
 	}
 
 	/**
 	 * Gets the current Weekly Demon on Geometry Dash.
 	 * 
-	 * @return a Mono emitting the Daily level, or an error if not found or
+	 * @return a Mono emitting the Wezekly demon, or an error if not found or
 	 *         something went wrong.
 	 */
-	public Mono<GDLevel> getWeeklyDemon() {
-		return fetch(new GDLevelSingleRequest(this, Indexes.WEEKLY_DEMON_ID));
+	public Mono<GDTimelyLevel> getWeeklyDemon() {
+		return fetch(new GDTimelyRequest(this, TimelyType.WEEKLY));
 	}
 
 	/**
@@ -387,6 +392,26 @@ public class GeometryDashClient {
 	public Mono<GDPaginator<GDMessage>> getPrivateMessages(int page) {
 		checkLogin();
 		return fetch(new GDMessageInboxRequest(this, page));
+	}
+
+	/**
+	 * Sends a private message to a user.
+	 * 
+	 * @param user    the recipient of the message
+	 * @param subject the message subject
+	 * @param body    the message body
+	 * @return a Mono completing empty if succeeded, an error otherwise.
+	 * @throws UnsupportedOperationException if this client is not logged it to any
+	 *                                       account
+	 * @throws IllegalArgumentException      if user isn't a registered user
+	 *                                       {@code (user.getAccountId() == 0)}
+	 */
+	public Mono<Void> sendPrivateMessage(GDUser user, String subject, String body) {
+		checkLogin();
+		if (user.getAccountId() <= 0) {
+			throw new IllegalArgumentException("Cannot send a private message to an unregistered user");
+		}
+		return fetch(new GDMessageSendRequest(this, user.getAccountId(), subject, body));
 	}
 
 	/**

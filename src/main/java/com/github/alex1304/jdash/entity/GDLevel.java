@@ -3,8 +3,6 @@ package com.github.alex1304.jdash.entity;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-import com.github.alex1304.jdash.util.LazyProperty;
-
 import reactor.core.publisher.Mono;
 
 public class GDLevel extends AbstractGDEntity {
@@ -21,7 +19,7 @@ public class GDLevel extends AbstractGDEntity {
 	private final int downloads;
 	private final int likes;
 	private final Length length;
-	private final LazyProperty<GDSong> song;
+	private final Supplier<Mono<GDSong>> song;
 	private final int coinCount;
 	private final boolean hasCoinsVerified;
 	private final int levelVersion;
@@ -31,7 +29,7 @@ public class GDLevel extends AbstractGDEntity {
 	private final boolean isAuto;
 	private final long originalLevelID;
 	private final int requestedStars;
-	private final LazyProperty<GDLevelData> downloader;
+	private final Supplier<Mono<GDLevelData>> downloader;
 
 	public GDLevel(long id, String name, long creatorID, String description, Difficulty difficulty,
 			DemonDifficulty demonDifficulty, int stars, int featuredScore, boolean isEpic, int downloads, int likes,
@@ -51,7 +49,7 @@ public class GDLevel extends AbstractGDEntity {
 		this.downloads = downloads;
 		this.likes = likes;
 		this.length = length;
-		this.song = new LazyProperty<>(Objects.requireNonNull(song));
+		this.song = Objects.requireNonNull(song);
 		this.coinCount = coinCount;
 		this.hasCoinsVerified = hasCoinsVerified;
 		this.levelVersion = levelVersion;
@@ -61,7 +59,7 @@ public class GDLevel extends AbstractGDEntity {
 		this.isAuto = isAuto;
 		this.originalLevelID = originalLevelID;
 		this.requestedStars = requestedStars;
-		this.downloader = new LazyProperty<>(Objects.requireNonNull(downloader));
+		this.downloader = Objects.requireNonNull(downloader);
 	}
 
 	public String getName() {
@@ -113,7 +111,7 @@ public class GDLevel extends AbstractGDEntity {
 	}
 	
 	public Mono<GDSong> getSong() {
-		return song.getValue();
+		return song.get();
 	}
 
 	public int getCoinCount() {
@@ -153,7 +151,7 @@ public class GDLevel extends AbstractGDEntity {
 	}
 
 	public Mono<GDLevelData> download() {
-		return downloader.getValue();
+		return downloader.get();
 	}
 	
 	@Override

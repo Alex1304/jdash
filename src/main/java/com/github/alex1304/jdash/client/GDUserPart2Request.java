@@ -3,10 +3,10 @@ package com.github.alex1304.jdash.client;
 import java.util.ArrayList;
 import java.util.Map;
 
-import com.github.alex1304.jdash.entity.GDPaginator;
 import com.github.alex1304.jdash.entity.GDUserPart2;
 import com.github.alex1304.jdash.entity.IconType;
 import com.github.alex1304.jdash.exception.GDClientException;
+import com.github.alex1304.jdash.util.GDPaginator;
 import com.github.alex1304.jdash.util.Indexes;
 import com.github.alex1304.jdash.util.ParseUtils;
 import com.github.alex1304.jdash.util.Routes;
