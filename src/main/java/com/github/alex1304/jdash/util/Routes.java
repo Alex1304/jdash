@@ -3,7 +3,7 @@ package com.github.alex1304.jdash.util;
 /**
  * Constants corresponding to API routes for Geometry Dash
  */
-public class Routes {
+public final class Routes {
 	private Routes() {
 	}
 	
@@ -18,4 +18,5 @@ public class Routes {
 	public static final String READ_PRIVATE_MESSAGE = "/downloadGJMessage20.php";
 	public static final String SEND_PRIVATE_MESSAGE = "/uploadGJMessage20.php";
 	public static final String GET_TIMELY = "/getGJDailyLevel.php";
+	public static final String LOGIN = "/accounts/loginGJAccount.php";
 }

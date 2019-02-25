@@ -12,11 +12,11 @@ import com.github.alex1304.jdash.util.ParseUtils;
 import com.github.alex1304.jdash.util.Routes;
 import com.github.alex1304.jdash.util.Utils;
 
-public class GDMessageInboxRequest extends AbstractGDRequest<GDPaginator<GDMessage>> {
+public class GDMessageInboxRequest extends AbstractAuthenticatedGDRequest<GDPaginator<GDMessage>> {
 	
 	private final int page;
 
-	GDMessageInboxRequest(GeometryDashClient client, int page) {
+	GDMessageInboxRequest(AuthenticatedGDClient client, int page) {
 		super(client);
 		this.page = page;
 	}

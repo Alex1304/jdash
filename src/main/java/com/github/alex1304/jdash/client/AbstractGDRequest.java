@@ -9,9 +9,9 @@ import com.github.alex1304.jdash.exception.MissingAccessException;
 
 abstract class AbstractGDRequest<E> implements GDRequest<E> {
 
-	final GeometryDashClient client;
+	final AbstractGDClient client;
 	
-	AbstractGDRequest(GeometryDashClient client) {
+	AbstractGDRequest(AbstractGDClient client) {
 		this.client = Objects.requireNonNull(client);
 	}
 
@@ -26,7 +26,7 @@ abstract class AbstractGDRequest<E> implements GDRequest<E> {
 
 	@Override
 	public E parseResponse(String response) throws GDClientException {
-		if (response.startsWith("-1")) {
+		if (response.equals("-1")) {
 			throw new MissingAccessException();
 		}
 		return parseResponse0(response);

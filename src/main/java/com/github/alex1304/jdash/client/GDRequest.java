@@ -5,7 +5,7 @@ import java.util.Map;
 import com.github.alex1304.jdash.exception.GDClientException;
 
 /**
- * A request is what is sent to a {@link GeometryDashClient} in order to perform
+ * A request is what is sent to a {@link AnonymousGDClient} in order to perform
  * an HTTP request to Geometry Dash servers.
  * 
  * @param <E> the type of object this request is dealing with

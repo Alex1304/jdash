@@ -2,7 +2,7 @@ package com.github.alex1304.jdash.entity;
 
 import java.util.Objects;
 
-public class GDLevelData extends AbstractGDEntity {
+public final class GDLevelData extends AbstractGDEntity {
 
 	private final int pass;
 	private final String uploadTimestamp;

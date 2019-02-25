@@ -8,13 +8,13 @@ import com.github.alex1304.jdash.util.Routes;
 import com.github.alex1304.jdash.util.Utils;
 import com.github.alex1304.jdash.util.robtopsweakcrypto.RobTopsWeakCrypto;
 
-public class GDMessageSendRequest extends AbstractGDRequest<Void> {
+public class GDMessageSendRequest extends AbstractAuthenticatedGDRequest<Void> {
 	
 	private final long recipientID;
 	private final String subject;
 	private final String body;
 	
-	public GDMessageSendRequest(GeometryDashClient client, long recipientID, String subject, String body) {
+	public GDMessageSendRequest(AuthenticatedGDClient client, long recipientID, String subject, String body) {
 		super(client);
 		this.recipientID = recipientID;
 		this.subject = Objects.requireNonNull(subject);
@@ -35,7 +35,7 @@ public class GDMessageSendRequest extends AbstractGDRequest<Void> {
 
 	@Override
 	Void parseResponse0(String response) throws GDClientException {
-		if (!response.trim().equals("1")) {
+		if (!response.equals("1")) {
 			throw new IllegalArgumentException("Unknown response: " + response);
 		}
 		return null;

@@ -3,13 +3,11 @@ package com.github.alex1304.jdash.entity;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-import com.github.alex1304.jdash.util.Indexes;
-
 import reactor.core.publisher.Mono;
 
-public class GDTimelyLevel extends AbstractGDEntity {
+public final class GDTimelyLevel extends AbstractGDEntity {
 	public static enum TimelyType {
-		DAILY(Indexes.DAILY_LEVEL_ID), WEEKLY(Indexes.WEEKLY_DEMON_ID);
+		DAILY(-1), WEEKLY(-2);
 		private final int downloadId;
 		TimelyType(int downloadId) {
 			this.downloadId = downloadId;

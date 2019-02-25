@@ -8,39 +8,31 @@ import java.util.StringJoiner;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.github.alex1304.jdash.entity.GDLevel;
-import com.github.alex1304.jdash.entity.GDMessage;
 import com.github.alex1304.jdash.entity.GDTimelyLevel;
 import com.github.alex1304.jdash.entity.GDTimelyLevel.TimelyType;
 import com.github.alex1304.jdash.entity.GDUser;
 import com.github.alex1304.jdash.exception.BadResponseException;
 import com.github.alex1304.jdash.exception.CorruptedResponseContentException;
 import com.github.alex1304.jdash.exception.GDClientException;
+import com.github.alex1304.jdash.exception.NoTimelyAvailableException;
 import com.github.alex1304.jdash.util.GDPaginator;
 import com.github.alex1304.jdash.util.LevelSearchFilters;
 import com.github.alex1304.jdash.util.LevelSearchStrategy;
-import com.github.alex1304.jdash.util.robtopsweakcrypto.RobTopsWeakCrypto;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 import reactor.netty.ByteBufFlux;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.http.client.PrematureCloseException;
 import reactor.netty.resources.ConnectionProvider;
 
-/**
- * An HTTP client specifically designed to make requests to Geometry Dash
- * servers. To create an instance of this class, use {@link GDClientBuilder}.
- */
-public class GeometryDashClient {
-	public static final String GAME_VERSION = "21";
-	public static final String BINARY_VERSION = "34";
-	public static final String SECRET = "Wmfd2893gb7";
-	public static final int CLEANUP_CACHE_EVERY = 50;
+abstract class AbstractGDClient {
+	private static final String GAME_VERSION = "21";
+	private static final String BINARY_VERSION = "34";
+	private static final String SECRET = "Wmfd2893gb7";
+	private static final int CLEANUP_CACHE_EVERY = 50;
 
-	private final long accountID;
-	private final String password;
-	private final String passwordEncoded;
-	private final boolean isAuthenticated;
 	private String host;
 	private final HttpClient client;
 	private final Map<GDRequest<?>, Object> cache;
@@ -48,11 +40,7 @@ public class GeometryDashClient {
 	private final long cacheLifetime;
 	private long totalNumberOfRequestsMade;
 
-	GeometryDashClient(long accountID, String password, String host, long cacheLifetime) {
-		this.accountID = accountID;
-		this.password = password;
-		this.passwordEncoded = RobTopsWeakCrypto.encodeGDAccountPassword(Objects.requireNonNull(password));
-		this.isAuthenticated = accountID > 0;
+	AbstractGDClient(String host, long cacheLifetime) {
 		this.host = host;
 		this.client = HttpClient.create(ConnectionProvider.elastic("gd-client-conn-pool"))
 				.headers(h -> h.add("Content-Type", "application/x-www-form-urlencoded"));
@@ -86,10 +74,7 @@ public class GeometryDashClient {
 		params.put("binaryVersion", BINARY_VERSION);
 		params.put("gdw", "0");
 		params.put("secret", SECRET);
-		if (isAuthenticated) {
-			params.put("accountID", "" + accountID);
-			params.put("gjp", passwordEncoded);
-		}
+		putExtraParams(params);
 		params.putAll(request.getParams());
 		params.forEach((k, v) -> sj.add(k + "=" + v));
 		String requestStr = sj.toString();
@@ -97,17 +82,17 @@ public class GeometryDashClient {
 		return client.baseUrl(host).post().uri(request.getPath())
 				.send(ByteBufFlux.fromString(Flux.just(requestStr)))
 				.responseSingle((response, content) -> {
-					if (response.status().code() >= 400 && response.status().code() < 600) {
+					if (response.status().code() != 200) {
 						return Mono.error(new BadResponseException(response));
 					} else {
-						return content.asString();
+						return content.asString().defaultIfEmpty("");
 					}
 				})
+				.publishOn(Schedulers.elastic())
 				.retry(PrematureCloseException.class::isInstance)
-				.flatMap(r -> {
+				.flatMap(responseStr -> {
 					try {
-//						System.out.println(requestStr);
-						E entity = request.parseResponse(r);
+						E entity = request.parseResponse(responseStr.trim());
 						if (entity == null) {
 							return Mono.empty();
 						}
@@ -127,6 +112,8 @@ public class GeometryDashClient {
 					}
 				});
 	}
+	
+	abstract void putExtraParams(Map<String, String> params);
 
 	private void cleanUpExpiredCacheEntries() {
 		Mono.just(System.currentTimeMillis()).doOnNext(now -> {
@@ -151,8 +138,9 @@ public class GeometryDashClient {
 		if (accountId < 1) {
 			throw new IllegalArgumentException("Account ID must be greater than 0");
 		}
-		return fetch(new GDUserPart1Request(this, accountId)).flatMap(
-				u1 -> fetch(new GDUserPart2Request(this, "" + u1.getId(), 0)).map(u2l -> GDUser.aggregate(u1, u2l.asList().get(0))));
+		return fetch(new GDUserPart1Request(this, accountId))
+				.flatMap(u1 -> fetch(new GDUserPart2Request(this, "" + u1.getId(), 0))
+						.map(u2l -> GDUser.aggregate(u1, u2l.asList().get(0))));
 	}
 
 	/**
@@ -186,7 +174,8 @@ public class GeometryDashClient {
 	 * Gets the current Daily Level on Geometry Dash.
 	 * 
 	 * @return a Mono emitting the Daily level, or an error if not found or
-	 *         something went wrong.
+	 *         something went wrong. If no Daily level is available, the error
+	 *         {@link NoTimelyAvailableException} is emitted.
 	 */
 	public Mono<GDTimelyLevel> getDailyLevel() {
 		return fetch(new GDTimelyRequest(this, TimelyType.DAILY));
@@ -195,8 +184,9 @@ public class GeometryDashClient {
 	/**
 	 * Gets the current Weekly Demon on Geometry Dash.
 	 * 
-	 * @return a Mono emitting the Wezekly demon, or an error if not found or
-	 *         something went wrong.
+	 * @return a Mono emitting the Weekly demon, or an error if not found or
+	 *         something went wrong. If no Weekly demon is available, the error
+	 *         {@link NoTimelyAvailableException} is emitted.
 	 */
 	public Mono<GDTimelyLevel> getWeeklyDemon() {
 		return fetch(new GDTimelyRequest(this, TimelyType.WEEKLY));
@@ -371,86 +361,6 @@ public class GeometryDashClient {
 		return fetch(new GDLevelSearchRequest(this, filters, followed, page));
 	}
 	
-	private void checkLogin() {
-		if (!isAuthenticated) {
-			throw new UnsupportedOperationException("This client must be logged in to a GD account in order to perform this operation");
-		}
-	}
-	
-	/**
-	 * Gets the private messages of the account that this client is logged on.
-	 * 
-	 * @param page the page number
-	 * @return a Mono emitting a paginator containing all messages found. Note that
-	 *         if no messages are found, it will emit an error instead of just an
-	 *         empty paginator. This is because the Geometry Dash API returns the
-	 *         same response when nothing is found and when an actual error occurs
-	 *         while processing the request (blame RobTop for that!).
-	 * @throws UnsupportedOperationException if this client is not logged it to any
-	 *                                       account
-	 */
-	public Mono<GDPaginator<GDMessage>> getPrivateMessages(int page) {
-		checkLogin();
-		return fetch(new GDMessageInboxRequest(this, page));
-	}
-
-	/**
-	 * Sends a private message to a user.
-	 * 
-	 * @param user    the recipient of the message
-	 * @param subject the message subject
-	 * @param body    the message body
-	 * @return a Mono completing empty if succeeded, an error otherwise.
-	 * @throws UnsupportedOperationException if this client is not logged it to any
-	 *                                       account
-	 * @throws IllegalArgumentException      if user isn't a registered user
-	 *                                       {@code (user.getAccountId() == 0)}
-	 */
-	public Mono<Void> sendPrivateMessage(GDUser user, String subject, String body) {
-		checkLogin();
-		if (user.getAccountId() <= 0) {
-			throw new IllegalArgumentException("Cannot send a private message to an unregistered user");
-		}
-		return fetch(new GDMessageSendRequest(this, user.getAccountId(), subject, body));
-	}
-
-	/**
-	 * Gets the account ID of this client
-	 * 
-	 * @return the account ID
-	 * @throws IllegalStateException if this client was built with no account ID
-	 *                               specified
-	 */
-	public long getAccountID() {
-		if (accountID == 0) {
-			throw new IllegalStateException("Cannot get the account ID of an unauthenticated GeometryDashClient.");
-		}
-		return accountID;
-	}
-
-	/**
-	 * Gets the GD account password of this client
-	 * 
-	 * @return the password
-	 * @throws IllegalStateException if this client was built with no password
-	 *                               specified
-	 */
-	public String getPassword() {
-		if (password.isEmpty()) {
-			throw new IllegalStateException("Cannot get the password of an unauthenticated GeometryDashClient.");
-		}
-		return password;
-	}
-
-	/**
-	 * Gets whether this client is authenticated with a GD account.
-	 * 
-	 * @return boolean
-	 */
-	public boolean isAuthenticated() {
-		return isAuthenticated;
-	}
-
 	/**
 	 * Gets the host
 	 *
@@ -458,6 +368,15 @@ public class GeometryDashClient {
 	 */
 	public String getHost() {
 		return host;
+	}
+	
+	/**
+	 * Gets the cache lifetime in milliseconds
+	 * 
+	 * @return long
+	 */
+	public long getCacheLifetime() {
+		return cacheLifetime;
 	}
 
 	/**
@@ -483,31 +402,5 @@ public class GeometryDashClient {
 	 */
 	public long getTotalNumberOfRequestsMade() {
 		return totalNumberOfRequestsMade;
-	}
-
-	/**
-	 * Two clients are considered equal if they are authenticated with the same GD
-	 * account.
-	 * 
-	 * If one of them is authenticated and the other is not, <code>false</code> is
-	 * always returned.
-	 * 
-	 * If they are both unauthenticated, <code>true</code> is always returned.
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (!(obj instanceof GeometryDashClient)) {
-			return false;
-		}
-		GeometryDashClient c = (GeometryDashClient) obj;
-		if (!c.isAuthenticated && !isAuthenticated) {
-			return true;
-		}
-		return c.isAuthenticated && isAuthenticated && c.accountID == accountID;
-	}
-	
-	@Override
-	public int hashCode() {
-		return isAuthenticated ? Long.hashCode(accountID) : 0;
 	}
 }

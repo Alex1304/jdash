@@ -8,7 +8,7 @@ import java.util.Objects;
  * @author Alex1304
  *
  */
-public class GDSong implements GDEntity {
+public final class GDSong implements GDEntity {
 
 	private final long id;
 	private final String songAuthorName;

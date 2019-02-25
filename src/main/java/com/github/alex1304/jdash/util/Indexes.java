@@ -4,7 +4,7 @@ package com.github.alex1304.jdash.util;
  * Index values used by the parser or the client to retrieve info on various
  * things in Geometry Dash.
  */
-public class Indexes {
+public final class Indexes {
 	private Indexes() {
 	}
 	
@@ -89,9 +89,4 @@ public class Indexes {
 	public static final int MESSAGE_BODY = 5;
 	public static final int MESSAGE_TIMESTAMP = 7;
 	public static final int MESSAGE_IS_READ = 8;
-
-	/* Timely level IDs */
-
-	public static final int DAILY_LEVEL_ID = -1;
-	public static final int WEEKLY_DEMON_ID = -2;
 }

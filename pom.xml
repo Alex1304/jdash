@@ -1,4 +1,6 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.github.alex1304</groupId>
@@ -8,7 +10,7 @@
 
 	<name>jdash</name>
 	<url>http://maven.apache.org</url>
-	
+
 	<description>A Java library for the Geometry Dash API</description>
 
 	<licenses>
@@ -18,7 +20,7 @@
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
-	
+
 	<developers>
 		<developer>
 			<name>Alex1304</name>
@@ -28,10 +30,10 @@
 
 	<scm>
 		<connection>scm:git:git://github.com/Alex1304/jdash.git</connection>
-  		<developerConnection>scm:git:ssh://git@github.com/Alex1304/jdash.git</developerConnection>
-  		<url>http://github.com/Alex1304/jdash/tree/master</url>
-	  <tag>HEAD</tag>
-  </scm>
+		<developerConnection>scm:git:ssh://git@github.com/Alex1304/jdash.git</developerConnection>
+		<url>http://github.com/Alex1304/jdash/tree/master</url>
+		<tag>HEAD</tag>
+	</scm>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -57,6 +59,44 @@
 					<source>1.8</source>
 					<target>1.8</target>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>3.1.1</version>
+				<executions>
+					<execution>
+						<id>copy-dependencies</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.8</version>
+				<executions>
+					<execution>
+						<id>antrun-archive</id>
+						<phase>package</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<target>
+								<property name="final.name"
+									value="${project.build.directory}/${project.build.finalName}" />
+								<property name="archive.includes"
+									value="${project.build.finalName}.jar dependency/*" />
+								<zip basedir="${project.build.directory}"
+									destfile="${final.name}.zip" includes="${archive.includes}" />
+							</target>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.sonatype.plugins</groupId>

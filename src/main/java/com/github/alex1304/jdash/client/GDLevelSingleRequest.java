@@ -19,7 +19,7 @@ class GDLevelSingleRequest extends AbstractGDRequest<GDLevel> {
 	
 	private final long levelId;
 	
-	GDLevelSingleRequest(GeometryDashClient client, long levelId) {
+	GDLevelSingleRequest(AbstractGDClient client, long levelId) {
 		super(client);
 		this.levelId = levelId;
 	} 

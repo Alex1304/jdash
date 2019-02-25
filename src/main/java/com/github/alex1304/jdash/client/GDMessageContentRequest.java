@@ -9,11 +9,11 @@ import com.github.alex1304.jdash.util.Routes;
 import com.github.alex1304.jdash.util.Utils;
 import com.github.alex1304.jdash.util.robtopsweakcrypto.RobTopsWeakCrypto;
 
-public class GDMessageContentRequest extends AbstractGDRequest<String> {
+public class GDMessageContentRequest extends AbstractAuthenticatedGDRequest<String> {
 	
 	private final long messageId;
 	
-	GDMessageContentRequest(GeometryDashClient client, long messageId) {
+	GDMessageContentRequest(AuthenticatedGDClient client, long messageId) {
 		super(client);
 		this.messageId = messageId;
 	}

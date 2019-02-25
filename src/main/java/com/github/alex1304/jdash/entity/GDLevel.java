@@ -3,9 +3,11 @@ package com.github.alex1304.jdash.entity;
 import java.util.Objects;
 import java.util.function.Supplier;
 
+import com.github.alex1304.jdash.exception.SongNotAllowedForUseException;
+
 import reactor.core.publisher.Mono;
 
-public class GDLevel extends AbstractGDEntity {
+public final class GDLevel extends AbstractGDEntity {
 
 	private final String name;
 	private final long creatorID;
@@ -110,6 +112,12 @@ public class GDLevel extends AbstractGDEntity {
 		return length;
 	}
 	
+	/**
+	 * Gets the song that this level uses.
+	 * 
+	 * @return a Mono emitting the song. If the song is not allowed for use in
+	 *         Geometry Dash, a {@link SongNotAllowedForUseException} is emitted.
+	 */
 	public Mono<GDSong> getSong() {
 		return song.get();
 	}
@@ -149,7 +157,13 @@ public class GDLevel extends AbstractGDEntity {
 	public int getRequestedStars() {
 		return requestedStars;
 	}
-
+	
+	/**
+	 * Gets the level download data, which includes binary data of the level, the
+	 * upload an d last updated dates, and the copy passcode.
+	 * 
+	 * @return a Mono emitting the download data for this level.
+	 */
 	public Mono<GDLevelData> download() {
 		return downloader.get();
 	}

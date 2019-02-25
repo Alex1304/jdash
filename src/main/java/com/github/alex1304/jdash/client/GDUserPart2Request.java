@@ -17,7 +17,7 @@ class GDUserPart2Request extends AbstractGDRequest<GDPaginator<GDUserPart2>> {
 	private final String query;
 	private final int page;
 
-	GDUserPart2Request(GeometryDashClient client, String query, int page) {
+	GDUserPart2Request(AbstractGDClient client, String query, int page) {
 		super(client);
 		this.query = query;
 		this.page = page;

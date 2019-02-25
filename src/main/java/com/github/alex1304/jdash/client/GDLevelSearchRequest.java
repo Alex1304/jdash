@@ -32,7 +32,7 @@ class GDLevelSearchRequest extends AbstractGDRequest<GDPaginator<GDLevel>> {
 	private final LevelSearchStrategy strategy;
 	private Collection<? extends GDUser> followed;
 	
-	private GDLevelSearchRequest(GeometryDashClient client, int page, String query, LevelSearchFilters filters,
+	private GDLevelSearchRequest(AbstractGDClient client, int page, String query, LevelSearchFilters filters,
 			LevelSearchStrategy strategy, Collection<? extends GDUser> followed) {
 		super(client);
 		this.page = page;
@@ -42,19 +42,19 @@ class GDLevelSearchRequest extends AbstractGDRequest<GDPaginator<GDLevel>> {
 		this.followed = Objects.requireNonNull(followed);
 	}
 
-	GDLevelSearchRequest(GeometryDashClient client, String query, LevelSearchFilters filters, int page) {
+	GDLevelSearchRequest(AbstractGDClient client, String query, LevelSearchFilters filters, int page) {
 		this(client, page, query, filters, LevelSearchStrategy.REGULAR, Collections.emptySet());
 	}
 	
-	GDLevelSearchRequest(GeometryDashClient client, GDUser byUser, int page) {
+	GDLevelSearchRequest(AbstractGDClient client, GDUser byUser, int page) {
 		this(client, page, "" + byUser.getId(), LevelSearchFilters.create(), LevelSearchStrategy.BY_USER, Collections.emptySet());
 	}
 	
-	GDLevelSearchRequest(GeometryDashClient client, LevelSearchStrategy strategy, LevelSearchFilters filters, int page) {
+	GDLevelSearchRequest(AbstractGDClient client, LevelSearchStrategy strategy, LevelSearchFilters filters, int page) {
 		this(client, page, "", filters, strategy, Collections.emptySet());
 	}
 	
-	GDLevelSearchRequest(GeometryDashClient client, LevelSearchFilters filters, Collection<? extends GDUser> followed, int page) {
+	GDLevelSearchRequest(AbstractGDClient client, LevelSearchFilters filters, Collection<? extends GDUser> followed, int page) {
 		this(client, page, "", filters, LevelSearchStrategy.FOLLOWED, followed);
 	}
 

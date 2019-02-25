@@ -2,7 +2,7 @@ package com.github.alex1304.jdash.entity;
 
 import java.util.Objects;
 
-public class GDUserPart1 extends AbstractGDUser {
+public final class GDUserPart1 extends AbstractGDUser {
 	private final int diamonds;
 	private final int globalRank;
 	private final int cubeIconId;

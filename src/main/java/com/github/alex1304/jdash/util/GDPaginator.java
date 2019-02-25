@@ -22,7 +22,7 @@ import reactor.core.publisher.Mono;
  *
  * @param <E> the type of GD entity contained in the list
  */
-public class GDPaginator<E> implements Iterable<E> {
+public final class GDPaginator<E> implements Iterable<E> {
 
 	private final List<E> list;
 	private final int pageNumber;

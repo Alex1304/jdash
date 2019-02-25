@@ -17,7 +17,7 @@ import com.github.alex1304.jdash.entity.GDSong;
  * @author Alex1304
  *
  */
-public class Utils {
+public final class Utils {
 	private Utils() {
 	}
 	

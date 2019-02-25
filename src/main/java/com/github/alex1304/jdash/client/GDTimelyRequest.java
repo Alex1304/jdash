@@ -11,9 +11,9 @@ import com.github.alex1304.jdash.util.Routes;
 
 public class GDTimelyRequest extends AbstractGDRequest<GDTimelyLevel> {
 	
-	private TimelyType type;
+	private final TimelyType type;
 
-	public GDTimelyRequest(GeometryDashClient client, TimelyType type) {
+	public GDTimelyRequest(AbstractGDClient client, TimelyType type) {
 		super(client);
 		this.type = Objects.requireNonNull(type);
 	}
@@ -30,7 +30,7 @@ public class GDTimelyRequest extends AbstractGDRequest<GDTimelyLevel> {
 
 	@Override
 	GDTimelyLevel parseResponse0(String response) throws GDClientException {
-		if (response.equals("|")) {
+		if (response.length() < 3) {
 			throw new NoTimelyAvailableException();
 		}
 		if (!response.matches("[0-9]+\\|[0-9]+")) {

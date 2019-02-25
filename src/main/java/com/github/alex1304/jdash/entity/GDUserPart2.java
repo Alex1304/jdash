@@ -2,7 +2,7 @@ package com.github.alex1304.jdash.entity;
 
 import java.util.Objects;
 
-public class GDUserPart2 extends AbstractGDUser {
+public final class GDUserPart2 extends AbstractGDUser {
 	
 	private final String name;
 	private final boolean hasGlowOutline;

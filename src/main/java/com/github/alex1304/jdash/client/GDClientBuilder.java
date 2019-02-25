@@ -3,59 +3,31 @@ package com.github.alex1304.jdash.client;
 import java.util.Objects;
 import java.util.Optional;
 
+import com.github.alex1304.jdash.exception.GDClientException;
+import com.github.alex1304.jdash.exception.GDLoginFailedException;
 import com.github.alex1304.jdash.util.Routes;
 
 /**
  * Builds a Geometry Dash client step by step.
  */
-public class GDClientBuilder {
+public final class GDClientBuilder {
 	public static final long DEFAULT_CACHE_LIFETIME = 900_000;
 
-	private final class Auth {
-		final long accountId;
-		final String password;
-
-		public Auth(long accountId, String password) {
-			if (accountId <= 0) {
-				throw new IllegalArgumentException("Account ID must be strictly positive");
-			}
-			this.accountId = accountId;
-			this.password = Objects.requireNonNull(password);
-		}
-	}
-
-	private Optional<Auth> auth;
 	private Optional<String> host;
 	private Optional<Long> cacheLifetime;
 
-	private GDClientBuilder(Optional<Auth> auth, Optional<String> host, Optional<Long> cacheLifetime) {
-		this.auth = auth;
+	private GDClientBuilder(Optional<String> host, Optional<Long> cacheLifetime) {
 		this.host = host;
 		this.cacheLifetime = cacheLifetime;
 	}
 
 	public static GDClientBuilder create() {
-		return new GDClientBuilder(Optional.empty(), Optional.empty(), Optional.empty());
-	}
-
-	/**
-	 * Specifies an account ID and a password to authenticate requests made with the
-	 * client.
-	 * 
-	 * @param accountId the account ID
-	 * @param password  the account password
-	 * @return this (for method chaining purposes)
-	 * @throws IllegalArgumentException if accountID is less than or equal to 0
-	 * @throws NullPointerException     if password is <code>null</code>
-	 */
-	public GDClientBuilder withAuthenticationDetails(long accountId, String password) {
-		this.auth = Optional.of(new Auth(accountId, password));
-		return this;
+		return new GDClientBuilder(Optional.empty(), Optional.empty());
 	}
 
 	/**
 	 * Specifies a custom host for the client to send the requests to. This allows
-	 * the use of {@link GeometryDashClient} for Geometry Dash private servers
+	 * the use of {@link AnonymousGDClient} for Geometry Dash private servers
 	 * (GDPS).
 	 * 
 	 * @param host the host address (WITHOUT protocol and WITHOUT trailing slash!)
@@ -72,7 +44,7 @@ public class GDClientBuilder {
 	}
 
 	/**
-	 * Specifies a custom lifetime for the request cache. Setting 0 as value
+	 * Specifies how long a request should stay in cache. Setting 0 as value
 	 * disables the cache.
 	 * 
 	 * @param time the time to set for the cache lifetime
@@ -88,15 +60,21 @@ public class GDClientBuilder {
 	}
 
 	/**
-	 * Builds the Geometry Dash client.
+	 * Builds an anonymous Geometry Dash client.
 	 * 
-	 * @return {@link GeometryDashClient}
+	 * @return {@link AnonymousGDClient}
 	 */
-	public GeometryDashClient build() {
-		return new GeometryDashClient(
-				auth.map(auth -> auth.accountId).orElse(0L),
-				auth.map(auth -> auth.password).orElse(""),
-				host.orElse(Routes.BASE_URL),
-				cacheLifetime.orElse(DEFAULT_CACHE_LIFETIME));
+	public AnonymousGDClient buildAnonymous() {
+		return new AnonymousGDClient(host.orElse(Routes.BASE_URL), cacheLifetime.orElse(DEFAULT_CACHE_LIFETIME));
+	}
+	
+	public AuthenticatedGDClient buildAuthenticated(String username, String password) throws GDLoginFailedException {
+		AnonymousGDClient client = buildAnonymous();
+		try {
+			long[] details = client.fetch(new GDLoginRequest(client, username, password, "jdash-client")).block();
+			return new AuthenticatedGDClient(details[0], details[1], username, password, client.getHost(), client.getCacheLifetime());
+		} catch (GDClientException e) {
+			throw new GDLoginFailedException(e);
+		}
 	}
 }

@@ -6,7 +6,7 @@ import java.util.Map;
 
 import com.github.alex1304.jdash.entity.GDSong;
 
-public class ParseUtils {
+public final class ParseUtils {
 	private ParseUtils() {
 	}
 

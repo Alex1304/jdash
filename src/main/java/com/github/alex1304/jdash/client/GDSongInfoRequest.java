@@ -13,7 +13,7 @@ class GDSongInfoRequest extends AbstractGDRequest<GDSong> {
 	
 	private final long songId;
 	
-	GDSongInfoRequest(GeometryDashClient client, long songId) {
+	GDSongInfoRequest(AbstractGDClient client, long songId) {
 		super(client);
 		this.songId = songId;
 	}
@@ -30,7 +30,7 @@ class GDSongInfoRequest extends AbstractGDRequest<GDSong> {
 
 	@Override
 	GDSong parseResponse0(String response) throws GDClientException {
-		if (response.startsWith("-2")) {
+		if (response.equals("-2")) {
 			throw new SongNotAllowedForUseException();
 		}
 		Map<Long, GDSong> songInfo = ParseUtils.structureSongsInfo(response);
