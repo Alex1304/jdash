@@ -153,7 +153,7 @@ public final class GDPaginator<E> implements Iterable<E> {
 	/**
 	 * Loads a specific page by providing its number.
 	 * 
-	 * @param page the page number to load
+	 * @param pageNumber the page number to load
 	 * @return a Mono emitting the desired page
 	 * @throws IllegalArgumentException if the given page number is out of range
 	 */

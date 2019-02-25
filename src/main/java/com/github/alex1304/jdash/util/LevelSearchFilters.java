@@ -39,6 +39,8 @@ public final class LevelSearchFilters {
 
 	/**
 	 * Creates a new instance of search filters.
+	 * 
+	 * @return a new instance of {@link LevelSearchFilters}
 	 */
 	public static LevelSearchFilters create() {
 		return new LevelSearchFilters(EnumSet.noneOf(Toggle.class), EnumSet.noneOf(Length.class),
@@ -59,7 +61,7 @@ public final class LevelSearchFilters {
 	/**
 	 * Defines the level lengths to filter on.
 	 * 
-	 * @param toggles the set of lengths
+	 * @param lengths the set of lengths
 	 * @return this (for method chaining purposes)
 	 */
 	public LevelSearchFilters withLengths(EnumSet<Length> lengths) {
@@ -103,7 +105,11 @@ public final class LevelSearchFilters {
 	/**
 	 * Defines the song filter.
 	 * 
-	 * @param demonDiff the demon difficulty to filter on
+	 * @param isCustom whether to filter on a custom song or a regular one
+	 * @param songId   the ID of the song to filter on. If the previous pareameter
+	 *                 was set to <code>false</code>, then it refers to the index of
+	 *                 the level that has the song in game (Stereo Madness is 1,
+	 *                 Back On Track is 2, and so on)
 	 * @return this (for method chaining purposes)
 	 */
 	public LevelSearchFilters withSongFilter(boolean isCustom, long songId) {
