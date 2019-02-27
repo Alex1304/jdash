@@ -5,9 +5,12 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.FilteredImageSource;
 import java.awt.image.RGBImageFilter;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,6 +19,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Map.Entry;
 import java.util.function.Predicate;
 
@@ -41,6 +45,7 @@ public class SpriteFactory {
 		Graphics2D g = img.createGraphics();
 		orderSprites(spList);
 		for (Sprite sp : spList) {
+			// Variables
 			String name = sp.getName();
 			int x = sp.getRectangle().x;
 			int y = sp.getRectangle().y;
@@ -51,25 +56,72 @@ public class SpriteFactory {
 			int realWidth = sp.isRotated() ? sp.getRectangle().height : sp.getRectangle().width;
 			int realHeight = sp.isRotated() ? sp.getRectangle().width : sp.getRectangle().height;
 			Image subimg = spriteImg.getSubimage(x, y, realWidth, realHeight);
-			if (sp.isRotated()) {
-				subimg = rotate(subimg);
-			}
 			int centerX = width / 2;
 			int centerY = height / 2;
+			// Fix orientation if rotated
+			if (sp.isRotated()) {
+				subimg = rotate(subimg, -90);
+			}
+			// Reduce brightness of robot/spider back legs
+			if (name.contains("001D") && !name.contains("glow")) {
+				subimg = reduceBrightness(subimg);
+			}
+			// Offset modifiers for robot legs
+			if (name.contains("robot")) {
+				if (name.contains(id + "_02_")) {
+					subimg = rotate(subimg, 45);
+					offX -= name.contains("001D") ? 50 : 40;
+					offY -= 20;
+				} else if (name.contains(id + "_03_")) {
+					subimg = rotate(subimg, -45);
+					offX -= name.contains("001D") ? 40 : 30;
+					offY -= 60;
+				} else if (name.contains(id + "_04_")) {
+					offX -= name.contains("001D") ? 10 : 00;
+					offY -= 70;
+				}
+			}
+			// Offset modifiers for spider legs
+			if (name.contains("spider")) {
+				if (name.contains("_02_") && name.endsWith("1D")) {
+					offX += 18;
+					offY -= 38;
+				} else if (name.contains("_02_") && name.endsWith("1DD")) {
+					offX += 58;
+					offY -= 38;
+				} else if (name.contains("_02_")) {
+					offX -= 16;
+					offY -= 38;
+				} else if (name.contains("_03_")) {
+					offX -= 86;
+					offY -= 38;
+					if (id == 7) {
+						offX += 20;
+						offY += 16;
+					}
+					subimg = rotate(subimg, 45);
+				} else if (name.contains("_04_")) {
+					offX -= 30;
+					offY -= 20;
+				}
+			}
+			
+			// Apply player colors
 			if (name.contains("_2_00")) {
 				subimg = applyColor(subimg, color2Id);
 			} else if (!name.contains("extra") && !name.contains("_3_00")) {
 				subimg = applyColor(subimg, color1Id);
 			}
+			// Draw the result
 			int drawX = 100 - centerX + offX;
 			int drawY = 100 - centerY - offY;
 			int drawOffY;
 			switch (type) {
 				case ROBOT:
-					drawOffY = 0;
+					drawOffY = -20;
 					break;
 				case SPIDER:
-					drawOffY = 0;
+					drawOffY = -10;
 					break;
 				case UFO:
 					drawOffY = 30;
@@ -78,7 +130,7 @@ public class SpriteFactory {
 					drawOffY = 0;
 					break;
 			}
-			g.drawImage(subimg, drawX, drawOffY + drawY, width, height, null);
+			g.drawImage(subimg, drawX, drawOffY + drawY, subimg.getWidth(null), subimg.getHeight(null), null);
 		}
 		g.dispose();
 		return img;
@@ -86,10 +138,19 @@ public class SpriteFactory {
 	
 	private static void orderSprites(List<Sprite> spList) {
 		Collections.reverse(spList);
-		pushSpriteToBackIf(spList, sp -> sp.getName().contains("extra"));
+		spList.removeIf(sp -> sp.getName().matches("robot_[0-9]{2,3}_02_2_.*"));
+		pullSpriteToFrontIf(spList, sp -> sp.getName().matches("(robot|spider)_[0-9]{2,3}_(02|03|04)_.*"));
+		dupeSpriteIf(spList, sp -> sp.getName().matches("robot_[0-9]{2,3}_(02|03|04)_.*"), 1, false);
+		dupeSpriteIf(spList, sp -> sp.getName().matches("spider_[0-9]{2,3}_02_.*") && !sp.getName().contains("extra"), 2, false);
+		pullSpriteToFrontIf(spList, sp -> sp.getName().matches("robot_[0-9]{2,3}_02_.*") && !sp.getName().endsWith("D"));
+		pullSpriteToFrontIf(spList, sp -> sp.getName().matches("robot_[0-9]{2,3}_04_.*") && !sp.getName().endsWith("D"));
+		pushSpriteToBackIf(spList, sp -> sp.getName().matches("robot_[0-9]{2,3}_03_.*D"));
+		
+		pullSpriteToFrontIf(spList, sp -> sp.getName().matches("spider[0-9]{2,3}_04_.*"));
+		pullSpriteToFrontIf(spList, sp -> sp.getName().contains("extra"));
 	}
 	
-	private static void pushSpriteToBackIf(List<Sprite> spList, Predicate<Sprite> cond) {
+	private static void pullSpriteToFrontIf(List<Sprite> spList, Predicate<Sprite> cond) {
 		int offset = 0;
 		for (int i = 0 ; i < spList.size() ; i++) {
 			Sprite sp = spList.get(i - offset);
@@ -100,17 +161,83 @@ public class SpriteFactory {
 			}
 		}
 	}
+	
+	private static void pushSpriteToBackIf(List<Sprite> spList, Predicate<Sprite> cond) {
+		for (int i = 0 ; i < spList.size() ; i++) {
+			Sprite sp = spList.get(i);
+			if (cond.test(sp)) {
+				spList.remove(i);
+				spList.add(0, sp);
+			}
+		}
+	}
+	
+	private static void dupeSpriteIf(List<Sprite> spList, Predicate<Sprite> cond, int nbDup, boolean front) {
+		final int initialSize = spList.size();
+		int offset = 0;
+		for (int i = 0 ; i < initialSize ; i++) {
+			Sprite sp = spList.get(i + offset);
+			if (cond.test(sp)) {
+				Sprite dupe = sp.duplicate();
+				for (int d = 0 ; d < nbDup ; d++) {
+					if (front) {
+						spList.add(dupe);
+					} else {
+						spList.add(0, dupe);
+						offset++;
+					}
+					dupe = dupe.duplicate();
+				}
+			}
+		}
+	}
 
-	private static Image rotate(Image img) {
+	private static Image rotate(Image img, double deg) {
+		deg = deg % 360 + (Math.abs(deg) > 180 ? -Math.signum(deg) * 360 : 0);
+		double rad = Math.toRadians(deg);
 		int width = img.getWidth(null);
 		int height = img.getHeight(null);
-		BufferedImage newImage = new BufferedImage(height, width, spriteImg.getType());
+		// surrounding rectangle
+		Rectangle2D newImgRect = AffineTransform.getRotateInstance(rad, 0, 0)
+				.createTransformedShape(new Rectangle(width, height)).getBounds2D();
+		int newWidth = (int) newImgRect.getWidth();
+		int newHeight = (int) newImgRect.getHeight();
+		BufferedImage newImage = new BufferedImage(newWidth, newHeight, spriteImg.getType());
 		Graphics2D g2 = newImage.createGraphics();
-		g2.translate(0, width);
-		g2.rotate(Math.toRadians(-90), 0, 0);
+		int tx, ty;
+		if (deg < 0 && deg >= -90) {
+			tx = 0;
+			ty = (int) (width * Math.abs(Math.sin(rad)));
+		} else if (deg < 90 && deg >= 0) {
+			tx = (int) (height * Math.abs(Math.sin(rad)));
+			ty = 0;
+		} else if (deg < -90 && deg >= -180) {
+			tx = (int) (width * Math.abs(Math.cos(rad)));
+			ty = newHeight;
+		} else {
+			tx = newWidth;
+			ty = (int) (height * Math.abs(Math.cos(rad)));
+		}
+		g2.translate(tx, ty);
+		g2.rotate(rad, 0, 0);
 		g2.drawImage(img, 0, 0, width, height, null);
+//		write(toBufferedImage(img), "rotate_before_" + deg);
+//		write(toBufferedImage(newImage), "rotate_after_" + deg);
 		return newImage;
 	}
+	
+//	private static Image merge(Image img1, Image img2) {
+//		int w1 = img1.getWidth(null);
+//		int h1 = img1.getHeight(null);
+//		int w2 = img2.getWidth(null);
+//		int h2 = img2.getHeight(null);
+//		BufferedImage newImg = new BufferedImage(Math.max(w1, w2), Math.max(h1, h2), spriteImg.getType());
+//		Graphics2D g = newImg.createGraphics();
+//		g.drawImage(img1, 0, 0, w1, h1, null);
+//		g.drawImage(img2, 0, 0, w2, h2, null);
+//		g.dispose();
+//		return newImg;
+//	}
 	
 	private static Image applyColor(Image img, int colorId) {
 		Color color = COLORS.get(colorId);
@@ -118,6 +245,15 @@ public class SpriteFactory {
 			@Override
 			public int filterRGB(int x, int y, int rgb) {
 				return rgb & color.getRGB();
+			}
+		}));
+	}
+	
+	private static Image reduceBrightness(Image img) {
+		return Toolkit.getDefaultToolkit().createImage(new FilteredImageSource(img.getSource(), new RGBImageFilter() {
+			@Override
+			public int filterRGB(int x, int y, int rgb) {
+				return rgb & 0xFF808080;
 			}
 		}));
 	}
@@ -138,6 +274,16 @@ public class SpriteFactory {
 		return sprites.toString();
 	}
 	
+	public static void write(BufferedImage img, String name) {
+		try {
+			String path = System.getProperty("java.io.tmpdir") + File.separator + name + ".png";
+			ImageIO.write(img, "png", new File(path));
+			System.out.println("Written " + path);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 	private static void loadSprites(XMLPropertyListConfiguration spritePlist) {
 		sprites = new HashMap<>();
 		final Map<String, IconType> prefixes = new LinkedHashMap<>();

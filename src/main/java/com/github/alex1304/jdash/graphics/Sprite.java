@@ -24,6 +24,10 @@ class Sprite {
 		this.isRotated = isRotated;
 	}
 	
+	Sprite duplicate() {
+		return new Sprite(name + "D", offsetX, offsetY, sizeX, sizeY, sourceSizeX, sourceSizeY, rectangle, isRotated);
+	}
+	
 	String getName() {
 		return name;
 	}
