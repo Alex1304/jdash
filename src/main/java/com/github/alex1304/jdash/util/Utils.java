@@ -132,4 +132,14 @@ public final class Utils {
 	public static String b64Encode(String str) {
 		return Base64.getUrlEncoder().encodeToString(str.getBytes());
 	}
+	
+	public static int partialParseInt(String str) {
+		for (int i = 0 ; i < str.length() ; i++) {
+			char c = str.charAt(i);
+			if (c < '0' || c > '9') {
+				return Integer.parseInt(str.substring(0, i));
+			}
+		}
+		return Integer.parseInt(str);
+	}
 }
