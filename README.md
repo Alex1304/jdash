@@ -9,7 +9,8 @@ A Java library for Geometry Dash.
 - Provides a high-level HTTP client to fetch data from Geometry Dash servers
 - Supports authentication with Geometry Dash account username / password
 - Allows for both blocking and reactive/non-blocking programming styles
-- Caches requests for better performance.
+- Supports request caching for better performances
+- Provides a convenient way to generate player icons.
 
 # Get started
 
@@ -28,7 +29,7 @@ In a Maven project, add the following dependency to your `pom.xml`:
 </dependencies>
 ```
 
-Or download the latest version at the [releases](https://github.com/Alex1304/jdash/releases) page, and add the JAR into the build path of your Java project.
+Or download the latest version at the [releases](https://github.com/Alex1304/jdash/releases) page, and add all required JAR files into the build path of your Java project.
 
 # How to use it ?
 

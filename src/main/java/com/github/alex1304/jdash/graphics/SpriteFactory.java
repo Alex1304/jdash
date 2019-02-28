@@ -11,7 +11,6 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.FilteredImageSource;
 import java.awt.image.RGBImageFilter;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -42,8 +41,17 @@ public class SpriteFactory {
 	private static Map<String, List<Sprite>> sprites;
 	
 	public BufferedImage makeSprite(IconType type, int id, int color1Id, int color2Id, boolean withGlowOutline) {
+		if (!COLORS.containsKey(color1Id)) {
+			throw new IllegalArgumentException("Color1 ID=" + color1Id + " does not exist");
+		}
+		if (!COLORS.containsKey(color2Id)) {
+			throw new IllegalArgumentException("Color2 ID=" + color2Id + " does not exist");
+		}
 		List<Sprite> spList = sprites.get(type.name() + id);
-		BufferedImage img = new BufferedImage(200, 200, spriteImg.getType());
+		if (spList == null) {
+			throw new IllegalArgumentException("Sprite ID=" + id + " for icon type " + type.name() + " does not exist");
+		}
+		BufferedImage img = new BufferedImage(250, 250, spriteImg.getType());
 		Graphics2D g = img.createGraphics();
 		if (!withGlowOutline) {
 			spList.removeIf(sp -> sp.getName().contains("_glow_"));
@@ -180,7 +188,7 @@ public class SpriteFactory {
 			}
 			
 			// Apply player colors
-			if (name.contains("_2_00")) {
+			if (name.contains("_2_00") || name.contains("_glow_")) {
 				subimg = applyColor(subimg, color2Id);
 			} else if (!name.contains("extra") && !name.contains("_3_00")) {
 				subimg = applyColor(subimg, color1Id);
@@ -204,7 +212,7 @@ public class SpriteFactory {
 					drawOffY = 0;
 					break;
 			}
-			g.drawImage(subimg, drawOffX + drawX, drawOffY + drawY, subimg.getWidth(null), subimg.getHeight(null), null);
+			g.drawImage(subimg, 25 + drawOffX + drawX, 25 + drawOffY + drawY, null);
 		}
 		g.dispose();
 		if (type != IconType.ROBOT && type != IconType.SPIDER) {
@@ -215,16 +223,14 @@ public class SpriteFactory {
 	
 	private static void orderSprites(List<Sprite> spList) {
 		Collections.reverse(spList);
-//		spList.removeIf(sp -> sp.getName().matches("robot_[0-9]{2,3}_02_2_.*"));
-		//spList.removeIf(sp -> sp.getName().matches("spider_(02|03|10)_03_2_.*"));
-		//spList.removeIf(sp -> sp.getName().matches("spider_[0-9]{2,3}_04_.*"));
+		pushSpriteToBackIf(spList, sp -> sp.getName().contains("_2_"));
 		pullSpriteToFrontIf(spList, sp -> sp.getName().matches("(robot|spider)_[0-9]{2,3}_(02|03|04)_.*"));
 		dupeSpriteIf(spList, sp -> sp.getName().matches("robot_[0-9]{2,3}_(02|03|04)_.*"), 1, false);
 		dupeSpriteIf(spList, sp -> sp.getName().matches("spider_[0-9]{2,3}_02_.*") && !sp.getName().contains("extra"), 2, false);
 		pullSpriteToFrontIf(spList, sp -> sp.getName().matches("robot_[0-9]{2,3}_02_.*") && !sp.getName().endsWith("D"));
 		pullSpriteToFrontIf(spList, sp -> sp.getName().matches("robot_[0-9]{2,3}_04_.*") && !sp.getName().endsWith("D"));
-		pushSpriteToBackIf(spList, sp -> sp.getName().matches("robot_[0-9]{2,3}_03_.*D"));
-		pushSpriteToBackIf(spList, sp -> sp.getName().matches("(robot|spider)_[0-9]{2,3}_02_2_.*D"));
+		pushSpriteToBackIf(spList, sp -> !sp.getName().contains("_2_") && sp.getName().endsWith("D"));
+		pushSpriteToBackIf(spList, sp -> sp.getName().contains("_2_") && sp.getName().endsWith("D"));
 		pushSpriteToBackIf(spList, sp -> sp.getName().matches("spider_[0-9]{2,3}_04_.*"));
 		pullSpriteToFrontIf(spList, sp -> sp.getName().contains("extra"));
 		pushSpriteToBackIf(spList, sp -> sp.getName().contains("_glow_"));
@@ -300,9 +306,7 @@ public class SpriteFactory {
 		}
 		g2.translate(tx, ty);
 		g2.rotate(rad, 0, 0);
-		g2.drawImage(img, 0, 0, width, height, null);
-//		write(toBufferedImage(img), "rotate_before_" + deg);
-//		write(toBufferedImage(newImage), "rotate_after_" + deg);
+		g2.drawImage(img, 0, 0, null);
 		return newImage;
 	}
 	
@@ -316,19 +320,6 @@ public class SpriteFactory {
 		g.drawImage(img, 0, 0, null);
 		return newImg;
 	}
-	
-//	private static Image merge(Image img1, Image img2) {
-//		int w1 = img1.getWidth(null);
-//		int h1 = img1.getHeight(null);
-//		int w2 = img2.getWidth(null);
-//		int h2 = img2.getHeight(null);
-//		BufferedImage newImg = new BufferedImage(Math.max(w1, w2), Math.max(h1, h2), spriteImg.getType());
-//		Graphics2D g = newImg.createGraphics();
-//		g.drawImage(img1, 0, 0, w1, h1, null);
-//		g.drawImage(img2, 0, 0, w2, h2, null);
-//		g.dispose();
-//		return newImg;
-//	}
 	
 	private static Image applyColor(Image img, int colorId) {
 		Color color = COLORS.get(colorId);
@@ -344,8 +335,7 @@ public class SpriteFactory {
 		return Toolkit.getDefaultToolkit().createImage(new FilteredImageSource(img.getSource(), new RGBImageFilter() {
 			@Override
 			public int filterRGB(int x, int y, int rgb) {
-				Color c = new Color(rgb, true);
-				return new Color((int) (c.getRed() * 0.8), (int) (c.getGreen() * 0.8), (int) (c.getBlue() * 0.8), c.getAlpha()).getRGB();
+				return rgb & 0xFF808080;
 			}
 		}));
 	}
@@ -357,8 +347,8 @@ public class SpriteFactory {
 		}
 		final Color color = COLORS.get(color2Id);
 		final int w = img.getWidth(), h = img.getHeight();
-		final int treshold = 100;
-		final int glowWidth = 5;
+		final int treshold = 120;
+		final int glowWidth = 4;
 		// create an array of distances (1 per pixel) and fill it with -1's
 		int[][] distances = new int[h][w];
 		for (int i = 0 ; i < h ; i++) {
@@ -399,46 +389,18 @@ public class SpriteFactory {
 		    for (int x = 0; x < w; x++) {
 				int alpha = (img.getRGB(x, y) & 0xff000000) >> 24;
 		    	// Apply color only if transparent pixel
-		    	if ( alpha != -1 && alpha < treshold && distances[y][x] <= glowWidth) {
+		    	if (alpha != -1 && alpha < treshold && distances[y][x] <= glowWidth) {
 		    		img.setRGB(x, y, color.getRGB());
 		    	}
 		    }
 		}
-//		for (int y = 0; y < h; y++) {
-//		    for (int x = 0; x < w; x++) {
-//		    	System.out.print(distances[y][x]);
-//		    }
-//		    System.out.println();
-//		}
-//		System.out.println();
 	}
-	
-//	private static BufferedImage toBufferedImage(Image img) {
-//		if (img instanceof BufferedImage) {
-//			return (BufferedImage) img;
-//		}
-//		BufferedImage buffered = new BufferedImage(img.getWidth(null), img.getHeight(null), spriteImg.getType());
-//		Graphics2D g = buffered.createGraphics();
-//		g.drawImage(img, 0, 0, null);
-//		g.dispose();
-//		return buffered;
-//	}
 	
 	@Override
 	public String toString() {
 		return sprites.toString();
 	}
 	
-	public static void write(BufferedImage img, String name) {
-		try {
-			String path = System.getProperty("java.io.tmpdir") + File.separator + name + ".png";
-			ImageIO.write(img, "png", new File(path));
-			System.out.println("Written " + path);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
 	private static void loadSprites(XMLPropertyListConfiguration spritePlist) {
 		sprites = new HashMap<>();
 		final Map<String, IconType> prefixes = new LinkedHashMap<>();
