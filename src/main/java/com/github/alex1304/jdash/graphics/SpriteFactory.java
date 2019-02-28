@@ -3,6 +3,7 @@ package com.github.alex1304.jdash.graphics;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.geom.AffineTransform;
@@ -12,14 +13,15 @@ import java.awt.image.FilteredImageSource;
 import java.awt.image.RGBImageFilter;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Map.Entry;
 import java.util.function.Predicate;
 
@@ -43,6 +45,9 @@ public class SpriteFactory {
 		List<Sprite> spList = sprites.get(type.name() + id);
 		BufferedImage img = new BufferedImage(200, 200, spriteImg.getType());
 		Graphics2D g = img.createGraphics();
+		if (!withGlowOutline) {
+			spList.removeIf(sp -> sp.getName().contains("_glow_"));
+		}
 		orderSprites(spList);
 		for (Sprite sp : spList) {
 			// Variables
@@ -72,10 +77,56 @@ public class SpriteFactory {
 					subimg = rotate(subimg, 45);
 					offX -= name.contains("001D") ? 50 : 40;
 					offY -= 20;
+					if (name.contains("_2_")) {
+						switch (id) {
+							case 2:
+							case 5:
+							case 6:
+							case 8:
+							case 9:
+							case 11:
+							case 12:
+							case 15:
+							case 17:
+							case 24:
+								offX += 15;
+								offY -= 5;
+								break;
+							case 7:
+							case 10:
+							case 19:
+							case 20:
+								offX += 7;
+								break;
+							case 13:
+								offX += 10;
+								offY -= 4;
+								break;
+							case 18:
+								offX -= 1;
+								offY -= 1;
+								break;
+							case 21:
+							case 25:
+								offX += 12;
+								break;
+							case 22:
+								offY -= 5;
+								break;
+							case 3:
+							case 26:
+								offX += 1;
+								break;
+							case 23:
+								offX -= 3;
+								offY -= 2;
+								break;
+						}
+					}
 				} else if (name.contains(id + "_03_")) {
 					subimg = rotate(subimg, -45);
 					offX -= name.contains("001D") ? 40 : 30;
-					offY -= 60;
+					offY -= id == 21 && !name.contains("_2_") ? 52 : 60;
 				} else if (name.contains(id + "_04_")) {
 					offX -= name.contains("001D") ? 10 : 00;
 					offY -= 70;
@@ -83,24 +134,46 @@ public class SpriteFactory {
 			}
 			// Offset modifiers for spider legs
 			if (name.contains("spider")) {
-				if (name.contains("_02_") && name.endsWith("1D")) {
+				if (name.contains(id + "_02_") && name.endsWith("1D")) {
 					offX += 18;
 					offY -= 38;
-				} else if (name.contains("_02_") && name.endsWith("1DD")) {
-					offX += 58;
+				} else if (name.contains(id + "_02_") && name.endsWith("1DD")) {
+					offX += 55;
 					offY -= 38;
-				} else if (name.contains("_02_")) {
+					if (name.contains("_2_")) {
+						offX += 1;
+					}
+					subimg = horizontalFlip(subimg);
+				} else if (name.contains(id + "_02_")) {
 					offX -= 16;
 					offY -= 38;
-				} else if (name.contains("_03_")) {
+				} else if (name.contains(id + "_03_")) {
 					offX -= 86;
 					offY -= 38;
 					if (id == 7) {
-						offX += 20;
-						offY += 16;
+						offX += 15;
+						offY += 13;
+					}
+					if (name.contains("_2_")) {
+						switch (id) {
+							case 16:
+								offY += 5;
+								break;
+							case 2:
+							case 3:
+								offX += 25;
+								break;
+							case 10:
+								offX += 18;
+								offY -= 5;
+								break;
+						}
+					}
+					if (name.contains("_glow_")) {
+						offY += 3;
 					}
 					subimg = rotate(subimg, 45);
-				} else if (name.contains("_04_")) {
+				} else if (name.contains(id + "_04_")) {
 					offX -= 30;
 					offY -= 20;
 				}
@@ -115,13 +188,14 @@ public class SpriteFactory {
 			// Draw the result
 			int drawX = 100 - centerX + offX;
 			int drawY = 100 - centerY - offY;
-			int drawOffY;
+			int drawOffX = 0, drawOffY;
 			switch (type) {
 				case ROBOT:
 					drawOffY = -20;
 					break;
 				case SPIDER:
-					drawOffY = -10;
+					drawOffX = 6;
+					drawOffY = -5;
 					break;
 				case UFO:
 					drawOffY = 30;
@@ -130,24 +204,30 @@ public class SpriteFactory {
 					drawOffY = 0;
 					break;
 			}
-			g.drawImage(subimg, drawX, drawOffY + drawY, subimg.getWidth(null), subimg.getHeight(null), null);
+			g.drawImage(subimg, drawOffX + drawX, drawOffY + drawY, subimg.getWidth(null), subimg.getHeight(null), null);
 		}
 		g.dispose();
+		if (type != IconType.ROBOT && type != IconType.SPIDER) {
+			addGlow(img, color1Id, color2Id);
+		}
 		return img;
 	}
 	
 	private static void orderSprites(List<Sprite> spList) {
 		Collections.reverse(spList);
-		spList.removeIf(sp -> sp.getName().matches("robot_[0-9]{2,3}_02_2_.*"));
+//		spList.removeIf(sp -> sp.getName().matches("robot_[0-9]{2,3}_02_2_.*"));
+		//spList.removeIf(sp -> sp.getName().matches("spider_(02|03|10)_03_2_.*"));
+		//spList.removeIf(sp -> sp.getName().matches("spider_[0-9]{2,3}_04_.*"));
 		pullSpriteToFrontIf(spList, sp -> sp.getName().matches("(robot|spider)_[0-9]{2,3}_(02|03|04)_.*"));
 		dupeSpriteIf(spList, sp -> sp.getName().matches("robot_[0-9]{2,3}_(02|03|04)_.*"), 1, false);
 		dupeSpriteIf(spList, sp -> sp.getName().matches("spider_[0-9]{2,3}_02_.*") && !sp.getName().contains("extra"), 2, false);
 		pullSpriteToFrontIf(spList, sp -> sp.getName().matches("robot_[0-9]{2,3}_02_.*") && !sp.getName().endsWith("D"));
 		pullSpriteToFrontIf(spList, sp -> sp.getName().matches("robot_[0-9]{2,3}_04_.*") && !sp.getName().endsWith("D"));
 		pushSpriteToBackIf(spList, sp -> sp.getName().matches("robot_[0-9]{2,3}_03_.*D"));
-		
-		pullSpriteToFrontIf(spList, sp -> sp.getName().matches("spider[0-9]{2,3}_04_.*"));
+		pushSpriteToBackIf(spList, sp -> sp.getName().matches("(robot|spider)_[0-9]{2,3}_02_2_.*D"));
+		pushSpriteToBackIf(spList, sp -> sp.getName().matches("spider_[0-9]{2,3}_04_.*"));
 		pullSpriteToFrontIf(spList, sp -> sp.getName().contains("extra"));
+		pushSpriteToBackIf(spList, sp -> sp.getName().contains("_glow_"));
 	}
 	
 	private static void pullSpriteToFrontIf(List<Sprite> spList, Predicate<Sprite> cond) {
@@ -226,6 +306,17 @@ public class SpriteFactory {
 		return newImage;
 	}
 	
+	private static Image horizontalFlip(Image img) {
+		int width = img.getWidth(null), height = img.getHeight(null);
+		BufferedImage newImg = new BufferedImage(width, height, spriteImg.getType());
+		Graphics2D g = newImg.createGraphics();
+		AffineTransform flipTr = AffineTransform.getScaleInstance(-1, 1);
+		flipTr.concatenate(AffineTransform.getTranslateInstance(-width, 0));
+		g.transform(flipTr);
+		g.drawImage(img, 0, 0, null);
+		return newImg;
+	}
+	
 //	private static Image merge(Image img1, Image img2) {
 //		int w1 = img1.getWidth(null);
 //		int h1 = img1.getHeight(null);
@@ -253,9 +344,73 @@ public class SpriteFactory {
 		return Toolkit.getDefaultToolkit().createImage(new FilteredImageSource(img.getSource(), new RGBImageFilter() {
 			@Override
 			public int filterRGB(int x, int y, int rgb) {
-				return rgb & 0xFF808080;
+				Color c = new Color(rgb, true);
+				return new Color((int) (c.getRed() * 0.8), (int) (c.getGreen() * 0.8), (int) (c.getBlue() * 0.8), c.getAlpha()).getRGB();
 			}
 		}));
+	}
+	
+	private static void addGlow(BufferedImage img, int color1Id, int color2Id) {
+		// White glow if both colors are black. If color2 is black, use color1 instead.
+		if (color2Id == 15) {
+			color2Id = color1Id == 15 ? 12 : color1Id;
+		}
+		final Color color = COLORS.get(color2Id);
+		final int w = img.getWidth(), h = img.getHeight();
+		final int treshold = 100;
+		final int glowWidth = 5;
+		// create an array of distances (1 per pixel) and fill it with -1's
+		int[][] distances = new int[h][w];
+		for (int i = 0 ; i < h ; i++) {
+			Arrays.fill(distances[i], -1);
+		}
+		// for each pixel, mark the black ones as distance 0, and add them to a deque
+		ArrayDeque<Point> deque = new ArrayDeque<>();
+		for (int y = 0; y < h; y++) {
+		    for (int x = 0; x < w; x++) {
+				int data = img.getRGB(x, y);
+				int alpha = (data & 0xff000000) >> 24;
+				int red = (data & 0x00ff0000) >> 16;
+				int green = (data & 0x0000ff00) >> 8;
+				int blue = data & 0x000000ff;
+				if (red < treshold && green < treshold && blue < treshold && (alpha > 255 - treshold || alpha == -1)) {
+					distances[y][x] = 0;
+					deque.add(new Point(x, y));
+				} 
+		    }
+		}
+		// for each pixel in deque, look at pixels immediately around that are -1,
+		// change them to the value of distance + 1 and add them to deque
+		while (!deque.isEmpty()) {
+			Point pix = deque.remove();
+			int pixDistance = distances[pix.y][pix.x];
+			for (int y = Math.max(0, pix.y - 1) ; y <= Math.min(pix.y + 1, h - 1) ; y++) {
+				for (int x = Math.max(0, pix.x - 1) ; x <= Math.min(pix.x + 1, w - 1) ; x++) {
+					int lookAtDistance = distances[y][x];
+					if (lookAtDistance == -1) {
+						distances[y][x] = pixDistance + 1;
+						deque.add(new Point(x, y));
+					}
+				}
+			}
+		}
+		// Colorize all pixels that have a distance value less than or equal to glowWidth
+		for (int y = 0; y < h; y++) {
+		    for (int x = 0; x < w; x++) {
+				int alpha = (img.getRGB(x, y) & 0xff000000) >> 24;
+		    	// Apply color only if transparent pixel
+		    	if ( alpha != -1 && alpha < treshold && distances[y][x] <= glowWidth) {
+		    		img.setRGB(x, y, color.getRGB());
+		    	}
+		    }
+		}
+//		for (int y = 0; y < h; y++) {
+//		    for (int x = 0; x < w; x++) {
+//		    	System.out.print(distances[y][x]);
+//		    }
+//		    System.out.println();
+//		}
+//		System.out.println();
 	}
 	
 //	private static BufferedImage toBufferedImage(Image img) {
