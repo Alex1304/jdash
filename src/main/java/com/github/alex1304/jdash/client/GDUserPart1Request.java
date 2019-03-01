@@ -85,7 +85,7 @@ class GDUserPart1Request extends AbstractGDRequest<GDUserPart1> {
 				strTwitter,
 				strTwitch,
 				Role.values()[Integer.parseInt(strRole)],
-				!strFriendRequest.equals("0"),
+				strFriendRequest.equals("0"),
 				PrivacySetting.values()[Integer.parseInt(strPrivateMessage)],
 				PrivacySetting.values()[Integer.parseInt(strCommentHistory)]);
 	}
