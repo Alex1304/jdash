@@ -217,7 +217,7 @@ public class SpriteFactory {
 			g.drawImage(subimg, 25 + drawOffX + drawX, 25 + drawOffY + drawY, null);
 		}
 		g.dispose();
-		if (type != IconType.ROBOT && type != IconType.SPIDER) {
+		if (withGlowOutline && type != IconType.ROBOT && type != IconType.SPIDER) {
 			addGlow(img, color1Id, color2Id);
 		}
 		return img;
