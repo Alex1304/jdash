@@ -188,10 +188,12 @@ public class SpriteFactory {
 			}
 			
 			// Apply player colors
-			if (name.contains("_2_00") || name.contains("_glow_")) {
-				subimg = applyColor(subimg, color2Id);
+			if (name.contains("_glow_")) {
+				subimg = applyColor(subimg, getGlowColor(color1Id, color2Id));
+			} else if (name.contains("_2_00")) {
+				subimg = applyColor(subimg, COLORS.get(color2Id));
 			} else if (!name.contains("extra") && !name.contains("_3_00")) {
-				subimg = applyColor(subimg, color1Id);
+				subimg = applyColor(subimg, COLORS.get(color1Id));
 			}
 			// Draw the result
 			int drawX = 100 - centerX + offX;
@@ -321,8 +323,7 @@ public class SpriteFactory {
 		return newImg;
 	}
 	
-	private static Image applyColor(Image img, int colorId) {
-		Color color = COLORS.get(colorId);
+	private static Image applyColor(Image img, Color color) {
 		return Toolkit.getDefaultToolkit().createImage(new FilteredImageSource(img.getSource(), new RGBImageFilter() {
 			@Override
 			public int filterRGB(int x, int y, int rgb) {
@@ -340,12 +341,16 @@ public class SpriteFactory {
 		}));
 	}
 	
-	private static void addGlow(BufferedImage img, int color1Id, int color2Id) {
-		// White glow if both colors are black. If color2 is black, use color1 instead.
+	private static Color getGlowColor(int color1Id, int color2Id) {
 		if (color2Id == 15) {
 			color2Id = color1Id == 15 ? 12 : color1Id;
 		}
-		final Color color = COLORS.get(color2Id);
+		return COLORS.get(color2Id);
+	}
+	
+	private static void addGlow(BufferedImage img, int color1Id, int color2Id) {
+		// White glow if both colors are black. If color2 is black, use color1 instead.
+		final Color color = getGlowColor(color1Id, color2Id);
 		final int w = img.getWidth(), h = img.getHeight();
 		final int treshold = 120;
 		final int glowWidth = 4;

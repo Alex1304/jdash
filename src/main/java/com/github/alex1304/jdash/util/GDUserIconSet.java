@@ -41,8 +41,9 @@ public class GDUserIconSet {
 	 */
 	@Override
 	public boolean equals(Object obj) {
-		if (!super.equals(obj) || !(obj instanceof GDUserIconSet))
+		if (!(obj instanceof GDUserIconSet)) {
 			return false;
+		}
 		GDUserIconSet o = (GDUserIconSet) obj;
 		if (user.equals(o.user)) {
 			return true;
