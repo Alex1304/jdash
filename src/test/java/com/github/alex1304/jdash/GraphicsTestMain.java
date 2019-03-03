@@ -20,7 +20,7 @@ public class GraphicsTestMain {
 		// Build the client
 		AnonymousGDClient client = GDClientBuilder.create().buildAnonymous();
 		// Fetch RobTop's profile
-		GDUser user = client.searchUser("neverRare").block();
+		GDUser user = client.getUserByAccountId(71).block();
 		// Instanciate the SpriteFactory
 		SpriteFactory sf = SpriteFactory.create();
 		// Read the user's icon set
