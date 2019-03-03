@@ -65,7 +65,7 @@ public final class GDUser extends AbstractGDUser {
 				part1.secretCoins, part1.userCoins, part1.creatorPoints, part1.getGlobalRank(), part1.getCubeIconId(),
 				part1.getShipIconId(), part1.getUfoIconId(), part1.getBallIconId(), part1.getWaveIconId(),
 				part1.getRobotIconId(), part1.getSpiderIconId(), part1.getTrailId(), part1.getDeathEffectId(),
-				part2.hasGlowOutline(), part1.color1Id, part1.color2Id, part2.getMainIconId(), part1.getYoutube(),
+				part1.hasGlowOutline(), part1.color1Id, part1.color2Id, part2.getMainIconId(), part1.getYoutube(),
 				part1.getTwitter(), part1.getTwitch(), part1.getRole(), part1.hasFriendRequestsEnabled(),
 				part1.getPrivateMessagePolicy(), part1.getCommmentHistoryPolicy(), part2.getMainIconType());
 	}

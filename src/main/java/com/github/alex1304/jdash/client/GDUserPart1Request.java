@@ -56,7 +56,7 @@ class GDUserPart1Request extends AbstractGDRequest<GDUserPart1> {
 		String strRole = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_ROLE), "0");
 		String strYoutube = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_YOUTUBE), "");
 		String strTwitter = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_TWITTER), "");
-		String strTwitch = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_TWITCH), "0");
+		String strTwitch = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_TWITCH), "");
 		String strFriendRequest = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_FRIEND_REQUEST_POLICY), "0");
 		String strPrivateMessage = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_PRIVATE_MESSAGE_POLICY), "0");
 		String strCommentHistory = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_COMMENT_HISTORY_POLICY), "0");
