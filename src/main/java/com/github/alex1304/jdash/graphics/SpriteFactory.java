@@ -76,7 +76,7 @@ public class SpriteFactory {
 				subimg = rotate(subimg, -90);
 			}
 			// Reduce brightness of robot/spider back legs
-			if (name.contains("001D") && !name.contains("glow")) {
+			if (name.contains("001D") && !name.contains("_glow_")) {
 				subimg = reduceBrightness(subimg);
 			}
 			// Offset modifiers for robot legs
@@ -161,6 +161,10 @@ public class SpriteFactory {
 					if (id == 7) {
 						offX += 15;
 						offY += 13;
+					}
+					if (id == 15) {
+						offX += 5;
+						offY += 3;
 					}
 					if (name.contains("_2_")) {
 						switch (id) {

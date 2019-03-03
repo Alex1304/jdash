@@ -49,7 +49,7 @@ class GDUserPart1Request extends AbstractGDRequest<GDUserPart1> {
 		String strWave = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_ICON_WAVE), "0");
 		String strRobot = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_ICON_ROBOT), "0");
 		String strSpider = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_ICON_SPIDER), "0");
-		String strTrail = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_TRAIL), "0");
+		String strGlowOutline = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_GLOW_OUTLINE_2), "0");
 		String strDeathEffect = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_DEATH_EFFECT), "0");
 		String strColor1 = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_COLOR_1), "0");
 		String strColor2 = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_COLOR_2), "0");
@@ -79,7 +79,7 @@ class GDUserPart1Request extends AbstractGDRequest<GDUserPart1> {
 				Integer.parseInt(strWave),
 				Integer.parseInt(strRobot),
 				Integer.parseInt(strSpider),
-				Integer.parseInt(strTrail),
+				strGlowOutline.equals("1"),
 				Integer.parseInt(strDeathEffect),
 				strYoutube,
 				strTwitter,

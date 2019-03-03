@@ -13,9 +13,8 @@ public final class GDUser extends AbstractGDUser {
 	private final int waveIconId;
 	private final int robotIconId;
 	private final int spiderIconId;
-	private final int trailId;
 	private final int deathEffectId;
-	private final boolean hasIconGlowOutline;
+	private final boolean hasGlowOutline;
 	private final int mainIconId;
 	private final String youtube;
 	private final String twitter;
@@ -28,8 +27,8 @@ public final class GDUser extends AbstractGDUser {
 
 	private GDUser(long id, long accountId, String name, int stars, int demons, int diamonds, int secretCoins,
 			int userCoins, int creatorPoints, int globalRank, int cubeIconId, int shipIconId, int ufoIconId,
-			int ballIconId, int waveIconId, int robotIconId, int spiderIconId, int trailId, int deathEffectId,
-			boolean hasIconGlowOutline, int color1Id, int color2Id, int mainIconId, String youtube, String twitter,
+			int ballIconId, int waveIconId, int robotIconId, int spiderIconId, int deathEffectId,
+			boolean hasGlowOutline, int color1Id, int color2Id, int mainIconId, String youtube, String twitter,
 			String twitch, Role role, boolean hasFriendRequestsEnabled, PrivacySetting privateMessagePolicy,
 			PrivacySetting commmentHistoryPolicy, IconType mainIconType) {
 		super(id, secretCoins, userCoins, color1Id, color2Id, accountId, stars, creatorPoints, demons);
@@ -43,9 +42,8 @@ public final class GDUser extends AbstractGDUser {
 		this.waveIconId = waveIconId;
 		this.robotIconId = robotIconId;
 		this.spiderIconId = spiderIconId;
-		this.trailId = trailId;
 		this.deathEffectId = deathEffectId;
-		this.hasIconGlowOutline = hasIconGlowOutline;
+		this.hasGlowOutline = hasGlowOutline;
 		this.mainIconId = mainIconId;
 		this.youtube = Objects.requireNonNull(youtube);
 		this.twitter = Objects.requireNonNull(twitter);
@@ -64,7 +62,7 @@ public final class GDUser extends AbstractGDUser {
 		return new GDUser(part1.id, part1.accountId, part2.getName(), part1.stars, part1.demons, part1.getDiamonds(),
 				part1.secretCoins, part1.userCoins, part1.creatorPoints, part1.getGlobalRank(), part1.getCubeIconId(),
 				part1.getShipIconId(), part1.getUfoIconId(), part1.getBallIconId(), part1.getWaveIconId(),
-				part1.getRobotIconId(), part1.getSpiderIconId(), part1.getTrailId(), part1.getDeathEffectId(),
+				part1.getRobotIconId(), part1.getSpiderIconId(), part1.getDeathEffectId(),
 				part1.hasGlowOutline(), part1.color1Id, part1.color2Id, part2.getMainIconId(), part1.getYoutube(),
 				part1.getTwitter(), part1.getTwitch(), part1.getRole(), part1.hasFriendRequestsEnabled(),
 				part1.getPrivateMessagePolicy(), part1.getCommmentHistoryPolicy(), part2.getMainIconType());
@@ -134,16 +132,12 @@ public final class GDUser extends AbstractGDUser {
 		return spiderIconId;
 	}
 
-	public int getTrailId() {
-		return trailId;
-	}
-
 	public int getDeathEffectId() {
 		return deathEffectId;
 	}
 
-	public boolean hasIconGlowOutline() {
-		return hasIconGlowOutline;
+	public boolean hasGlowOutline() {
+		return hasGlowOutline;
 	}
 
 	public int getColor1Id() {
@@ -205,8 +199,8 @@ public final class GDUser extends AbstractGDUser {
 		return "GDUser [name=" + name + ", diamonds=" + diamonds + ", globalRank=" + globalRank + ", cubeIconId="
 				+ cubeIconId + ", shipIconId=" + shipIconId + ", ufoIconId=" + ufoIconId + ", ballIconId=" + ballIconId
 				+ ", waveIconId=" + waveIconId + ", robotIconId=" + robotIconId + ", spiderIconId=" + spiderIconId
-				+ ", trailId=" + trailId + ", deathEffectId=" + deathEffectId + ", hasIconGlowOutline="
-				+ hasIconGlowOutline + ", mainIconId=" + mainIconId + ", youtube=" + youtube + ", twitter=" + twitter
+				+ ", deathEffectId=" + deathEffectId + ", hasIconGlowOutline="
+				+ hasGlowOutline + ", mainIconId=" + mainIconId + ", youtube=" + youtube + ", twitter=" + twitter
 				+ ", twitch=" + twitch + ", role=" + role + ", hasFriendRequestsEnabled=" + hasFriendRequestsEnabled
 				+ ", privateMessagePolicy=" + privateMessagePolicy + ", commmentHistoryPolicy=" + commmentHistoryPolicy
 				+ ", mainIconType=" + mainIconType + ", secretCoins=" + secretCoins + ", userCoins=" + userCoins

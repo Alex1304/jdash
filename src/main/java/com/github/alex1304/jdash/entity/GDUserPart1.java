@@ -12,7 +12,7 @@ public final class GDUserPart1 extends AbstractGDUser {
 	private final int waveIconId;
 	private final int robotIconId;
 	private final int spiderIconId;
-	private final int trailId;
+	private final boolean hasGlowOutline;
 	private final int deathEffectId;
 	private final String youtube;
 	private final String twitter;
@@ -24,7 +24,7 @@ public final class GDUserPart1 extends AbstractGDUser {
 
 	public GDUserPart1(long id, int secretCoins, int userCoins, int color1Id, int color2Id, long accountId, int stars,
 			int creatorPoints, int demons, int diamonds, int globalRank, int cubeIconId, int shipIconId, int ufoIconId, int ballIconId, int waveIconId,
-			int robotIconId, int spiderIconId, int trailId, int deathEffectId, String youtube, String twitter, String twitch, Role role,
+			int robotIconId, int spiderIconId, boolean hasGlowOutline, int deathEffectId, String youtube, String twitter, String twitch, Role role,
 			boolean hasFriendRequestsEnabled, PrivacySetting privateMessagePolicy, PrivacySetting commmentHistoryPolicy) {
 		super(id, secretCoins, userCoins, color1Id, color2Id, accountId, stars, creatorPoints, demons);
 		this.diamonds = diamonds;
@@ -36,7 +36,7 @@ public final class GDUserPart1 extends AbstractGDUser {
 		this.waveIconId = waveIconId;
 		this.robotIconId = robotIconId;
 		this.spiderIconId = spiderIconId;
-		this.trailId = trailId;
+		this.hasGlowOutline = hasGlowOutline;
 		this.deathEffectId = deathEffectId;
 		this.youtube = Objects.requireNonNull(youtube);
 		this.twitter = Objects.requireNonNull(twitter);
@@ -83,8 +83,8 @@ public final class GDUserPart1 extends AbstractGDUser {
 		return spiderIconId;
 	}
 
-	public int getTrailId() {
-		return trailId;
+	public boolean hasGlowOutline() {
+		return hasGlowOutline;
 	}
 
 	public int getDeathEffectId() {
@@ -129,7 +129,7 @@ public final class GDUserPart1 extends AbstractGDUser {
 		return "GDUserPart1 [diamonds=" + diamonds + ", globalRank=" + globalRank + ", cubeIconId=" + cubeIconId
 				+ ", shipIconId=" + shipIconId + ", ufoIconId=" + ufoIconId + ", ballIconId=" + ballIconId
 				+ ", waveIconId=" + waveIconId + ", robotIconId=" + robotIconId + ", spiderIconId=" + spiderIconId
-				+ ", trailId=" + trailId + ", deathEffectId=" + deathEffectId + ", youtube=" + youtube + ", twitter="
+				+ ", trailId=" + hasGlowOutline + ", deathEffectId=" + deathEffectId + ", youtube=" + youtube + ", twitter="
 				+ twitter + ", twitch=" + twitch + ", role=" + role + ", hasFriendRequestsEnabled="
 				+ hasFriendRequestsEnabled + ", privateMessagePolicy=" + privateMessagePolicy
 				+ ", commmentHistoryPolicy=" + commmentHistoryPolicy + ", secretCoins=" + secretCoins + ", userCoins="

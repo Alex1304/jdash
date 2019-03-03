@@ -70,7 +70,7 @@ public final class Indexes {
 	public static final int USER_ICON_UFO = 24;
 	public static final int USER_ICON_WAVE = 25;
 	public static final int USER_ICON_ROBOT = 26;
-	public static final int USER_TRAIL = 28;
+	public static final int USER_GLOW_OUTLINE_2 = 28;
 	public static final int USER_GLOBAL_RANK = 30;
 	public static final int USER_ICON_SPIDER = 43;
 	public static final int USER_TWITTER = 44;

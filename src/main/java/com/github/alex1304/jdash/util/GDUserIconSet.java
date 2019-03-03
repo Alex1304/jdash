@@ -27,7 +27,7 @@ public class GDUserIconSet {
 	 * @return the requested icon as a {@link BufferedImage}
 	 */
 	public BufferedImage generateIcon(IconType iconType) {
-		return factory.makeSprite(iconType, Math.max(1, iconType.idForUser(user)), user.getColor1Id(), user.getColor2Id(), user.hasIconGlowOutline());
+		return factory.makeSprite(iconType, Math.max(1, iconType.idForUser(user)), user.getColor1Id(), user.getColor2Id(), user.hasGlowOutline());
 	}
 	
 	/**
@@ -54,12 +54,12 @@ public class GDUserIconSet {
 			}
 		}
 		return user.getColor1Id() == o.user.getColor1Id() && user.getColor2Id() == o.user.getColor2Id()
-				&& user.hasIconGlowOutline() == o.user.hasIconGlowOutline();
+				&& user.hasGlowOutline() == o.user.hasGlowOutline();
 	}
 	
 	@Override
 	public int hashCode() {
-		int hash = user.getColor1Id() ^ user.getColor2Id() ^ Boolean.hashCode(user.hasIconGlowOutline());
+		int hash = user.getColor1Id() ^ user.getColor2Id() ^ Boolean.hashCode(user.hasGlowOutline());
 		for (IconType t : IconType.values()) {
 			hash ^= t.idForUser(user);
 		}
