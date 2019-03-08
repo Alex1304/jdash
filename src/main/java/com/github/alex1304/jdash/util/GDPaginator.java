@@ -79,7 +79,7 @@ public final class GDPaginator<E> implements Iterable<E> {
 
 	/**
 	 * Gets the total size. The total size is defined as the sum of the sizes of all
-	 * pages.
+	 * pages. Note that for some reason, this may return zero if this is the last page.
 	 * 
 	 * @return the total size
 	 */

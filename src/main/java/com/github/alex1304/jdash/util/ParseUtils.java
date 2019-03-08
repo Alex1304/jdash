@@ -6,6 +6,9 @@ import java.util.Map;
 
 import com.github.alex1304.jdash.entity.GDSong;
 
+import reactor.util.function.Tuple3;
+import reactor.util.function.Tuples;
+
 public final class ParseUtils {
 	private ParseUtils() {
 	}
@@ -99,15 +102,13 @@ public final class ParseUtils {
 	 * @param raw the String to parse
 	 * @return an int array of length 3 containing the three values of the triplet.
 	 */
-	public static int[] extractTriplet(String raw) {
-		if (!raw.matches("[0-9]+:[0-9]+:[0-9]+")) {
+	public static Tuple3<Integer, Integer, Integer> extractPageInfo(String raw) {
+		if (!raw.matches("[0-9]*:[0-9]*:[0-9]*")) {
 			throw new IllegalArgumentException("Malformed page info string");
 		}
 		String[] pageInfo = raw.split(":");
-		return new int[] { 
-			Integer.parseInt(pageInfo[0]),
-			Integer.parseInt(pageInfo[1]),
-			Integer.parseInt(pageInfo[2])
-		};
+		return Tuples.of(Integer.parseInt(Utils.defaultStringIfEmptyOrNull(pageInfo[0], "0")),
+				Integer.parseInt(Utils.defaultStringIfEmptyOrNull(pageInfo[1], "0")),
+				Integer.parseInt(Utils.defaultStringIfEmptyOrNull(pageInfo[2], "0")));
 	}
 }

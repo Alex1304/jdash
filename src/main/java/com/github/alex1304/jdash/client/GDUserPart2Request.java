@@ -12,6 +12,8 @@ import com.github.alex1304.jdash.util.ParseUtils;
 import com.github.alex1304.jdash.util.Routes;
 import com.github.alex1304.jdash.util.Utils;
 
+import reactor.util.function.Tuple3;
+
 class GDUserPart2Request extends AbstractGDRequest<GDPaginator<GDUserPart2>> {
 
 	private final String query;
@@ -69,8 +71,8 @@ class GDUserPart2Request extends AbstractGDRequest<GDPaginator<GDUserPart2>> {
 					Integer.parseInt(strMainIconId),
 					IconType.values()[Integer.parseInt(strIconType)]));
 		}
-		int[] pageInfo = ParseUtils.extractTriplet(split1[1]);
-		return new GDPaginator<>(list, page, pageInfo[2], pageInfo[0], newPage ->
+		Tuple3<Integer, Integer, Integer> pageInfo = ParseUtils.extractPageInfo(split1[1]);
+		return new GDPaginator<>(list, page, pageInfo.getT3(), pageInfo.getT1(), newPage ->
 				client.fetch(new GDUserPart2Request(client, query, newPage)));
 	}
 	

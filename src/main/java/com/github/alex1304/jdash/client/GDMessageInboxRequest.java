@@ -12,6 +12,8 @@ import com.github.alex1304.jdash.util.ParseUtils;
 import com.github.alex1304.jdash.util.Routes;
 import com.github.alex1304.jdash.util.Utils;
 
+import reactor.util.function.Tuple3;
+
 public class GDMessageInboxRequest extends AbstractAuthenticatedGDRequest<GDPaginator<GDMessage>> {
 	
 	private final int page;
@@ -48,8 +50,8 @@ public class GDMessageInboxRequest extends AbstractAuthenticatedGDRequest<GDPagi
 					Utils.defaultStringIfEmptyOrNull(data.get(Indexes.MESSAGE_IS_READ), "0").equals("1"),
 					Utils.defaultStringIfEmptyOrNull(data.get(Indexes.MESSAGE_TIMESTAMP), "0")));
 		}
-		int[] pageInfo = ParseUtils.extractTriplet(split1[1]);
-		return new GDPaginator<>(messageList, page, pageInfo[2], pageInfo[0], newPage ->
+		Tuple3<Integer, Integer, Integer>  pageInfo = ParseUtils.extractPageInfo(split1[1]);
+		return new GDPaginator<>(messageList, page, pageInfo.getT3(), pageInfo.getT1(), newPage ->
 				client.fetch(new GDMessageInboxRequest(client, newPage)));
 	}
 	

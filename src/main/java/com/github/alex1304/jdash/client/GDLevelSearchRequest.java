@@ -18,6 +18,7 @@ import com.github.alex1304.jdash.util.LevelSearchFilters;
 import com.github.alex1304.jdash.util.LevelSearchFilters.Toggle;
 
 import reactor.core.publisher.Mono;
+import reactor.util.function.Tuple3;
 
 import com.github.alex1304.jdash.util.LevelSearchStrategy;
 import com.github.alex1304.jdash.util.ParseUtils;
@@ -151,8 +152,8 @@ class GDLevelSearchRequest extends AbstractGDRequest<GDPaginator<GDLevel>> {
 					() -> client.fetch(new GDLevelDataRequest(client, levelId))
 			));
 		}
-		int[] pageInfo = ParseUtils.extractTriplet(split1[3]);
-		return new GDPaginator<>(list, page, pageInfo[2], pageInfo[0], newPage ->
+		Tuple3<Integer, Integer, Integer> pageInfo = ParseUtils.extractPageInfo(split1[3]);
+		return new GDPaginator<>(list, page, pageInfo.getT3(), pageInfo.getT1(), newPage ->
 				client.fetch(new GDLevelSearchRequest(client, newPage, query, filters, strategy, followed)));
 	}
 	
