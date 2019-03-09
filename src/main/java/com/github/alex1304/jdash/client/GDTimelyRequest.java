@@ -50,4 +50,9 @@ public class GDTimelyRequest extends AbstractGDRequest<GDTimelyLevel> {
 	public int hashCode() {
 		return type.hashCode();
 	}
+	
+	@Override
+	public boolean cacheable() {
+		return false;
+	}
 }

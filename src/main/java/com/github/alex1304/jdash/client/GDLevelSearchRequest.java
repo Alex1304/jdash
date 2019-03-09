@@ -170,4 +170,9 @@ class GDLevelSearchRequest extends AbstractGDRequest<GDPaginator<GDLevel>> {
 	public int hashCode() {
 		return page ^ query.hashCode() ^ filters.hashCode() ^ strategy.hashCode() ^ followed.hashCode();
 	}
+	
+	@Override
+	public boolean cacheable() {
+		return false;
+	}
 }

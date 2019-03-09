@@ -68,4 +68,9 @@ public class GDMessageInboxRequest extends AbstractAuthenticatedGDRequest<GDPagi
 	public int hashCode() {
 		return Long.hashCode(client.getAccountID()) ^ page;
 	}
+	
+	@Override
+	public boolean cacheable() {
+		return false;
+	}
 }
