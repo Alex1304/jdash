@@ -2,14 +2,14 @@ package com.github.alex1304.jdash.entity;
 
 import java.util.Objects;
 
-public final class GDUserPart2 extends AbstractGDUser {
+public final class GDUserSearchData extends AbstractGDUser {
 	
 	private final String name;
 	private final boolean hasGlowOutline;
 	private final int mainIconId;
 	private final IconType mainIconType;
 
-	public GDUserPart2(long id, int secretCoins, int userCoins, int color1Id, int color2Id, long accountId, int stars,
+	public GDUserSearchData(long id, int secretCoins, int userCoins, int color1Id, int color2Id, long accountId, int stars,
 			int creatorPoints, int demons, String name, boolean hasGlowOutline, int mainIconId, IconType mainIconType) {
 		super(id, secretCoins, userCoins, color1Id, color2Id, accountId, stars, creatorPoints, demons);
 		this.name = Objects.requireNonNull(name);
@@ -36,7 +36,7 @@ public final class GDUserPart2 extends AbstractGDUser {
 
 	@Override
 	public boolean equals(Object obj) {
-		return obj instanceof GDUserPart2 && super.equals(obj);
+		return obj instanceof GDUserSearchData && super.equals(obj);
 	}
 
 	@Override

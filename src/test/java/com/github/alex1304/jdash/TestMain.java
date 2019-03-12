@@ -145,7 +145,6 @@ public class TestMain {
 			.subscribe();
 		
 		Mono.delay(Duration.ofSeconds(8)).block();
-		System.out.println("Requests made: " + client.getTotalNumberOfRequestsMade());
 		System.out.println("End program");
 	}
 	

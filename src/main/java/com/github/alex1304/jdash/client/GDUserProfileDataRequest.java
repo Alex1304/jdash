@@ -2,7 +2,7 @@ package com.github.alex1304.jdash.client;
 
 import java.util.Map;
 
-import com.github.alex1304.jdash.entity.GDUserPart1;
+import com.github.alex1304.jdash.entity.GDUserProfileData;
 import com.github.alex1304.jdash.entity.PrivacySetting;
 import com.github.alex1304.jdash.entity.Role;
 import com.github.alex1304.jdash.exception.GDClientException;
@@ -11,11 +11,11 @@ import com.github.alex1304.jdash.util.ParseUtils;
 import com.github.alex1304.jdash.util.Routes;
 import com.github.alex1304.jdash.util.Utils;
 
-class GDUserPart1Request extends AbstractGDRequest<GDUserPart1> {
+class GDUserProfileDataRequest extends AbstractGDRequest<GDUserProfileData> {
 	
 	private final long targetAccountID;
 
-	GDUserPart1Request(AbstractGDClient client, long targetAccountID) {
+	GDUserProfileDataRequest(AbstractGDClient client, long targetAccountID) {
 		super(client);
 		this.targetAccountID = targetAccountID;
 	}
@@ -31,7 +31,7 @@ class GDUserPart1Request extends AbstractGDRequest<GDUserPart1> {
 	}
 
 	@Override
-	GDUserPart1 parseResponse0(String response) throws GDClientException {
+	GDUserProfileData parseResponse0(String response) throws GDClientException {
 		Map<Integer, String> data = ParseUtils.splitToMap(response, ":");
 		String strPlayerID = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_PLAYER_ID), "0");
 		String strAccountID = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_ACCOUNT_ID), "0");
@@ -60,7 +60,7 @@ class GDUserPart1Request extends AbstractGDRequest<GDUserPart1> {
 		String strFriendRequest = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_FRIEND_REQUEST_POLICY), "0");
 		String strPrivateMessage = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_PRIVATE_MESSAGE_POLICY), "0");
 		String strCommentHistory = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_COMMENT_HISTORY_POLICY), "0");
-		return new GDUserPart1(
+		return new GDUserProfileData(
 				Long.parseLong(strPlayerID),
 				Integer.parseInt(strSecretCoins),
 				Integer.parseInt(strUserCoins),
@@ -92,7 +92,7 @@ class GDUserPart1Request extends AbstractGDRequest<GDUserPart1> {
 	
 	@Override
 	public boolean equals(Object obj) {
-		return obj instanceof GDUserPart1Request && ((GDUserPart1Request) obj).targetAccountID == targetAccountID;
+		return obj instanceof GDUserProfileDataRequest && ((GDUserProfileDataRequest) obj).targetAccountID == targetAccountID;
 	}
 	
 	@Override

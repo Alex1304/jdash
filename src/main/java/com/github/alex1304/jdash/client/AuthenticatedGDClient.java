@@ -53,8 +53,8 @@ public final class AuthenticatedGDClient extends AbstractGDClient {
 	private final String passwordEncoded;
 
 	AuthenticatedGDClient(long accountID, long playerID, String username, String password, String host,
-			long cacheLifetime) {
-		super(host, cacheLifetime);
+			long cacheTtl, int maxConnections) {
+		super(host, cacheTtl, maxConnections);
 		this.accountID = accountID;
 		this.playerID = playerID;
 		this.username = username;

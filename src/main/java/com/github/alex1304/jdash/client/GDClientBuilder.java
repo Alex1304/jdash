@@ -11,18 +11,21 @@ import com.github.alex1304.jdash.util.Routes;
  * Builds a Geometry Dash client step by step.
  */
 public final class GDClientBuilder {
-	public static final long DEFAULT_CACHE_LIFETIME = 900_000;
+	public static final long DEFAULT_CACHE_TTL = 900_000;
+	public static final int DEFAULT_MAX_CONNECTIONS = Runtime.getRuntime().availableProcessors();
 
 	private Optional<String> host;
-	private Optional<Long> cacheLifetime;
+	private Optional<Long> cacheTtl;
+	private Optional<Integer> maxConnections;
 
-	private GDClientBuilder(Optional<String> host, Optional<Long> cacheLifetime) {
+	private GDClientBuilder(Optional<String> host, Optional<Long> cacheTtl, Optional<Integer> maxConnections) {
 		this.host = host;
-		this.cacheLifetime = cacheLifetime;
+		this.cacheTtl = cacheTtl;
+		this.maxConnections = maxConnections;
 	}
 
 	public static GDClientBuilder create() {
-		return new GDClientBuilder(Optional.empty(), Optional.empty());
+		return new GDClientBuilder(Optional.empty(), Optional.empty(), Optional.empty());
 	}
 
 	/**
@@ -47,15 +50,30 @@ public final class GDClientBuilder {
 	 * Specifies how long a request should stay in cache. Setting 0 as value
 	 * disables the cache.
 	 * 
-	 * @param time the time to set for the cache lifetime
+	 * @param time the time to set for the cache ttl
 	 * @return this (for method chaining purposes)
 	 * @throws IllegalArgumentException if time is negative
 	 */
-	public GDClientBuilder withCacheLifetime(long time) {
+	public GDClientBuilder withCacheTtl(long time) {
 		if (time < 0) {
 			throw new IllegalArgumentException("time cannot be negative");
 		}
-		this.cacheLifetime = Optional.of(time);
+		this.cacheTtl = Optional.of(time);
+		return this;
+	}
+
+	/**
+	 * Specifies how many connections to the GD servers can be simultaneously open.
+	 * 
+	 * @param maxConnections the number of max connections
+	 * @return this (for method chaining purposes)
+	 * @throws IllegalArgumentException if maxConnections is &lt; 1
+	 */
+	public GDClientBuilder withMaxConnections(int maxConnections) {
+		if (maxConnections < 1) {
+			throw new IllegalArgumentException("maxConnections must be >= 1");
+		}
+		this.maxConnections = Optional.of(maxConnections);
 		return this;
 	}
 
@@ -65,14 +83,22 @@ public final class GDClientBuilder {
 	 * @return {@link AnonymousGDClient}
 	 */
 	public AnonymousGDClient buildAnonymous() {
-		return new AnonymousGDClient(host.orElse(Routes.BASE_URL), cacheLifetime.orElse(DEFAULT_CACHE_LIFETIME));
+		return new AnonymousGDClient(host.orElse(Routes.BASE_URL), cacheTtl.orElse(DEFAULT_CACHE_TTL), maxConnections.orElse(DEFAULT_MAX_CONNECTIONS));
 	}
 	
+	/**
+	 * Builds a GD client authenticated with a username and a password.
+	 * 
+	 * @param username the username
+	 * @param password the password
+	 * @return the authenticated GD client
+	 * @throws GDLoginFailedException if the authentication fails
+	 */
 	public AuthenticatedGDClient buildAuthenticated(String username, String password) throws GDLoginFailedException {
 		AnonymousGDClient client = buildAnonymous();
 		try {
 			long[] details = client.fetch(new GDLoginRequest(client, username, password, "jdash-client")).block();
-			return new AuthenticatedGDClient(details[0], details[1], username, password, client.getHost(), client.getCacheLifetime());
+			return new AuthenticatedGDClient(details[0], details[1], username, password, client.getHost(), client.getCacheTtl(), client.getMaxConnections());
 		} catch (GDClientException e) {
 			throw new GDLoginFailedException(e);
 		}

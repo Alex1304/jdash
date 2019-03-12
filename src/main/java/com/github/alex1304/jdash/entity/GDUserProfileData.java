@@ -2,7 +2,7 @@ package com.github.alex1304.jdash.entity;
 
 import java.util.Objects;
 
-public final class GDUserPart1 extends AbstractGDUser {
+public final class GDUserProfileData extends AbstractGDUser {
 	private final int diamonds;
 	private final int globalRank;
 	private final int cubeIconId;
@@ -22,7 +22,7 @@ public final class GDUserPart1 extends AbstractGDUser {
 	private final PrivacySetting privateMessagePolicy;
 	private final PrivacySetting commmentHistoryPolicy;
 
-	public GDUserPart1(long id, int secretCoins, int userCoins, int color1Id, int color2Id, long accountId, int stars,
+	public GDUserProfileData(long id, int secretCoins, int userCoins, int color1Id, int color2Id, long accountId, int stars,
 			int creatorPoints, int demons, int diamonds, int globalRank, int cubeIconId, int shipIconId, int ufoIconId, int ballIconId, int waveIconId,
 			int robotIconId, int spiderIconId, boolean hasGlowOutline, int deathEffectId, String youtube, String twitter, String twitch, Role role,
 			boolean hasFriendRequestsEnabled, PrivacySetting privateMessagePolicy, PrivacySetting commmentHistoryPolicy) {
@@ -121,7 +121,7 @@ public final class GDUserPart1 extends AbstractGDUser {
 	
 	@Override
 	public boolean equals(Object obj) {
-		return obj instanceof GDUserPart1 && super.equals(obj);
+		return obj instanceof GDUserProfileData && super.equals(obj);
 	}
 
 	@Override

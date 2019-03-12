@@ -55,7 +55,7 @@ public final class GDUser extends AbstractGDUser {
 		this.mainIconType = Objects.requireNonNull(mainIconType);
 	}
 	
-	public static GDUser aggregate(GDUserPart1 part1, GDUserPart2 part2) {
+	public static GDUser aggregate(GDUserProfileData part1, GDUserSearchData part2) {
 		if (part1.id != part2.id) {
 			throw new IllegalArgumentException("Parts don't match");
 		}

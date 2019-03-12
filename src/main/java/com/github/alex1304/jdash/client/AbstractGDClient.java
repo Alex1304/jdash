@@ -1,5 +1,6 @@
 package com.github.alex1304.jdash.client;
 
+import java.time.Duration;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,6 +12,8 @@ import com.github.alex1304.jdash.entity.GDLevel;
 import com.github.alex1304.jdash.entity.GDTimelyLevel;
 import com.github.alex1304.jdash.entity.GDTimelyLevel.TimelyType;
 import com.github.alex1304.jdash.entity.GDUser;
+import com.github.alex1304.jdash.entity.GDUserProfileData;
+import com.github.alex1304.jdash.entity.GDUserSearchData;
 import com.github.alex1304.jdash.exception.BadResponseException;
 import com.github.alex1304.jdash.exception.CorruptedResponseContentException;
 import com.github.alex1304.jdash.exception.GDClientException;
@@ -21,7 +24,6 @@ import com.github.alex1304.jdash.util.LevelSearchStrategy;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
 import reactor.netty.ByteBufFlux;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.http.client.PrematureCloseException;
@@ -31,23 +33,23 @@ abstract class AbstractGDClient {
 	private static final String GAME_VERSION = "21";
 	private static final String BINARY_VERSION = "34";
 	private static final String SECRET = "Wmfd2893gb7";
-	private static final int CLEANUP_CACHE_EVERY = 50;
 
 	private String host;
+	private int maxConnections;
 	private final HttpClient client;
 	private final Map<GDRequest<?>, Object> cache;
 	private final Map<GDRequest<?>, Long> cacheTime;
-	private final long cacheLifetime;
-	private long totalNumberOfRequestsMade;
+	private final long cacheTtl;
 
-	AbstractGDClient(String host, long cacheLifetime) {
+	AbstractGDClient(String host, long cacheTtl, int maxConnections) {
 		this.host = host;
-		this.client = HttpClient.create(ConnectionProvider.elastic("gd-client-conn-pool"))
+		this.maxConnections = maxConnections;
+		this.client = HttpClient.create(ConnectionProvider.fixed("gd-connection-pool", maxConnections))
 				.headers(h -> h.add("Content-Type", "application/x-www-form-urlencoded"));
 		this.cache = new ConcurrentHashMap<>();
 		this.cacheTime = new ConcurrentHashMap<>();
-		this.cacheLifetime = cacheLifetime;
-		this.totalNumberOfRequestsMade = 0;
+		this.cacheTtl = cacheTtl;
+		cleanUpExpiredCacheEntries();
 	}
 
 	/**
@@ -63,7 +65,7 @@ abstract class AbstractGDClient {
 		if (request.cacheable()) {
 			@SuppressWarnings("unchecked")
 			E cached = (E) cache.get(request);
-			if (cached != null && System.currentTimeMillis() - cacheTime.getOrDefault(request, 0L) <= cacheLifetime) {
+			if (cached != null) {
 				return Mono.just(cached);
 			}
 		}
@@ -88,7 +90,6 @@ abstract class AbstractGDClient {
 						return content.asString().defaultIfEmpty("");
 					}
 				})
-				.publishOn(Schedulers.elastic())
 				.retry(PrematureCloseException.class::isInstance)
 				.flatMap(responseStr -> {
 					try {
@@ -99,10 +100,6 @@ abstract class AbstractGDClient {
 						if (request.cacheable()) {
 							cache.put(request, entity);
 							cacheTime.put(request, System.currentTimeMillis());
-							totalNumberOfRequestsMade++;
-							if (totalNumberOfRequestsMade % CLEANUP_CACHE_EVERY == 0) {
-								cleanUpExpiredCacheEntries();
-							}
 						}
 						return Mono.just(entity);
 					} catch (GDClientException e) {
@@ -116,14 +113,17 @@ abstract class AbstractGDClient {
 	abstract void putExtraParams(Map<String, String> params);
 
 	private void cleanUpExpiredCacheEntries() {
-		Mono.just(System.currentTimeMillis()).doOnNext(now -> {
-			new HashMap<>(cacheTime).forEach((k, v) -> {
-				if (now - v < cacheLifetime) {
-					cacheTime.remove(k);
-					cache.remove(k);
-				}
-			});
-		}).subscribe();
+		Flux.interval(Duration.ofMillis(cacheTtl))
+				.map(__ -> System.currentTimeMillis())
+				.doOnNext(now -> {
+					new HashMap<>(cacheTime).forEach((k, v) -> {
+						if (now - v < cacheTtl) {
+							cacheTime.remove(k);
+							cache.remove(k);
+						}
+					});
+				})
+				.subscribe();
 	}
 
 	/**
@@ -138,8 +138,8 @@ abstract class AbstractGDClient {
 		if (accountId < 1) {
 			throw new IllegalArgumentException("Account ID must be greater than 0");
 		}
-		return fetch(new GDUserPart1Request(this, accountId))
-				.flatMap(u1 -> fetch(new GDUserPart2Request(this, "" + u1.getId(), 0))
+		return fetch(new GDUserProfileDataRequest(this, accountId))
+				.flatMap(u1 -> fetch(new GDUserSearchDataRequest(this, "" + u1.getId(), 0))
 						.map(u2l -> GDUser.aggregate(u1, u2l.asList().get(0))));
 	}
 
@@ -151,8 +151,8 @@ abstract class AbstractGDClient {
 	 */
 	public Mono<GDUser> searchUser(String searchQuery) {
 		Objects.requireNonNull(searchQuery);
-		return fetch(new GDUserPart2Request(this, searchQuery, 0)).map(paginator -> paginator.asList().get(0))
-				.flatMap(u2 -> fetch(new GDUserPart1Request(this, u2.getAccountId()))
+		return fetch(new GDUserSearchDataRequest(this, searchQuery, 0)).map(paginator -> paginator.asList().get(0))
+				.flatMap(u2 -> fetch(new GDUserProfileDataRequest(this, u2.getAccountId()))
 						.map(u1 -> GDUser.aggregate(u1, u2)));
 	}
 
@@ -360,9 +360,33 @@ abstract class AbstractGDClient {
 	public Mono<GDPaginator<GDLevel>> browseFollowedLevels(LevelSearchFilters filters, Collection<? extends GDUser> followed, int page) {
 		return fetch(new GDLevelSearchRequest(this, filters, followed, page));
 	}
+
+	/**
+	 * Gets data from a user provided by their profile. Unlike
+	 * {@link #getUserByAccountId(long)}, this doesn't include some data that is
+	 * only obtainable by using {@link #getUserDataFromSearch(String)}
+	 * 
+	 * @param accountId the account ID of the user to fetch
+	 * @return a Mono emitting the data found
+	 */
+	public Mono<GDUserProfileData> getUserDataFromProfile(long accountId) {
+		return fetch(new GDUserProfileDataRequest(this, accountId));
+	}
 	
 	/**
-	 * Gets the host
+	 * Gets data from a user provided by the Search user feature.
+	 * The data gotten from there might be inaccurate and severely outdated, that's why it is preferred to use 
+	 * {@link #getUserDataFromProfile(long)} in order to fetch stats.
+	 * 
+	 * @param searchQuery the search query
+	 * @return a Mono emitting the data found
+	 */
+	public Mono<GDUserSearchData> getUserDataFromSearch(String searchQuery) {
+		return fetch(new GDUserSearchDataRequest(this, searchQuery, 0)).map(paginator -> paginator.asList().get(0));
+	}
+	
+	/**
+	 * Gets the host.
 	 *
 	 * @return String
 	 */
@@ -371,12 +395,21 @@ abstract class AbstractGDClient {
 	}
 	
 	/**
-	 * Gets the cache lifetime in milliseconds
+	 * Gets the time to live of a cache entry in milliseconds.
 	 * 
 	 * @return long
 	 */
-	public long getCacheLifetime() {
-		return cacheLifetime;
+	public long getCacheTtl() {
+		return cacheTtl;
+	}
+	
+	/**
+	 * Gets the maximum number of simultaneous connections.
+	 * 
+	 * @return int
+	 */
+	public int getMaxConnections() {
+		return maxConnections;
 	}
 
 	/**
@@ -385,22 +418,5 @@ abstract class AbstractGDClient {
 	public void clearCache() {
 		cache.clear();
 		cacheTime.clear();
-	}
-
-	/**
-	 * Gets the total number of requests that this client has made to Geometry Dash
-	 * servers since the creation of this client. This value is not guaranteed to
-	 * increase everytime a method such as {@link #getUserByAccountId(long)} is
-	 * called, because sometimes the client caches the responses in order to reduce
-	 * the number of requests and improve performance. For example, 50 successive
-	 * calls of {@link #getUserByAccountId(long)} with the same argument is likely
-	 * to increase this number by only 1 or 2. That's why the returned value should
-	 * only be used for performance monitoring purposes.
-	 * 
-	 * @return the total number of requests sent to GD servers during the lifetime
-	 *         of this client.
-	 */
-	public long getTotalNumberOfRequestsMade() {
-		return totalNumberOfRequestsMade;
 	}
 }
