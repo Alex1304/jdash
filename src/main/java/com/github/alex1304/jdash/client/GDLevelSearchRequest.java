@@ -12,7 +12,6 @@ import com.github.alex1304.jdash.entity.GDSong;
 import com.github.alex1304.jdash.entity.GDUser;
 import com.github.alex1304.jdash.entity.Length;
 import com.github.alex1304.jdash.exception.GDClientException;
-import com.github.alex1304.jdash.exception.MissingAccessException;
 import com.github.alex1304.jdash.util.GDPaginator;
 import com.github.alex1304.jdash.util.Indexes;
 import com.github.alex1304.jdash.util.LevelSearchFilters;
@@ -151,8 +150,7 @@ class GDLevelSearchRequest extends AbstractGDRequest<GDPaginator<GDLevel>> {
 					creatorName,
 					() -> client.fetch(new GDLevelDataRequest(client, levelId)),
 					() -> client.fetch(new GDLevelSearchRequest(client, "" + levelId, LevelSearchFilters.create(), 0))
-							.map(__ -> false)
-							.onErrorReturn(MissingAccessException.class, true)
+							.map(paginator -> paginator.asList().get(0))
 			));
 		}
 		Tuple3<Integer, Integer, Integer> pageInfo = ParseUtils.extractPageInfo(split1[3]);

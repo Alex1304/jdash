@@ -7,7 +7,6 @@ import com.github.alex1304.jdash.entity.GDLevelData;
 import com.github.alex1304.jdash.entity.GDSong;
 import com.github.alex1304.jdash.entity.Length;
 import com.github.alex1304.jdash.exception.GDClientException;
-import com.github.alex1304.jdash.exception.MissingAccessException;
 import com.github.alex1304.jdash.util.Indexes;
 import com.github.alex1304.jdash.util.LevelSearchFilters;
 import com.github.alex1304.jdash.util.ParseUtils;
@@ -88,8 +87,7 @@ class GDLevelSingleRequest extends AbstractGDRequest<GDLevel> {
 						Utils.defaultStringIfEmptyOrNull(dataMap.get(Indexes.LEVEL_LAST_UPDATED_TIMESTAMP), "NA"),
 						Utils.b64DecodeToBytes(Utils.defaultStringIfEmptyOrNull(dataMap.get(Indexes.LEVEL_DATA), "")))),
 				() -> client.fetch(new GDLevelSearchRequest(client, "" + levelId, LevelSearchFilters.create(), 0))
-						.map(__ -> false)
-						.onErrorReturn(MissingAccessException.class, true));
+						.map(paginator -> paginator.asList().get(0)));
 	}
 	
 	@Override
