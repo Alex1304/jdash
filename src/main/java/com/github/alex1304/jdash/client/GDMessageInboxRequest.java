@@ -14,7 +14,7 @@ import com.github.alex1304.jdash.util.Utils;
 
 import reactor.util.function.Tuple3;
 
-public class GDMessageInboxRequest extends AbstractAuthenticatedGDRequest<GDPaginator<GDMessage>> {
+class GDMessageInboxRequest extends AbstractAuthenticatedGDRequest<GDPaginator<GDMessage>> {
 	
 	private final int page;
 

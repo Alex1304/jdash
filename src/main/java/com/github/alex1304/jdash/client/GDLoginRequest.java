@@ -6,13 +6,13 @@ import java.util.Objects;
 import com.github.alex1304.jdash.exception.GDClientException;
 import com.github.alex1304.jdash.util.Routes;
 
-public class GDLoginRequest extends AbstractGDRequest<long[]> {
+class GDLoginRequest extends AbstractGDRequest<long[]> {
 
 	private final String username;
 	private final String password;
 	private final String udid;
 	
-	public GDLoginRequest(AbstractGDClient client, String username, String password, String udid) {
+	GDLoginRequest(AbstractGDClient client, String username, String password, String udid) {
 		super(client);
 		this.username = Objects.requireNonNull(username);
 		this.password = Objects.requireNonNull(password);

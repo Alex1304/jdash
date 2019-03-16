@@ -12,18 +12,18 @@ import com.github.alex1304.jdash.entity.GDSong;
 import com.github.alex1304.jdash.entity.GDUser;
 import com.github.alex1304.jdash.entity.Length;
 import com.github.alex1304.jdash.exception.GDClientException;
+import com.github.alex1304.jdash.exception.MissingAccessException;
 import com.github.alex1304.jdash.util.GDPaginator;
 import com.github.alex1304.jdash.util.Indexes;
 import com.github.alex1304.jdash.util.LevelSearchFilters;
 import com.github.alex1304.jdash.util.LevelSearchFilters.Toggle;
-
-import reactor.core.publisher.Mono;
-import reactor.util.function.Tuple3;
-
 import com.github.alex1304.jdash.util.LevelSearchStrategy;
 import com.github.alex1304.jdash.util.ParseUtils;
 import com.github.alex1304.jdash.util.Routes;
 import com.github.alex1304.jdash.util.Utils;
+
+import reactor.core.publisher.Mono;
+import reactor.util.function.Tuple3;
 
 class GDLevelSearchRequest extends AbstractGDRequest<GDPaginator<GDLevel>> {
 	
@@ -149,7 +149,10 @@ class GDLevelSearchRequest extends AbstractGDRequest<GDPaginator<GDLevel>> {
 					Long.parseLong(Utils.defaultStringIfEmptyOrNull(lmap.get(Indexes.LEVEL_ORIGINAL), "0")),
 					Integer.parseInt(Utils.defaultStringIfEmptyOrNull(lmap.get(Indexes.LEVEL_REQUESTED_STARS), "0")),
 					creatorName,
-					() -> client.fetch(new GDLevelDataRequest(client, levelId))
+					() -> client.fetch(new GDLevelDataRequest(client, levelId)),
+					() -> client.fetch(new GDLevelSearchRequest(client, "" + levelId, LevelSearchFilters.create(), 0))
+							.map(__ -> false)
+							.onErrorReturn(MissingAccessException.class, true)
 			));
 		}
 		Tuple3<Integer, Integer, Integer> pageInfo = ParseUtils.extractPageInfo(split1[3]);

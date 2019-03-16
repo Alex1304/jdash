@@ -9,11 +9,11 @@ import com.github.alex1304.jdash.exception.GDClientException;
 import com.github.alex1304.jdash.exception.NoTimelyAvailableException;
 import com.github.alex1304.jdash.util.Routes;
 
-public class GDTimelyRequest extends AbstractGDRequest<GDTimelyLevel> {
+class GDTimelyRequest extends AbstractGDRequest<GDTimelyLevel> {
 	
 	private final TimelyType type;
 
-	public GDTimelyRequest(AbstractGDClient client, TimelyType type) {
+	GDTimelyRequest(AbstractGDClient client, TimelyType type) {
 		super(client);
 		this.type = Objects.requireNonNull(type);
 	}

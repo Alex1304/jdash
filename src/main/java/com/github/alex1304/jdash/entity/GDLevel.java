@@ -32,12 +32,13 @@ public final class GDLevel extends AbstractGDEntity {
 	private final long originalLevelID;
 	private final int requestedStars;
 	private final Supplier<Mono<GDLevelData>> downloader;
+	private final Supplier<Mono<Boolean>> isDeleted;
 
 	public GDLevel(long id, String name, long creatorID, String description, Difficulty difficulty,
 			DemonDifficulty demonDifficulty, int stars, int featuredScore, boolean isEpic, int downloads, int likes,
 			Length length, Supplier<Mono<GDSong>> song, int coinCount, boolean hasCoinsVerified, int levelVersion, int gameVersion,
 			int objectCount, boolean isDemon, boolean isAuto, long originalLevelID, int requestedStars,
-			String creatorName, Supplier<Mono<GDLevelData>> downloader) {
+			String creatorName, Supplier<Mono<GDLevelData>> downloader, Supplier<Mono<Boolean>> isDeleted) {
 		super(id);
 		this.name = Objects.requireNonNull(name);
 		this.creatorName = Objects.requireNonNull(creatorName);
@@ -62,6 +63,7 @@ public final class GDLevel extends AbstractGDEntity {
 		this.originalLevelID = originalLevelID;
 		this.requestedStars = requestedStars;
 		this.downloader = Objects.requireNonNull(downloader);
+		this.isDeleted = Objects.requireNonNull(isDeleted);
 	}
 
 	public String getName() {
@@ -166,6 +168,15 @@ public final class GDLevel extends AbstractGDEntity {
 	 */
 	public Mono<GDLevelData> download() {
 		return downloader.get();
+	}
+	
+	/**
+	 * Performs a request to know whether the level has been deleted.
+	 * 
+	 * @return true if the level is still on the GD servers, false if deleted.
+	 */
+	public Mono<Boolean> isDeleted() {
+		return isDeleted.get();
 	}
 	
 	@Override

@@ -8,13 +8,13 @@ import com.github.alex1304.jdash.util.Routes;
 import com.github.alex1304.jdash.util.Utils;
 import com.github.alex1304.jdash.util.robtopsweakcrypto.RobTopsWeakCrypto;
 
-public class GDMessageSendRequest extends AbstractAuthenticatedGDRequest<Void> {
+class GDMessageSendRequest extends AbstractAuthenticatedGDRequest<Void> {
 	
 	private final long recipientID;
 	private final String subject;
 	private final String body;
 	
-	public GDMessageSendRequest(AuthenticatedGDClient client, long recipientID, String subject, String body) {
+	GDMessageSendRequest(AuthenticatedGDClient client, long recipientID, String subject, String body) {
 		super(client);
 		this.recipientID = recipientID;
 		this.subject = Objects.requireNonNull(subject);
