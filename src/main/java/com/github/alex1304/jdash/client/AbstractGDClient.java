@@ -24,6 +24,7 @@ import com.github.alex1304.jdash.util.LevelSearchStrategy;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 import reactor.netty.ByteBufFlux;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.http.client.PrematureCloseException;
@@ -90,6 +91,7 @@ abstract class AbstractGDClient {
 						return content.asString().defaultIfEmpty("");
 					}
 				})
+				.publishOn(Schedulers.elastic())
 				.retry(PrematureCloseException.class::isInstance)
 				.flatMap(responseStr -> {
 					try {
