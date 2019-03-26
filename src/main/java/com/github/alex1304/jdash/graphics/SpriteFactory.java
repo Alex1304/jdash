@@ -51,6 +51,7 @@ public class SpriteFactory {
 		if (spList == null) {
 			throw new IllegalArgumentException("Sprite ID=" + id + " for icon type " + type.name() + " does not exist");
 		}
+		spList = new ArrayList<>(spList);
 		BufferedImage img = new BufferedImage(250, 250, spriteImg.getType());
 		Graphics2D g = img.createGraphics();
 		if (!withGlowOutline) {
