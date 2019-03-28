@@ -79,7 +79,8 @@ public final class GDPaginator<E> implements Iterable<E> {
 
 	/**
 	 * Gets the total size. The total size is defined as the sum of the sizes of all
-	 * pages. Note that for some reason, this may return zero if this is the last page.
+	 * pages. Note that for some reason, this may return zero if this is the last
+	 * page.
 	 * 
 	 * @return the total size
 	 */
@@ -127,12 +128,12 @@ public final class GDPaginator<E> implements Iterable<E> {
 	/**
 	 * Loads the next page.
 	 * 
-	 * @return a Mono emitting the next page
-	 * @throws IllegalStateException if already in the last page
+	 * @return a Mono emitting the next page, or IllegalStateException if already in
+	 *         the last page
 	 */
 	public Mono<GDPaginator<E>> goToNextPage() {
 		if (!hasNextPage) {
-			throw new IllegalStateException("There is no next page");
+			return Mono.error(new IllegalStateException("There is no next page"));
 		}
 		return pageLoader.apply(pageNumber + 1);
 	}
@@ -140,12 +141,12 @@ public final class GDPaginator<E> implements Iterable<E> {
 	/**
 	 * Loads the previous page.
 	 * 
-	 * @return a Mono emitting the previous page
-	 * @throws IllegalStateException if already in the first page
+	 * @return a Mono emitting the previous page, or IllegalStateException if
+	 *         already in the first page
 	 */
 	public Mono<GDPaginator<E>> goToPreviousPage() {
 		if (!hasPreviousPage) {
-			throw new IllegalStateException("There is no previous page");
+			return Mono.error(new IllegalStateException("There is no previous page"));
 		}
 		return pageLoader.apply(pageNumber - 1);
 	}
@@ -154,12 +155,12 @@ public final class GDPaginator<E> implements Iterable<E> {
 	 * Loads a specific page by providing its number.
 	 * 
 	 * @param pageNumber the page number to load
-	 * @return a Mono emitting the desired page
-	 * @throws IllegalArgumentException if the given page number is out of range
+	 * @return a Mono emitting the desired page, or IllegalArgumentException if the
+	 *         given page number is out of range
 	 */
 	public Mono<GDPaginator<E>> goTo(int pageNumber) {
 		if (pageNumber > totalNumberOfPages || pageNumber < 0) {
-			throw new IllegalArgumentException("Page number out of range");
+			return Mono.error(new IllegalArgumentException("Page number out of range"));
 		}
 		return pageLoader.apply(pageNumber);
 	}
@@ -172,7 +173,7 @@ public final class GDPaginator<E> implements Iterable<E> {
 	public Stream<E> stream() {
 		return list.stream();
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		if (!(obj instanceof GDPaginator)) {
@@ -182,7 +183,7 @@ public final class GDPaginator<E> implements Iterable<E> {
 		return p.list.equals(list) && p.pageNumber == pageNumber && p.maxSizePerPage == maxSizePerPage
 				&& p.totalSize == totalSize;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return list.hashCode() ^ pageNumber ^ maxSizePerPage ^ totalSize;
@@ -190,11 +191,10 @@ public final class GDPaginator<E> implements Iterable<E> {
 
 	@Override
 	public String toString() {
-		return String.format("GDPaginator [\n"
-				+ "\tPage %d of %d, showing %d elements out of %d\n"
-				+ "\tHas next page: %b ; Has previous page: %b\n"
-				+ "\tElements: %s\n"
-				+ "]", pageNumber + 1, totalNumberOfPages + 1, list.size(), totalSize,
-				hasNextPage, hasPreviousPage, list.toString());
+		return String.format(
+				"GDPaginator [\n" + "\tPage %d of %d, showing %d elements out of %d\n"
+						+ "\tHas next page: %b ; Has previous page: %b\n" + "\tElements: %s\n" + "]",
+				pageNumber + 1, totalNumberOfPages + 1, list.size(), totalSize, hasNextPage, hasPreviousPage,
+				list.toString());
 	}
 }
