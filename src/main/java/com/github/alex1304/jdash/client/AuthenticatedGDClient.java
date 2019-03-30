@@ -1,5 +1,6 @@
 package com.github.alex1304.jdash.client;
 
+import java.time.Duration;
 import java.util.Map;
 import java.util.Objects;
 
@@ -53,8 +54,8 @@ public final class AuthenticatedGDClient extends AbstractGDClient {
 	private final String passwordEncoded;
 
 	AuthenticatedGDClient(long accountID, long playerID, String username, String password, String host,
-			long cacheTtl, int maxConnections) {
-		super(host, cacheTtl, maxConnections);
+			Duration cacheTtl, int maxConnections, Duration requestTimeout) {
+		super(host, cacheTtl, maxConnections, requestTimeout);
 		this.accountID = accountID;
 		this.playerID = playerID;
 		this.username = username;

@@ -30,10 +30,10 @@ class GDLevelSearchRequest extends AbstractGDRequest<GDPaginator<GDLevel>> {
 	private final String query;
 	private final LevelSearchFilters filters;
 	private final LevelSearchStrategy strategy;
-	private Collection<? extends GDUser> followed;
+	private Collection<? extends Long> followed;
 	
 	private GDLevelSearchRequest(AbstractGDClient client, int page, String query, LevelSearchFilters filters,
-			LevelSearchStrategy strategy, Collection<? extends GDUser> followed) {
+			LevelSearchStrategy strategy, Collection<? extends Long> followed) {
 		super(client);
 		this.page = page;
 		this.query = Objects.requireNonNull(query);
@@ -54,7 +54,7 @@ class GDLevelSearchRequest extends AbstractGDRequest<GDPaginator<GDLevel>> {
 		this(client, page, "", filters, strategy, Collections.emptySet());
 	}
 	
-	GDLevelSearchRequest(AbstractGDClient client, LevelSearchFilters filters, Collection<? extends GDUser> followed, int page) {
+	GDLevelSearchRequest(AbstractGDClient client, LevelSearchFilters filters, Collection<? extends Long> followed, int page) {
 		this(client, page, "", filters, LevelSearchStrategy.FOLLOWED, followed);
 	}
 
@@ -99,8 +99,7 @@ class GDLevelSearchRequest extends AbstractGDRequest<GDPaginator<GDLevel>> {
 					.map(GDLevel::getId).map(String::valueOf).collect(Collectors.toSet())) + ")");
 		}
 		if (!followed.isEmpty()) {
-			params.put("followed", String.join(",", followed.stream()
-					.map(GDUser::getAccountId).map(String::valueOf).collect(Collectors.toSet())));
+			params.put("followed", String.join(",", followed.stream().map(String::valueOf).collect(Collectors.toSet())));
 		}
 	}
 

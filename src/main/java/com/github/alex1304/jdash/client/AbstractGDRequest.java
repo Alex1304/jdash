@@ -38,4 +38,9 @@ abstract class AbstractGDRequest<E> implements GDRequest<E> {
 	public boolean cacheable() {
 		return true;
 	}
+	
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + "[path=" + getPath() + ", params=" + getParams() + "]";
+	}
 }

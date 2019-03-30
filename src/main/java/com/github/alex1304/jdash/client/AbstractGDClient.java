@@ -1,14 +1,21 @@
 package com.github.alex1304.jdash.client;
 
+import java.io.IOException;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.github.alex1304.jdash.entity.GDLevel;
+import com.github.alex1304.jdash.entity.GDSong;
 import com.github.alex1304.jdash.entity.GDTimelyLevel;
 import com.github.alex1304.jdash.entity.GDTimelyLevel.TimelyType;
 import com.github.alex1304.jdash.entity.GDUser;
@@ -18,6 +25,7 @@ import com.github.alex1304.jdash.exception.BadResponseException;
 import com.github.alex1304.jdash.exception.CorruptedResponseContentException;
 import com.github.alex1304.jdash.exception.GDClientException;
 import com.github.alex1304.jdash.exception.NoTimelyAvailableException;
+import com.github.alex1304.jdash.exception.SongNotAllowedForUseException;
 import com.github.alex1304.jdash.util.GDPaginator;
 import com.github.alex1304.jdash.util.LevelSearchFilters;
 import com.github.alex1304.jdash.util.LevelSearchStrategy;
@@ -27,29 +35,34 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 import reactor.netty.ByteBufFlux;
 import reactor.netty.http.client.HttpClient;
-import reactor.netty.http.client.PrematureCloseException;
 import reactor.netty.resources.ConnectionProvider;
+import reactor.retry.Retry;
 
 abstract class AbstractGDClient {
 	private static final String GAME_VERSION = "21";
 	private static final String BINARY_VERSION = "34";
 	private static final String SECRET = "Wmfd2893gb7";
 
+	private final Logger logger;
 	private String host;
 	private int maxConnections;
 	private final HttpClient client;
 	private final Map<GDRequest<?>, Object> cache;
-	private final Map<GDRequest<?>, Long> cacheTime;
-	private final long cacheTtl;
+	private final Map<GDRequest<?>, Instant> cacheTime;
+	private final Duration cacheTtl;
+	private final Duration requestTimeout;
 
-	AbstractGDClient(String host, long cacheTtl, int maxConnections) {
+	AbstractGDClient(String host, Duration cacheTtl, int maxConnections, Duration requestTimeout) {
+		this.logger = LoggerFactory.getLogger("jdash");
 		this.host = host;
 		this.maxConnections = maxConnections;
 		this.client = HttpClient.create(ConnectionProvider.fixed("gd-connection-pool", maxConnections))
+				.baseUrl(host)
 				.headers(h -> h.add("Content-Type", "application/x-www-form-urlencoded"));
 		this.cache = new ConcurrentHashMap<>();
 		this.cacheTime = new ConcurrentHashMap<>();
 		this.cacheTtl = cacheTtl;
+		this.requestTimeout = requestTimeout;
 		cleanUpExpiredCacheEntries();
 	}
 
@@ -82,7 +95,7 @@ abstract class AbstractGDClient {
 		params.forEach((k, v) -> sj.add(k + "=" + v));
 		String requestStr = sj.toString();
 		// Parsing, caching and returning the response
-		return client.baseUrl(host).post().uri(request.getPath())
+		return client.post().uri(request.getPath())
 				.send(ByteBufFlux.fromString(Flux.just(requestStr)))
 				.responseSingle((response, content) -> {
 					if (response.status().code() != 200) {
@@ -91,8 +104,13 @@ abstract class AbstractGDClient {
 						return content.asString().defaultIfEmpty("");
 					}
 				})
+				.retryWhen(Retry.anyOf(IOException.class)
+						.timeout(requestTimeout)
+						.exponentialBackoffWithJitter(Duration.ofMillis(100), Duration.ofSeconds(5))
+						.doOnRetry(retryCtx -> logger.info("Retrying attempt " + retryCtx.iteration()
+								+ " in " + retryCtx.backoff().toMillis() + "ms for failed request " + request, retryCtx.exception())))
+				.timeout(requestTimeout)
 				.publishOn(Schedulers.elastic())
-				.retry(PrematureCloseException.class::isInstance)
 				.flatMap(responseStr -> {
 					try {
 						E entity = request.parseResponse(responseStr.trim());
@@ -101,13 +119,13 @@ abstract class AbstractGDClient {
 						}
 						if (request.cacheable()) {
 							cache.put(request, entity);
-							cacheTime.put(request, System.currentTimeMillis());
+							cacheTime.put(request, Instant.now());
 						}
 						return Mono.just(entity);
 					} catch (GDClientException e) {
 						return Mono.error(e);
 					} catch (RuntimeException e) {
-						return Mono.error(new CorruptedResponseContentException(e));
+						return Mono.error(new CorruptedResponseContentException(e, request.getPath(), request.getParams(), responseStr));
 					}
 				});
 	}
@@ -115,11 +133,11 @@ abstract class AbstractGDClient {
 	abstract void putExtraParams(Map<String, String> params);
 
 	private void cleanUpExpiredCacheEntries() {
-		Flux.interval(Duration.ofMillis(cacheTtl))
-				.map(__ -> System.currentTimeMillis())
+		Flux.interval(cacheTtl)
+				.map(__ -> Instant.now())
 				.doOnNext(now -> {
 					new HashMap<>(cacheTime).forEach((k, v) -> {
-						if (now - v < cacheTtl) {
+						if (!Duration.between(v, now).abs().minus(cacheTtl).isNegative()) {
 							cacheTime.remove(k);
 							cache.remove(k);
 						}
@@ -138,7 +156,7 @@ abstract class AbstractGDClient {
 	 */
 	public Mono<GDUser> getUserByAccountId(long accountId) {
 		if (accountId < 1) {
-			throw new IllegalArgumentException("Account ID must be greater than 0");
+			return Mono.error(new IllegalArgumentException("Account ID must be greater than 0"));
 		}
 		return fetch(new GDUserProfileDataRequest(this, accountId))
 				.flatMap(u1 -> fetch(new GDUserSearchDataRequest(this, "" + u1.getId(), 0))
@@ -167,9 +185,24 @@ abstract class AbstractGDClient {
 	 */
 	public Mono<GDLevel> getLevelById(long levelId) {
 		if (levelId < 1) {
-			throw new IllegalArgumentException("Level ID must be greater than 0");
+			return Mono.error(new IllegalArgumentException("Level ID must be greater than 0"));
 		}
 		return fetch(new GDLevelSearchRequest(this, "" + levelId, LevelSearchFilters.create(), 0)).map(list -> list.asList().get(0));
+	}
+	
+	/**
+	 * Gets information on a custom song from its ID.
+	 * 
+	 * @param songId the ID of the song
+	 * @return a Mono emitting the song info, or an error if not found or something
+	 *         went wrong. If the song is not allowed for use in Geometry Dash, the
+	 *         error {@link SongNotAllowedForUseException} will be emitted.
+	 */
+	public Mono<GDSong> getSongById(long songId) {
+		if (songId < 1) {
+			return Mono.error(new IllegalArgumentException("Song ID must be greater than 0"));
+		}
+		return fetch(new GDSongInfoRequest(this, songId));
 	}
 
 	/**
@@ -350,17 +383,39 @@ abstract class AbstractGDClient {
 	/**
 	 * Browse levels in the Followed section of Geometry Dash.
 	 * 
-	 * @param filters the search filters
-	 * @param followed the collection containing followed users
-	 * @param page    the page number
+	 * @param filters  the search filters
+	 * @param followed the collection containing the instances of followed users
+	 * @param page     the page number
+	 * @return a Mono emitting a paginator containing all levels found. Note that if
+	 *         no levels are found, it will emit an error instead of just an empty
+	 *         paginator. This is because the Geometry Dash API returns the same
+	 *         response when the search produces no results and when an actual error
+	 *         occurs while processing the request (blame RobTop for that!).
+	 * 
+	 * @deprecated This requires that all GDUser instances must have been fetched
+	 *             beforehand, while account IDs are technically sufficient to
+	 *             perform this request. Please use browseFollowedIds(...) instead.
+	 */
+	@Deprecated
+	public Mono<GDPaginator<GDLevel>> browseFollowedLevels(LevelSearchFilters filters, Collection<? extends GDUser> followed, int page) {
+		return browseFollowedIds(filters, followed.stream().map(GDUser::getAccountId).collect(Collectors.toSet()), page);
+	}
+
+	/**
+	 * Browse levels in the Followed section of Geometry Dash.
+	 * 
+	 * @param filters            the search filters
+	 * @param followedAccountIDs the collection containing the account IDs of
+	 *                           followed users
+	 * @param page               the page number
 	 * @return a Mono emitting a paginator containing all levels found. Note that if
 	 *         no levels are found, it will emit an error instead of just an empty
 	 *         paginator. This is because the Geometry Dash API returns the same
 	 *         response when the search produces no results and when an actual error
 	 *         occurs while processing the request (blame RobTop for that!).
 	 */
-	public Mono<GDPaginator<GDLevel>> browseFollowedLevels(LevelSearchFilters filters, Collection<? extends GDUser> followed, int page) {
-		return fetch(new GDLevelSearchRequest(this, filters, followed, page));
+	public Mono<GDPaginator<GDLevel>> browseFollowedIds(LevelSearchFilters filters, Collection<? extends Long> followedAccountIDs, int page) {
+		return fetch(new GDLevelSearchRequest(this, filters, followedAccountIDs, page));
 	}
 
 	/**
@@ -376,9 +431,10 @@ abstract class AbstractGDClient {
 	}
 	
 	/**
-	 * Gets data from a user provided by the Search user feature.
-	 * The data gotten from there might be inaccurate and severely outdated, that's why it is preferred to use 
-	 * {@link #getUserDataFromProfile(long)} in order to fetch stats.
+	 * Gets data from a user provided by the Search user feature. The data gotten
+	 * from there might be inaccurate and severely outdated, that's why it is
+	 * preferred to use {@link #getUserDataFromProfile(long)} in order to fetch
+	 * stats.
 	 * 
 	 * @param searchQuery the search query
 	 * @return a Mono emitting the data found
@@ -401,7 +457,7 @@ abstract class AbstractGDClient {
 	 * 
 	 * @return long
 	 */
-	public long getCacheTtl() {
+	public Duration getCacheTtl() {
 		return cacheTtl;
 	}
 	
@@ -412,6 +468,16 @@ abstract class AbstractGDClient {
 	 */
 	public int getMaxConnections() {
 		return maxConnections;
+	}
+	
+	/**
+	 * Gets the maximum time in milliseconds to wait if a request takes too long
+	 * to complete.
+	 * 
+	 * @return long
+	 */
+	public Duration getRequestTimeout() {
+		return requestTimeout;
 	}
 
 	/**

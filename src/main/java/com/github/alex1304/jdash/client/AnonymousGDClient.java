@@ -1,5 +1,6 @@
 package com.github.alex1304.jdash.client;
 
+import java.time.Duration;
 import java.util.Map;
 
 import com.github.alex1304.jdash.exception.BadResponseException;
@@ -37,8 +38,8 @@ import reactor.core.publisher.Mono;
  * </ul>
  */
 public final class AnonymousGDClient extends AbstractGDClient {
-	AnonymousGDClient(String host, long cacheTtl, int maxConnections) {
-		super(host, cacheTtl, maxConnections);
+	AnonymousGDClient(String host, Duration cacheTtl, int maxConnections, Duration requestTimeout) {
+		super(host, cacheTtl, maxConnections, requestTimeout);
 	}
 	@Override
 	void putExtraParams(Map<String, String> params) {

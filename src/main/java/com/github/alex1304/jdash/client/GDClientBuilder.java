@@ -1,7 +1,9 @@
 package com.github.alex1304.jdash.client;
 
+import java.time.Duration;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.TimeoutException;
 
 import com.github.alex1304.jdash.exception.GDClientException;
 import com.github.alex1304.jdash.exception.GDLoginFailedException;
@@ -11,21 +13,24 @@ import com.github.alex1304.jdash.util.Routes;
  * Builds a Geometry Dash client step by step.
  */
 public final class GDClientBuilder {
-	public static final long DEFAULT_CACHE_TTL = 900_000;
+	public static final Duration DEFAULT_CACHE_TTL = Duration.ofMinutes(15);
 	public static final int DEFAULT_MAX_CONNECTIONS = Runtime.getRuntime().availableProcessors();
+	public static final Duration DEFAULT_REQUEST_TIMEOUT = Duration.ofMillis(Long.MAX_VALUE);
 
 	private Optional<String> host;
-	private Optional<Long> cacheTtl;
+	private Optional<Duration> cacheTtl;
 	private Optional<Integer> maxConnections;
+	private Optional<Duration> requestTimeout; 
 
-	private GDClientBuilder(Optional<String> host, Optional<Long> cacheTtl, Optional<Integer> maxConnections) {
+	private GDClientBuilder(Optional<String> host, Optional<Duration> cacheTtl, Optional<Integer> maxConnections, Optional<Duration> requestTimeout) {
 		this.host = host;
 		this.cacheTtl = cacheTtl;
 		this.maxConnections = maxConnections;
+		this.requestTimeout = requestTimeout;
 	}
 
 	public static GDClientBuilder create() {
-		return new GDClientBuilder(Optional.empty(), Optional.empty(), Optional.empty());
+		return new GDClientBuilder(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
 	}
 
 	/**
@@ -54,8 +59,8 @@ public final class GDClientBuilder {
 	 * @return this (for method chaining purposes)
 	 * @throws IllegalArgumentException if time is negative
 	 */
-	public GDClientBuilder withCacheTtl(long time) {
-		if (time < 0) {
+	public GDClientBuilder withCacheTtl(Duration time) {
+		if (Objects.requireNonNull(time).isNegative()) {
 			throw new IllegalArgumentException("time cannot be negative");
 		}
 		this.cacheTtl = Optional.of(time);
@@ -78,12 +83,29 @@ public final class GDClientBuilder {
 	}
 
 	/**
+	 * Specifies a timeout for requests to complete. If a request does not complete
+	 * in time, a {@link TimeoutException} will be propagated for the said request.
+	 * 
+	 * @param time the time to set for the cache ttl
+	 * @return this (for method chaining purposes)
+	 * @throws IllegalArgumentException if time is negative
+	 */
+	public GDClientBuilder withRequestTimeout(Duration time) {
+		if (Objects.requireNonNull(time).isNegative()) {
+			throw new IllegalArgumentException("time cannot be negative");
+		}
+		this.requestTimeout = Optional.of(time);
+		return this;
+	}
+
+	/**
 	 * Builds an anonymous Geometry Dash client.
 	 * 
 	 * @return {@link AnonymousGDClient}
 	 */
 	public AnonymousGDClient buildAnonymous() {
-		return new AnonymousGDClient(host.orElse(Routes.BASE_URL), cacheTtl.orElse(DEFAULT_CACHE_TTL), maxConnections.orElse(DEFAULT_MAX_CONNECTIONS));
+		return new AnonymousGDClient(host.orElse(Routes.BASE_URL), cacheTtl.orElse(DEFAULT_CACHE_TTL), maxConnections.orElse(DEFAULT_MAX_CONNECTIONS),
+				requestTimeout.orElse(DEFAULT_REQUEST_TIMEOUT));
 	}
 	
 	/**
@@ -98,7 +120,8 @@ public final class GDClientBuilder {
 		AnonymousGDClient client = buildAnonymous();
 		try {
 			long[] details = client.fetch(new GDLoginRequest(client, username, password, "jdash-client")).block();
-			return new AuthenticatedGDClient(details[0], details[1], username, password, client.getHost(), client.getCacheTtl(), client.getMaxConnections());
+			return new AuthenticatedGDClient(details[0], details[1], username, password, client.getHost(), client.getCacheTtl(), client.getMaxConnections(),
+					client.getRequestTimeout());
 		} catch (GDClientException e) {
 			throw new GDLoginFailedException(e);
 		}

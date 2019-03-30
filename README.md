@@ -1,6 +1,6 @@
 # JDash
 
-[![Maven Central](https://img.shields.io/maven-central/v/com.github.alex1304/jdash.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.github.alex1304%22%20AND%20a:%22jdash%22)
+[![Maven Central](https://img.shields.io/maven-central/v/com.github.alex1304/jdash.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.github.alex1304%22%20AND%20a:%22jdash%22) [![Documentation Status](https://readthedocs.org/projects/jdash/badge/?version=latest)](https://jdash.readthedocs.io/en/latest/?badge=latest)
 
 A Java library for Geometry Dash.
 
