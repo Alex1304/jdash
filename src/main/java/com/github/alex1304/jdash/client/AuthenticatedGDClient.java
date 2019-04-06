@@ -104,9 +104,9 @@ public final class AuthenticatedGDClient extends AbstractGDClient {
 	/**
 	 * Sends a private message to a user by their ID.
 	 * 
-	 * @param user    the ID of the recipient of the message
-	 * @param subject the message subject
-	 * @param body    the message body
+	 * @param recipientAccountId the ID of the recipient of the message
+	 * @param subject            the message subject
+	 * @param body               the message body
 	 * @return a Mono completing empty if succeeded, an error otherwise.
 	 * @throws UnsupportedOperationException if this client is not logged it to any
 	 *                                       account
