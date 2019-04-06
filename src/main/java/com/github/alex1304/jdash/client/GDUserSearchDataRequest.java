@@ -56,6 +56,7 @@ class GDUserSearchDataRequest extends AbstractGDRequest<GDPaginator<GDUserSearch
 			String strMainIconId = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_ICON), "0");
 			String strName = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_NAME), "-");
 			String strIconType = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_ICON_TYPE), "0");
+			int iconTypeIndex = Integer.parseInt(strIconType);
 			list.add(new GDUserSearchData(
 					Long.parseLong(strPlayerID),
 					Integer.parseInt(strSecretCoins),
@@ -69,7 +70,7 @@ class GDUserSearchDataRequest extends AbstractGDRequest<GDPaginator<GDUserSearch
 					strName,
 					!strHasGlowOutline.equals("0"),
 					Integer.parseInt(strMainIconId),
-					IconType.values()[Integer.parseInt(strIconType)]));
+					IconType.values()[iconTypeIndex >= IconType.values().length ? 0 : iconTypeIndex]));
 		}
 		Tuple3<Integer, Integer, Integer> pageInfo = ParseUtils.extractPageInfo(split1[1]);
 		return new GDPaginator<>(list, page, pageInfo.getT3(), pageInfo.getT1(), newPage ->

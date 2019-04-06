@@ -120,7 +120,7 @@ public class TestMain {
 			.doOnSuccess(o -> printResult("Browse second page of Awarded section", o))
 			.subscribe();
 		
-		client.browseFollowedLevels(LevelSearchFilters.create(), new ArrayList<>(Arrays.asList(client.searchUser("Alex1304").block(), client.searchUser("RobTop").block())), 0)
+		client.browseFollowedIds(LevelSearchFilters.create(), new ArrayList<>(Arrays.asList(98006L, 71L)), 0)
 			.doOnError(Throwable::printStackTrace)
 			.doOnSuccess(o -> printResult("Following Alex1304 and RobTop", o))
 			.subscribe();

@@ -122,6 +122,7 @@ class GDLevelSearchRequest extends AbstractGDRequest<GDPaginator<GDLevel>> {
 					structuredSongsInfo.getOrDefault(songID, GDSong.unknownSong(songID));
 			String creatorName = structuredCreatorsInfo.getOrDefault(Long.parseLong(
 					Utils.defaultStringIfEmptyOrNull(lmap.get(Indexes.LEVEL_CREATOR_ID), "0")), "-");
+			int length = Integer.parseInt(Utils.defaultStringIfEmptyOrNull(lmap.get(Indexes.LEVEL_LENGTH), "0"));
 			long levelId = Long.parseLong(Utils.defaultStringIfEmptyOrNull(lmap.get(Indexes.LEVEL_ID), "0"));
 			list.add(new GDLevel(
 					levelId,
@@ -135,7 +136,7 @@ class GDLevelSearchRequest extends AbstractGDRequest<GDPaginator<GDLevel>> {
 					!Utils.defaultStringIfEmptyOrNull(lmap.get(Indexes.LEVEL_IS_EPIC), "0").equals("0"),
 					Integer.parseInt(Utils.defaultStringIfEmptyOrNull(lmap.get(Indexes.LEVEL_DOWNLOADS), "0")),
 					Integer.parseInt(Utils.defaultStringIfEmptyOrNull(lmap.get(Indexes.LEVEL_LIKES), "0")),
-					Length.values()[Integer.parseInt(Utils.defaultStringIfEmptyOrNull(lmap.get(Indexes.LEVEL_LENGTH), "0"))],
+					Length.values()[length >= Length.values().length ? 0 : length],
 					() -> Mono.just(song),
 					Integer.parseInt(Utils.defaultStringIfEmptyOrNull(lmap.get(Indexes.LEVEL_COIN_COUNT), "0")),
 					Utils.defaultStringIfEmptyOrNull(lmap.get(Indexes.LEVEL_COIN_VERIFIED), "0").equals("1"),

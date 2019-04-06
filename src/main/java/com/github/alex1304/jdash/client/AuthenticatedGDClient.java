@@ -98,10 +98,26 @@ public final class AuthenticatedGDClient extends AbstractGDClient {
 	 *                                       {@code (user.getAccountId() == 0)}
 	 */
 	public Mono<Void> sendPrivateMessage(GDUser user, String subject, String body) {
-		if (user.getAccountId() <= 0) {
+		return sendPrivateMessage(user.getAccountId(), subject, body);
+	}
+
+	/**
+	 * Sends a private message to a user by their ID.
+	 * 
+	 * @param user    the ID of the recipient of the message
+	 * @param subject the message subject
+	 * @param body    the message body
+	 * @return a Mono completing empty if succeeded, an error otherwise.
+	 * @throws UnsupportedOperationException if this client is not logged it to any
+	 *                                       account
+	 * @throws IllegalArgumentException      if user isn't a registered user
+	 *                                       {@code (user.getAccountId() == 0)}
+	 */
+	public Mono<Void> sendPrivateMessage(long recipientAccountId, String subject, String body) {
+		if (recipientAccountId <= 0) {
 			throw new IllegalArgumentException("Cannot send a private message to an unregistered user");
 		}
-		return fetch(new GDMessageSendRequest(this, user.getAccountId(), subject, body));
+		return fetch(new GDMessageSendRequest(this, recipientAccountId, subject, body));
 	}
 
 	/**

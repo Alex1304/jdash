@@ -60,6 +60,9 @@ class GDUserProfileDataRequest extends AbstractGDRequest<GDUserProfileData> {
 		String strFriendRequest = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_FRIEND_REQUEST_POLICY), "0");
 		String strPrivateMessage = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_PRIVATE_MESSAGE_POLICY), "0");
 		String strCommentHistory = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_COMMENT_HISTORY_POLICY), "0");
+		int strRoleIndex = Integer.parseInt(strRole);
+		int privateMessageIndex = Integer.parseInt(strPrivateMessage);
+		int commentHistoryIndex = Integer.parseInt(strCommentHistory);
 		return new GDUserProfileData(
 				Long.parseLong(strPlayerID),
 				Integer.parseInt(strSecretCoins),
@@ -84,10 +87,10 @@ class GDUserProfileDataRequest extends AbstractGDRequest<GDUserProfileData> {
 				strYoutube,
 				strTwitter,
 				strTwitch,
-				Role.values()[Integer.parseInt(strRole)],
+				Role.values()[strRoleIndex >= Role.values().length ? 0 : strRoleIndex],
 				strFriendRequest.equals("0"),
-				PrivacySetting.values()[Integer.parseInt(strPrivateMessage)],
-				PrivacySetting.values()[Integer.parseInt(strCommentHistory)]);
+				PrivacySetting.values()[privateMessageIndex >= PrivacySetting.values().length ? 0 : privateMessageIndex],
+				PrivacySetting.values()[commentHistoryIndex >= PrivacySetting.values().length ? 0 : commentHistoryIndex]);
 	}
 	
 	@Override

@@ -105,10 +105,13 @@ abstract class AbstractGDClient {
 					}
 				})
 				.retryWhen(Retry.anyOf(IOException.class)
-						.timeout(requestTimeout)
 						.exponentialBackoffWithJitter(Duration.ofMillis(100), Duration.ofSeconds(5))
-						.doOnRetry(retryCtx -> logger.info("Retrying attempt " + retryCtx.iteration()
-								+ " in " + retryCtx.backoff().toMillis() + "ms for failed request " + request, retryCtx.exception())))
+						.doOnRetry(retryCtx -> {
+								logger.info("Retrying attempt {} in {}ms for failed request {} ({}: {})", retryCtx.iteration(),
+										retryCtx.backoff().toMillis(), request, retryCtx.exception().getClass().getCanonicalName(), 
+										retryCtx.exception().getMessage() == null ? "(no message)" : retryCtx.exception().getMessage());
+								logger.debug("I/O error when performing request to Geometry Dash servers", retryCtx.exception());
+						}))
 				.timeout(requestTimeout)
 				.publishOn(Schedulers.elastic())
 				.flatMap(responseStr -> {
