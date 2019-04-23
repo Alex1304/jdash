@@ -32,7 +32,7 @@ public final class GDLevel extends AbstractGDEntity {
 	private final boolean isAuto;
 	private final long originalLevelID;
 	private final int requestedStars;
-	private final Supplier<Mono<GDLevelData>> downloader;
+	private final Mono<GDLevelData> data;
 	private final Supplier<Mono<GDLevel>> refresher;
 
 	public GDLevel(long id, String name, long creatorID, String description, Difficulty difficulty,
@@ -63,7 +63,7 @@ public final class GDLevel extends AbstractGDEntity {
 		this.isAuto = isAuto;
 		this.originalLevelID = originalLevelID;
 		this.requestedStars = requestedStars;
-		this.downloader = Objects.requireNonNull(downloader);
+		this.data = Objects.requireNonNull(downloader).get().cache();
 		this.refresher = Objects.requireNonNull(refresher);
 	}
 
@@ -168,7 +168,7 @@ public final class GDLevel extends AbstractGDEntity {
 	 * @return a Mono emitting the download data for this level.
 	 */
 	public Mono<GDLevelData> download() {
-		return downloader.get();
+		return data;
 	}
 	
 	/**

@@ -17,13 +17,13 @@ public final class GDTimelyLevel extends AbstractGDEntity {
 		}
 	}
 	private final long cooldown;
-	private final Supplier<Mono<GDLevel>> levelLoader;
+	private final Mono<GDLevel> level;
 	private final TimelyType type;
 
 	public GDTimelyLevel(long id, long cooldown, Supplier<Mono<GDLevel>> levelLoader, TimelyType type) {
 		super(id);
 		this.cooldown = cooldown;
-		this.levelLoader = Objects.requireNonNull(levelLoader);
+		this.level = Objects.requireNonNull(levelLoader).get().cache();
 		this.type = Objects.requireNonNull(type);
 	}
 
@@ -32,7 +32,7 @@ public final class GDTimelyLevel extends AbstractGDEntity {
 	}
 
 	public Mono<GDLevel> getLevel() {
-		return levelLoader.get();
+		return level;
 	}
 	
 	public TimelyType getType() {

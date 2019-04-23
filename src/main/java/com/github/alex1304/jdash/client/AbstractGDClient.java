@@ -104,15 +104,6 @@ abstract class AbstractGDClient {
 						return content.asString().defaultIfEmpty("");
 					}
 				})
-				.retryWhen(Retry.anyOf(IOException.class)
-						.exponentialBackoffWithJitter(Duration.ofMillis(100), Duration.ofSeconds(5))
-						.doOnRetry(retryCtx -> {
-								logger.info("Retrying attempt {} in {}ms for failed request {} ({}: {})", retryCtx.iteration(),
-										retryCtx.backoff().toMillis(), request, retryCtx.exception().getClass().getCanonicalName(), 
-										retryCtx.exception().getMessage() == null ? "(no message)" : retryCtx.exception().getMessage());
-								logger.debug("I/O error when performing request to Geometry Dash servers", retryCtx.exception());
-						}))
-				.timeout(requestTimeout)
 				.publishOn(Schedulers.elastic())
 				.flatMap(responseStr -> {
 					try {
@@ -130,13 +121,22 @@ abstract class AbstractGDClient {
 					} catch (RuntimeException e) {
 						return Mono.error(new CorruptedResponseContentException(e, request.getPath(), request.getParams(), responseStr));
 					}
-				});
+				})
+				.retryWhen(Retry.anyOf(IOException.class)
+						.exponentialBackoffWithJitter(Duration.ofMillis(100), Duration.ofSeconds(10))
+						.doOnRetry(retryCtx -> {
+								logger.info("Retrying attempt {} in {}ms for failed request {} ({}: {})", retryCtx.iteration(),
+										retryCtx.backoff().toMillis(), request, retryCtx.exception().getClass().getCanonicalName(), 
+										retryCtx.exception().getMessage() == null ? "(no message)" : retryCtx.exception().getMessage());
+								logger.debug("I/O error when performing request to Geometry Dash servers", retryCtx.exception());
+						}))
+				.timeout(requestTimeout);
 	}
 	
 	abstract void putExtraParams(Map<String, String> params);
 
 	private void cleanUpExpiredCacheEntries() {
-		Flux.interval(cacheTtl)
+		Flux.interval(cacheTtl.dividedBy(10))
 				.map(__ -> Instant.now())
 				.doOnNext(now -> {
 					new HashMap<>(cacheTime).forEach((k, v) -> {
@@ -146,6 +146,7 @@ abstract class AbstractGDClient {
 						}
 					});
 				})
+				.doAfterTerminate(this::cleanUpExpiredCacheEntries)
 				.subscribe();
 	}
 
