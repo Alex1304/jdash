@@ -35,6 +35,7 @@ class GDUserProfileDataRequest extends AbstractGDRequest<GDUserProfileData> {
 		Map<Integer, String> data = ParseUtils.splitToMap(response, ":");
 		String strPlayerID = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_PLAYER_ID), "0");
 		String strAccountID = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_ACCOUNT_ID), "0");
+		String strName = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_NAME), "");
 		String strStars = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_STARS), "0");
 		String strDemons = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_DEMONS), "0");
 		String strDiamonds = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_DIAMONDS), "0");
@@ -65,6 +66,7 @@ class GDUserProfileDataRequest extends AbstractGDRequest<GDUserProfileData> {
 		int commentHistoryIndex = Integer.parseInt(strCommentHistory);
 		return new GDUserProfileData(
 				Long.parseLong(strPlayerID),
+				strName,
 				Integer.parseInt(strSecretCoins),
 				Integer.parseInt(strUserCoins),
 				Integer.parseInt(strColor1),

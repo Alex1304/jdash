@@ -59,6 +59,7 @@ class GDUserSearchDataRequest extends AbstractGDRequest<GDPaginator<GDUserSearch
 			int iconTypeIndex = Integer.parseInt(strIconType);
 			list.add(new GDUserSearchData(
 					Long.parseLong(strPlayerID),
+					strName,
 					Integer.parseInt(strSecretCoins),
 					Integer.parseInt(strUserCoins),
 					Integer.parseInt(strColor1),
@@ -67,7 +68,6 @@ class GDUserSearchDataRequest extends AbstractGDRequest<GDPaginator<GDUserSearch
 					Integer.parseInt(strStars),
 					Integer.parseInt(strCreatorPoints),
 					Integer.parseInt(strDemons),
-					strName,
 					!strHasGlowOutline.equals("0"),
 					Integer.parseInt(strMainIconId),
 					IconType.values()[iconTypeIndex >= IconType.values().length ? 0 : iconTypeIndex]));

@@ -22,11 +22,11 @@ public final class GDUserProfileData extends AbstractGDUser {
 	private final PrivacySetting privateMessagePolicy;
 	private final PrivacySetting commmentHistoryPolicy;
 
-	public GDUserProfileData(long id, int secretCoins, int userCoins, int color1Id, int color2Id, long accountId, int stars,
+	public GDUserProfileData(long id, String name, int secretCoins, int userCoins, int color1Id, int color2Id, long accountId, int stars,
 			int creatorPoints, int demons, int diamonds, int globalRank, int cubeIconId, int shipIconId, int ufoIconId, int ballIconId, int waveIconId,
 			int robotIconId, int spiderIconId, boolean hasGlowOutline, int deathEffectId, String youtube, String twitter, String twitch, Role role,
 			boolean hasFriendRequestsEnabled, PrivacySetting privateMessagePolicy, PrivacySetting commmentHistoryPolicy) {
-		super(id, secretCoins, userCoins, color1Id, color2Id, accountId, stars, creatorPoints, demons);
+		super(id, name, secretCoins, userCoins, color1Id, color2Id, accountId, stars, creatorPoints, demons);
 		this.diamonds = diamonds;
 		this.globalRank = globalRank;
 		this.cubeIconId = cubeIconId;
@@ -126,14 +126,15 @@ public final class GDUserProfileData extends AbstractGDUser {
 
 	@Override
 	public String toString() {
-		return "GDUserPart1 [diamonds=" + diamonds + ", globalRank=" + globalRank + ", cubeIconId=" + cubeIconId
+		return "GDUserProfileData [diamonds=" + diamonds + ", globalRank=" + globalRank + ", cubeIconId=" + cubeIconId
 				+ ", shipIconId=" + shipIconId + ", ufoIconId=" + ufoIconId + ", ballIconId=" + ballIconId
 				+ ", waveIconId=" + waveIconId + ", robotIconId=" + robotIconId + ", spiderIconId=" + spiderIconId
-				+ ", trailId=" + hasGlowOutline + ", deathEffectId=" + deathEffectId + ", youtube=" + youtube + ", twitter="
-				+ twitter + ", twitch=" + twitch + ", role=" + role + ", hasFriendRequestsEnabled="
+				+ ", hasGlowOutline=" + hasGlowOutline + ", deathEffectId=" + deathEffectId + ", youtube=" + youtube
+				+ ", twitter=" + twitter + ", twitch=" + twitch + ", role=" + role + ", hasFriendRequestsEnabled="
 				+ hasFriendRequestsEnabled + ", privateMessagePolicy=" + privateMessagePolicy
-				+ ", commmentHistoryPolicy=" + commmentHistoryPolicy + ", secretCoins=" + secretCoins + ", userCoins="
-				+ userCoins + ", color1Id=" + color1Id + ", color2Id=" + color2Id + ", accountId=" + accountId
-				+ ", stars=" + stars + ", creatorPoints=" + creatorPoints + ", demons=" + demons + ", id=" + id + "]";
+				+ ", commmentHistoryPolicy=" + commmentHistoryPolicy + ", name=" + name + ", secretCoins=" + secretCoins
+				+ ", userCoins=" + userCoins + ", color1Id=" + color1Id + ", color2Id=" + color2Id + ", accountId="
+				+ accountId + ", stars=" + stars + ", creatorPoints=" + creatorPoints + ", demons=" + demons + ", id="
+				+ id + "]";
 	}
 }

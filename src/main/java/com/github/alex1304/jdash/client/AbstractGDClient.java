@@ -26,17 +26,19 @@ import com.github.alex1304.jdash.exception.CorruptedResponseContentException;
 import com.github.alex1304.jdash.exception.GDClientException;
 import com.github.alex1304.jdash.exception.NoTimelyAvailableException;
 import com.github.alex1304.jdash.exception.SongNotAllowedForUseException;
+import com.github.alex1304.jdash.exception.UserSearchDataNotFoundException;
 import com.github.alex1304.jdash.util.GDPaginator;
 import com.github.alex1304.jdash.util.LevelSearchFilters;
 import com.github.alex1304.jdash.util.LevelSearchStrategy;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
+import reactor.core.scheduler.Scheduler;
 import reactor.netty.ByteBufFlux;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.resources.ConnectionProvider;
 import reactor.retry.Retry;
+import reactor.scheduler.forkjoin.ForkJoinPoolScheduler;
 
 abstract class AbstractGDClient {
 	private static final String GAME_VERSION = "21";
@@ -44,6 +46,7 @@ abstract class AbstractGDClient {
 	private static final String SECRET = "Wmfd2893gb7";
 
 	private final Logger logger;
+	private final Scheduler scheduler;
 	private String host;
 	private int maxConnections;
 	private final HttpClient client;
@@ -54,6 +57,7 @@ abstract class AbstractGDClient {
 
 	AbstractGDClient(String host, Duration cacheTtl, int maxConnections, Duration requestTimeout) {
 		this.logger = LoggerFactory.getLogger("jdash");
+		this.scheduler = ForkJoinPoolScheduler.create("jdash-client-forkjoin");
 		this.host = host;
 		this.maxConnections = maxConnections;
 		this.client = HttpClient.create(ConnectionProvider.fixed("gd-connection-pool", maxConnections))
@@ -95,7 +99,9 @@ abstract class AbstractGDClient {
 		params.forEach((k, v) -> sj.add(k + "=" + v));
 		String requestStr = sj.toString();
 		// Parsing, caching and returning the response
-		return client.post().uri(request.getPath())
+		return client.doAfterRequest((httpreq, connection) -> logger.debug("Request sent: {}", request))
+				.post()
+				.uri(request.getPath())
 				.send(ByteBufFlux.fromString(Flux.just(requestStr)))
 				.responseSingle((response, content) -> {
 					if (response.status().code() != 200) {
@@ -104,8 +110,9 @@ abstract class AbstractGDClient {
 						return content.asString().defaultIfEmpty("");
 					}
 				})
-				.publishOn(Schedulers.elastic())
+				.publishOn(scheduler)
 				.flatMap(responseStr -> {
+					logger.debug("Received response: {}", responseStr);
 					try {
 						E entity = request.parseResponse(responseStr.trim());
 						if (entity == null) {
@@ -115,6 +122,7 @@ abstract class AbstractGDClient {
 							cache.put(request, entity);
 							cacheTime.put(request, Instant.now());
 						}
+						logger.debug("Successfully parsed response into entity: {}", entity);
 						return Mono.just(entity);
 					} catch (GDClientException e) {
 						return Mono.error(e);
@@ -128,7 +136,7 @@ abstract class AbstractGDClient {
 								logger.info("Retrying attempt {} in {}ms for failed request {} ({}: {})", retryCtx.iteration(),
 										retryCtx.backoff().toMillis(), request, retryCtx.exception().getClass().getCanonicalName(), 
 										retryCtx.exception().getMessage() == null ? "(no message)" : retryCtx.exception().getMessage());
-								logger.debug("I/O error when performing request to Geometry Dash servers", retryCtx.exception());
+								logger.debug("I/O error occured", retryCtx.exception());
 						}))
 				.timeout(requestTimeout);
 	}
@@ -156,7 +164,9 @@ abstract class AbstractGDClient {
 	 * @param accountId the ID of the user's Geometry Dash account
 	 * @return a Mono emitting the requested user, or an error if something goes
 	 *         wrong (user not found, user has blocked the account that this client
-	 *         is logged on, etc)
+	 *         is logged on, etc). If the user profile is found but was unable to retrieve
+	 *         search result data for that user, a {@link UserSearchDataNotFoundException}
+	 *         will be emitted.
 	 */
 	public Mono<GDUser> getUserByAccountId(long accountId) {
 		if (accountId < 1) {
@@ -164,7 +174,10 @@ abstract class AbstractGDClient {
 		}
 		return fetch(new GDUserProfileDataRequest(this, accountId))
 				.flatMap(u1 -> fetch(new GDUserSearchDataRequest(this, "" + u1.getId(), 0))
-						.map(u2l -> GDUser.aggregate(u1, u2l.asList().get(0))));
+						.map(u2l -> GDUser.aggregate(u1, u2l.asList().stream()
+								.filter(usr -> usr.getAccountId() == u1.getAccountId())
+								.findAny()
+								.orElseThrow(() -> new UserSearchDataNotFoundException()))));
 	}
 
 	/**

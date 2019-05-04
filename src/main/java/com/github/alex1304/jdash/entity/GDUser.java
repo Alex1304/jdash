@@ -3,7 +3,6 @@ package com.github.alex1304.jdash.entity;
 import java.util.Objects;
 
 public final class GDUser extends AbstractGDUser {
-	private final String name;
 	private final int diamonds;
 	private final int globalRank;
 	private final int cubeIconId;
@@ -31,8 +30,7 @@ public final class GDUser extends AbstractGDUser {
 			boolean hasGlowOutline, int color1Id, int color2Id, int mainIconId, String youtube, String twitter,
 			String twitch, Role role, boolean hasFriendRequestsEnabled, PrivacySetting privateMessagePolicy,
 			PrivacySetting commmentHistoryPolicy, IconType mainIconType) {
-		super(id, secretCoins, userCoins, color1Id, color2Id, accountId, stars, creatorPoints, demons);
-		this.name = name;
+		super(id, name, secretCoins, userCoins, color1Id, color2Id, accountId, stars, creatorPoints, demons);
 		this.diamonds = diamonds;
 		this.globalRank = globalRank;
 		this.cubeIconId = cubeIconId;
@@ -57,7 +55,7 @@ public final class GDUser extends AbstractGDUser {
 	
 	public static GDUser aggregate(GDUserProfileData part1, GDUserSearchData part2) {
 		if (part1.id != part2.id) {
-			throw new IllegalArgumentException("Parts don't match");
+			throw new IllegalArgumentException("The player ID from profile doesn't match with the player ID from user search results");
 		}
 		return new GDUser(part1.id, part1.accountId, part2.getName(), part1.stars, part1.demons, part1.getDiamonds(),
 				part1.secretCoins, part1.userCoins, part1.creatorPoints, part1.getGlobalRank(), part1.getCubeIconId(),
@@ -70,10 +68,6 @@ public final class GDUser extends AbstractGDUser {
 
 	public long getAccountId() {
 		return accountId;
-	}
-
-	public String getName() {
-		return name;
 	}
 
 	public int getStars() {
@@ -196,14 +190,14 @@ public final class GDUser extends AbstractGDUser {
 
 	@Override
 	public String toString() {
-		return "GDUser [name=" + name + ", diamonds=" + diamonds + ", globalRank=" + globalRank + ", cubeIconId="
-				+ cubeIconId + ", shipIconId=" + shipIconId + ", ufoIconId=" + ufoIconId + ", ballIconId=" + ballIconId
+		return "GDUser [diamonds=" + diamonds + ", globalRank=" + globalRank + ", cubeIconId=" + cubeIconId
+				+ ", shipIconId=" + shipIconId + ", ufoIconId=" + ufoIconId + ", ballIconId=" + ballIconId
 				+ ", waveIconId=" + waveIconId + ", robotIconId=" + robotIconId + ", spiderIconId=" + spiderIconId
-				+ ", deathEffectId=" + deathEffectId + ", hasIconGlowOutline="
-				+ hasGlowOutline + ", mainIconId=" + mainIconId + ", youtube=" + youtube + ", twitter=" + twitter
-				+ ", twitch=" + twitch + ", role=" + role + ", hasFriendRequestsEnabled=" + hasFriendRequestsEnabled
-				+ ", privateMessagePolicy=" + privateMessagePolicy + ", commmentHistoryPolicy=" + commmentHistoryPolicy
-				+ ", mainIconType=" + mainIconType + ", secretCoins=" + secretCoins + ", userCoins=" + userCoins
+				+ ", deathEffectId=" + deathEffectId + ", hasGlowOutline=" + hasGlowOutline + ", mainIconId="
+				+ mainIconId + ", youtube=" + youtube + ", twitter=" + twitter + ", twitch=" + twitch + ", role=" + role
+				+ ", hasFriendRequestsEnabled=" + hasFriendRequestsEnabled + ", privateMessagePolicy="
+				+ privateMessagePolicy + ", commmentHistoryPolicy=" + commmentHistoryPolicy + ", mainIconType="
+				+ mainIconType + ", name=" + name + ", secretCoins=" + secretCoins + ", userCoins=" + userCoins
 				+ ", color1Id=" + color1Id + ", color2Id=" + color2Id + ", accountId=" + accountId + ", stars=" + stars
 				+ ", creatorPoints=" + creatorPoints + ", demons=" + demons + ", id=" + id + "]";
 	}

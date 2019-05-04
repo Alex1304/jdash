@@ -1,7 +1,10 @@
 package com.github.alex1304.jdash.entity;
 
+import java.util.Objects;
+
 abstract class AbstractGDUser extends AbstractGDEntity {
-	
+
+	final String name;
 	final int secretCoins;
 	final int userCoins;
 	final int color1Id;
@@ -11,9 +14,10 @@ abstract class AbstractGDUser extends AbstractGDEntity {
 	final int creatorPoints;
 	final int demons;
 	
-	public AbstractGDUser(long id, int secretCoins, int userCoins, int color1Id, int color2Id, long accountId, int stars,
+	public AbstractGDUser(long id, String name, int secretCoins, int userCoins, int color1Id, int color2Id, long accountId, int stars,
 			int creatorPoints, int demons) {
 		super(id);
+		this.name = Objects.requireNonNull(name);
 		this.secretCoins = secretCoins;
 		this.userCoins = userCoins;
 		this.color1Id = color1Id;
@@ -24,6 +28,10 @@ abstract class AbstractGDUser extends AbstractGDEntity {
 		this.demons = demons;
 	}
 
+	public String getName() {
+		return name;
+	}
+	
 	public int getSecretCoins() {
 		return secretCoins;
 	}
