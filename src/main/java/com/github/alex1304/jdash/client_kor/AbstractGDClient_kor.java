@@ -68,14 +68,14 @@ abstract class AbstractGDClient {
 
 	/**
 	 * Sends the given request through the client and returns a Mono emtting the
-	 * response object.
+	 * response object.(클라이언트를 통해 주어진 요청을 보내고 응답 개체를 방출하는 모노를 반환한다.)
 	 * 
 	 * @param request the request object to send
-	 * @return a Mono emitting the response object. If an error occurs when fetching
+	 * @return a Mono emtting the response object. If an error occurs when fetching
 	 *         info to GD servers, it is emitted through the Mono.
 	 */
 	<E> Mono<E> fetch(GDRequest<E> request) {
-		// Returning immediately if the value is cached already
+		// Returning immediately if the value is cached already(값이 이미 캐시된 경우 즉시 반환)
 		if (request.cacheable()) {
 			@SuppressWarnings("unchecked")
 			E cached = (E) cache.get(request);
@@ -83,7 +83,7 @@ abstract class AbstractGDClient {
 				return Mono.just(cached);
 			}
 		}
-		// Building the request string
+		// Building the request string(요청 문자열 작성)
 		StringJoiner sj = new StringJoiner("&");
 		HashMap<String, String> params = new HashMap<>();
 		params.put("gameVersion", GAME_VERSION);
@@ -94,7 +94,7 @@ abstract class AbstractGDClient {
 		params.putAll(request.getParams());
 		params.forEach((k, v) -> sj.add(k + "=" + v));
 		String requestStr = sj.toString();
-		// Parsing, caching and returning the response
+		// Parsing, caching and returning the response(응답 구문 분석, 캐싱 및 반환)
 		return client.post().uri(request.getPath())
 				.send(ByteBufFlux.fromString(Flux.just(requestStr)))
 				.responseSingle((response, content) -> {
@@ -150,7 +150,7 @@ abstract class AbstractGDClient {
 	}
 
 	/**
-	 * Gets a Geometry Dash user from their accountID
+	 * Gets a Geometry Dash user from their accountID(계정에서 지오메트리 대시 사용자 가져오기)
 	 * 
 	 * @param accountId the ID of the user's Geometry Dash account
 	 * @return a Mono emitting the requested user, or an error if something goes
@@ -167,7 +167,7 @@ abstract class AbstractGDClient {
 	}
 
 	/**
-	 * Submits a search query and returns the corresponding user.
+	 * Submits a search query and returns the corresponding user.(검색 쿼리를 제출하고 해당 사용자를 반환하십시오.)
 	 * 
 	 * @param searchQuery the user to search for
 	 * @return a Mono emitting the user found, or an error if not found.
@@ -180,7 +180,7 @@ abstract class AbstractGDClient {
 	}
 
 	/**
-	 * Gets a Geometry Dash level from its ID.
+	 * Gets a Geometry Dash level from its ID.(ID에서 지오메트리 대시 레벨을 가져오십시오.)
 	 * 
 	 * @param levelId the ID of the level to get
 	 * @return a Mono emitting the level with the corresponding ID, or an error if
@@ -194,7 +194,7 @@ abstract class AbstractGDClient {
 	}
 	
 	/**
-	 * Gets information on a custom song from its ID.
+	 * Gets information on a custom song from its ID.(ID에서 사용자 지정 곡에 대한 정보를 가져오십시오.)
 	 * 
 	 * @param songId the ID of the song
 	 * @return a Mono emitting the song info, or an error if not found or something
@@ -209,7 +209,7 @@ abstract class AbstractGDClient {
 	}
 
 	/**
-	 * Gets the current Daily Level on Geometry Dash.
+	 * Gets the current Daily Level on Geometry Dash.(지오메트리 대시에서 현재 일별 레벨을 가져오십시오.)
 	 * 
 	 * @return a Mono emitting the Daily level, or an error if not found or
 	 *         something went wrong. If no Daily level is available, the error
@@ -220,7 +220,7 @@ abstract class AbstractGDClient {
 	}
 
 	/**
-	 * Gets the current Weekly Demon on Geometry Dash.
+	 * Gets the current Weekly Demon on Geometry Dash.(지오메트리 대시에서 현재 주간 데모를 가져오십시오.)
 	 * 
 	 * @return a Mono emitting the Weekly demon, or an error if not found or
 	 *         something went wrong. If no Weekly demon is available, the error
@@ -231,7 +231,7 @@ abstract class AbstractGDClient {
 	}
 
 	/**
-	 * Search for levels in Geometry Dash.
+	 * Search for levels in Geometry Dash.(지오메트리 대시에서 레벨을 검색하십시오.)
 	 * 
 	 * @param query   the search query
 	 * @param filters the search filters
@@ -247,7 +247,7 @@ abstract class AbstractGDClient {
 	}
 
 	/**
-	 * Gets levels uploaded by a specific user in Geometry Dash.
+	 * Gets levels uploaded by a specific user in Geometry Dash.(지오메트리 대시에서 특정 사용자가 업로드한 레벨을 가져오십시오.)
 	 * 
 	 * @param user the user
 	 * @param page the page number
@@ -266,7 +266,7 @@ abstract class AbstractGDClient {
 	}
 
 	/**
-	 * Browse levels in the Awarded section of Geometry Dash.
+	 * Browse levels in the Awarded section of Geometry Dash.(지오메트리 대시(Geometry Dash)의 Awarded 섹션에서 레벨을 찾아보십시오.)
 	 * 
 	 * @param filters the search filters
 	 * @param page    the page number
@@ -281,7 +281,7 @@ abstract class AbstractGDClient {
 	}
 
 	/**
-	 * Browse levels in the Recent section of Geometry Dash.
+	 * Browse levels in the Recent section of Geometry Dash.(지오메트리 대시 Recent 섹션에서 레벨을 찾아보십시오.)
 	 * 
 	 * @param filters the search filters
 	 * @param page    the page number
@@ -296,7 +296,7 @@ abstract class AbstractGDClient {
 	}
 
 	/**
-	 * Browse levels in the Featured section of Geometry Dash.
+	 * Browse levels in the Featured section of Geometry Dash.(지오메트리 대시(Geometry Dash)의 Featured 섹션에서 레벨을 찾아보십시오.)
 	 * 
 	 * @param page    the page number
 	 * @return a Mono emitting a paginator containing all levels found. Note that if
@@ -310,7 +310,7 @@ abstract class AbstractGDClient {
 	}
 
 	/**
-	 * Browse levels in the Hall of Fame section of Geometry Dash.
+	 * Browse levels in the Hall of Fame section of Geometry Dash.(지오메트리 대시(Geometry Dash)의 Hall of Fame 섹션에서 레벨을 찾아보십시오.)
 	 * 
 	 * @param page    the page number
 	 * @return a Mono emitting a paginator containing all levels found. Note that if
@@ -324,7 +324,7 @@ abstract class AbstractGDClient {
 	}
 
 	/**
-	 * Browse levels in the Most Downloaded section of Geometry Dash.
+	 * Browse levels in the Most Downloaded section of Geometry Dash.(지오메트리 대시(Geometry Dash)의 Most Downloaded 섹션에서 수준을 찾아보십시오.)
 	 * 
 	 * @param filters the search filters
 	 * @param page    the page number
@@ -339,7 +339,7 @@ abstract class AbstractGDClient {
 	}
 
 	/**
-	 * Browse levels in the Most Liked section of Geometry Dash.
+	 * Browse levels in the Most Liked section of Geometry Dash.(지오메트리 대시(Geometry Dash)의 Most Liked 섹션에서 수준을 찾아보십시오.)
 	 * 
 	 * @param filters the search filters
 	 * @param page    the page number
@@ -354,7 +354,7 @@ abstract class AbstractGDClient {
 	}
 
 	/**
-	 * Browse levels in the Trending section of Geometry Dash.
+	 * Browse levels in the Trending section of Geometry Dash.(지오메트리 대시(Geometry Dash)의 Trending 섹션에서 레벨을 찾아보십시오.)
 	 * 
 	 * @param filters the search filters
 	 * @param page    the page number
@@ -369,7 +369,7 @@ abstract class AbstractGDClient {
 	}
 
 	/**
-	 * Browse levels in the Magic section of Geometry Dash.
+	 * Browse levels in the Magic section of Geometry Dash.(지오메트리 대시(Geometry Dash)의 Magic 섹션에서 레벨을 찾아보십시오.)
 	 * 
 	 * @param filters the search filters
 	 * @param page    the page number
@@ -384,7 +384,7 @@ abstract class AbstractGDClient {
 	}
 
 	/**
-	 * Browse levels in the Followed section of Geometry Dash.
+	 * Browse levels in the Followed section of Geometry Dash.(지오메트리 대시(Geometry Dash)의 Followed 섹션에서 레벨을 찾아보십시오.)
 	 * 
 	 * @param filters  the search filters
 	 * @param followed the collection containing the instances of followed users
@@ -405,7 +405,7 @@ abstract class AbstractGDClient {
 	}
 
 	/**
-	 * Browse levels in the Followed section of Geometry Dash.
+	 * Browse levels in the Followed section of Geometry Dash.(지오메트리 대시(Geometry Dash)의 Followed 섹션에서 레벨을 찾아보십시오.)
 	 * 
 	 * @param filters            the search filters
 	 * @param followedAccountIDs the collection containing the account IDs of
@@ -424,7 +424,7 @@ abstract class AbstractGDClient {
 	/**
 	 * Gets data from a user provided by their profile. Unlike
 	 * {@link #getUserByAccountId(long)}, this doesn't include some data that is
-	 * only obtainable by using {@link #getUserDataFromSearch(String)}
+	 * only obtainable by using {@link #getUserDataFromSearch(String)}(프로필에서 제공한 사용자로부터 데이터를 가져오십시오. {@link #getUserByAccountId(long)}과(와) 달리 {@link #getUserDataFromSearch(String)}을(를) 사용해야만 얻을 수 있는 일부 데이터는 포함되지 않음)
 	 * 
 	 * @param accountId the account ID of the user to fetch
 	 * @return a Mono emitting the data found
@@ -437,7 +437,7 @@ abstract class AbstractGDClient {
 	 * Gets data from a user provided by the Search user feature. The data gotten
 	 * from there might be inaccurate and severely outdated, that's why it is
 	 * preferred to use {@link #getUserDataFromProfile(long)} in order to fetch
-	 * stats.
+	 * stats.(Search user feature가 제공하는 사용자로부터 데이터를 가져오십시오. 거기서 얻은 데이터가 부정확하고 심각하게 구식일 수 있으므로 통계를 가져오기 위해 {@link #getUserDataFromProfile(long)}을(를) 사용하는 것이 좋다.)
 	 * 
 	 * @param searchQuery the search query
 	 * @return a Mono emitting the data found
@@ -447,7 +447,7 @@ abstract class AbstractGDClient {
 	}
 	
 	/**
-	 * Gets the host.
+	 * Gets the host.(호스트를 가져온다.)
 	 *
 	 * @return String
 	 */
@@ -456,7 +456,7 @@ abstract class AbstractGDClient {
 	}
 	
 	/**
-	 * Gets the time to live of a cache entry in milliseconds.
+	 * Gets the time to live of a cache entry in milliseconds.(캐시 항목의 수명(밀리초)을 가져오십시오.)
 	 * 
 	 * @return long
 	 */
@@ -465,7 +465,7 @@ abstract class AbstractGDClient {
 	}
 	
 	/**
-	 * Gets the maximum number of simultaneous connections.
+	 * Gets the maximum number of simultaneous connections.(최대 동시 연결 수를 가져오십시오.)
 	 * 
 	 * @return int
 	 */
@@ -475,7 +475,7 @@ abstract class AbstractGDClient {
 	
 	/**
 	 * Gets the maximum time in milliseconds to wait if a request takes too long
-	 * to complete.
+	 * to complete.(요청이 완료되는 데 너무 오래 걸리는 경우 대기할 최대 시간(밀리초)을 가져오십시오.)
 	 * 
 	 * @return long
 	 */
@@ -484,7 +484,7 @@ abstract class AbstractGDClient {
 	}
 
 	/**
-	 * Clears the cache of previous requests.
+	 * Clears the cache of previous requests.(이전 요청의 캐시 지우기)
 	 */
 	public void clearCache() {
 		cache.clear();
