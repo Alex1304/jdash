@@ -35,7 +35,7 @@ interface GDRequest<E> {
 	E parseResponse(String response) throws GDClientException;
 	
 	/**
-	 * Whehter cache should be disabled for this request.
+	 * Whether cache should be disabled for this request.
 	 * 
 	 * @return boolean
 	 */

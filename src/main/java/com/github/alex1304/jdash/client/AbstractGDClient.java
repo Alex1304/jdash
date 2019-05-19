@@ -75,7 +75,7 @@ abstract class AbstractGDClient {
 	 * response object.
 	 * 
 	 * @param request the request object to send
-	 * @return a Mono emtting the response object. If an error occurs when fetching
+	 * @return a Mono emitting the response object. If an error occurs when fetching
 	 *         info to GD servers, it is emitted through the Mono.
 	 */
 	<E> Mono<E> fetch(GDRequest<E> request) {
