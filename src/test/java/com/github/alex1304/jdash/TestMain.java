@@ -7,6 +7,7 @@ import java.util.EnumSet;
 
 import com.github.alex1304.jdash.client.AuthenticatedGDClient;
 import com.github.alex1304.jdash.client.GDClientBuilder;
+import com.github.alex1304.jdash.client.GDClientBuilder.Credentials;
 import com.github.alex1304.jdash.entity.Difficulty;
 import com.github.alex1304.jdash.entity.GDLevel;
 import com.github.alex1304.jdash.entity.GDMessage;
@@ -23,7 +24,9 @@ public class TestMain {
 			System.err.println("Please provide GD account login details in arguments");
 			return;
 		}
-		AuthenticatedGDClient client = GDClientBuilder.create().buildAuthenticated(args[0], args[1]);
+		AuthenticatedGDClient client = GDClientBuilder.create()
+				.buildAuthenticated(new Credentials(args[0], args[1]))
+				.block();
 		
 		client.getUserByAccountId(98006)
 			.doOnError(Throwable::printStackTrace)

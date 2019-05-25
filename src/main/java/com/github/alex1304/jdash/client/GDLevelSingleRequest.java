@@ -91,6 +91,11 @@ class GDLevelSingleRequest extends AbstractGDRequest<GDLevel> {
 	}
 	
 	@Override
+	public boolean cacheable() {
+		return levelId > 0;
+	}
+	
+	@Override
 	public boolean equals(Object obj) {
 		return obj instanceof GDLevelSingleRequest && ((GDLevelSingleRequest) obj).levelId == levelId;
 	}

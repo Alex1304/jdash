@@ -78,7 +78,7 @@ public final class AuthenticatedGDClient extends AbstractGDClient {
 	 *         empty paginator. This is because the Geometry Dash API returns the
 	 *         same response when nothing is found and when an actual error occurs
 	 *         while processing the request (blame RobTop for that!).
-	 * @throws UnsupportedOperationException if this client is not logged it to any
+	 * @throws UnsupportedOperationException if this client is not logged in to any
 	 *                                       account
 	 */
 	public Mono<GDPaginator<GDMessage>> getPrivateMessages(int page) {

@@ -102,7 +102,7 @@ public class TestMain {
 	public static void main(String[] args) throws Exception {
 		// Build an anonymous client
 		try {
-			AuthenticatedGDClient client = GDClientBuilder.create().buildAuthenticated("MyUsername", "MyP@ssw0rd");
+			AuthenticatedGDClient client = GDClientBuilder.create().buildAuthenticated(new Credentials("MyUsername", "MyP@ssw0rd")).block();
 			// With an authenticated client, you can do cool stuff like this:
 			client.getPrivateMessages(0).doOnSuccess(messages -> {
 				for (GDMessage message : messages) {

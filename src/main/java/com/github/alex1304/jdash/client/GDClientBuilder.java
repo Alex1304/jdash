@@ -9,6 +9,8 @@ import com.github.alex1304.jdash.exception.GDClientException;
 import com.github.alex1304.jdash.exception.GDLoginFailedException;
 import com.github.alex1304.jdash.util.Routes;
 
+import reactor.core.publisher.Mono;
+
 /**
  * Builds a Geometry Dash client step by step.
  */
@@ -115,7 +117,12 @@ public final class GDClientBuilder {
 	 * @param password the password
 	 * @return the authenticated GD client
 	 * @throws GDLoginFailedException if the authentication fails
+	 * 
+	 * @deprecated This method is synchronous and blocking. Use
+	 *             {@link #buildAuthenticated(Credentials)} instead which builds the
+	 *             authenticated client asynchronously.
 	 */
+	@Deprecated
 	public AuthenticatedGDClient buildAuthenticated(String username, String password) throws GDLoginFailedException {
 		AnonymousGDClient client = buildAnonymous();
 		try {
@@ -124,6 +131,43 @@ public final class GDClientBuilder {
 					client.getRequestTimeout());
 		} catch (GDClientException e) {
 			throw new GDLoginFailedException(e);
+		}
+	}
+	
+	/**
+	 * Builds a GD client authenticated with a username and a password. It
+	 * internally builds an anonymous GD client in order to perform a login request,
+	 * then constructs an authenticated client based on the login response.
+	 * 
+	 * @param credentials the credentials used to authenticate the client
+	 * @return a Mono that emites the authenticated client upon successful login. If
+	 *         the login fails, it will emit an error of type
+	 *         {@link GDLoginFailedException}
+	 */
+	public Mono<AuthenticatedGDClient> buildAuthenticated(Credentials credentials) {
+		return Mono.fromCallable(this::buildAnonymous)
+				.flatMap(anonClient -> anonClient.fetch(new GDLoginRequest(anonClient, credentials.username, credentials.password, "jdash-client"))
+						.map(details -> new AuthenticatedGDClient(details[0], details[1], credentials.username, credentials.password,
+								anonClient.getHost(), anonClient.getCacheTtl(), anonClient.getMaxConnections(), anonClient.getRequestTimeout()))
+						.onErrorMap(GDClientException.class, GDLoginFailedException::new));
+	}
+	
+	/**
+	 * Encapsulates a username and a password field.
+	 */
+	public static class Credentials {
+		
+		private final String username, password;
+		
+		/**
+		 * Creates a Credentials object with the given usernama and password.
+		 * 
+		 * @param username the username
+		 * @param password the password
+		 */
+		public Credentials(String username, String password) {
+			this.username = username;
+			this.password = password;
 		}
 	}
 }
