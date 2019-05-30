@@ -36,7 +36,6 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 import reactor.netty.ByteBufFlux;
 import reactor.netty.http.client.HttpClient;
-import reactor.netty.resources.ConnectionProvider;
 import reactor.retry.Retry;
 import reactor.scheduler.forkjoin.ForkJoinPoolScheduler;
 
@@ -48,19 +47,17 @@ abstract class AbstractGDClient {
 	private final Logger logger;
 	private final Scheduler scheduler;
 	private String host;
-	private int maxConnections;
 	private final HttpClient client;
 	private final Map<GDRequest<?>, Object> cache;
 	private final Map<GDRequest<?>, Instant> cacheTime;
 	private final Duration cacheTtl;
 	private final Duration requestTimeout;
 
-	AbstractGDClient(String host, Duration cacheTtl, int maxConnections, Duration requestTimeout) {
+	AbstractGDClient(String host, Duration cacheTtl, Duration requestTimeout) {
 		this.logger = LoggerFactory.getLogger("jdash");
 		this.scheduler = ForkJoinPoolScheduler.create("jdash-client-forkjoin");
 		this.host = host;
-		this.maxConnections = maxConnections;
-		this.client = HttpClient.create(ConnectionProvider.fixed("gd-connection-pool", maxConnections))
+		this.client = HttpClient.create()
 				.baseUrl(host)
 				.headers(h -> h.add("Content-Type", "application/x-www-form-urlencoded"));
 		this.cache = new ConcurrentHashMap<>();
@@ -482,9 +479,12 @@ abstract class AbstractGDClient {
 	 * Gets the maximum number of simultaneous connections.
 	 * 
 	 * @return int
+	 * 
+	 * @deprecated limiting max connections is no longer supported. This method will always return -1
 	 */
+	@Deprecated
 	public int getMaxConnections() {
-		return maxConnections;
+		return -1;
 	}
 	
 	/**

@@ -14,12 +14,11 @@ public class MultiRequestTestMain {
 
 	public static void main(String[] args) {
 		AnonymousGDClient client = GDClientBuilder.create()
-				.withMaxConnections(70)
 				.buildAnonymous();
 		
 		Flux.fromIterable(Arrays.asList(args))
 			.map(Long::parseLong)
-			.flatMap(id -> client.getUserByAccountId(id))
+			.flatMap(id -> client.getUserByAccountId(id), 120)
 			.doOnNext(__ -> System.out.println(++i))
 			.doOnComplete(() -> System.out.println("Done!"))
 			.subscribe();

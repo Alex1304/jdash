@@ -16,23 +16,22 @@ import reactor.core.publisher.Mono;
  */
 public final class GDClientBuilder {
 	public static final Duration DEFAULT_CACHE_TTL = Duration.ofMinutes(15);
+	@Deprecated
 	public static final int DEFAULT_MAX_CONNECTIONS = Runtime.getRuntime().availableProcessors();
 	public static final Duration DEFAULT_REQUEST_TIMEOUT = Duration.ofMillis(Long.MAX_VALUE);
 
 	private Optional<String> host;
 	private Optional<Duration> cacheTtl;
-	private Optional<Integer> maxConnections;
 	private Optional<Duration> requestTimeout; 
 
-	private GDClientBuilder(Optional<String> host, Optional<Duration> cacheTtl, Optional<Integer> maxConnections, Optional<Duration> requestTimeout) {
+	private GDClientBuilder(Optional<String> host, Optional<Duration> cacheTtl, Optional<Duration> requestTimeout) {
 		this.host = host;
 		this.cacheTtl = cacheTtl;
-		this.maxConnections = maxConnections;
 		this.requestTimeout = requestTimeout;
 	}
 
 	public static GDClientBuilder create() {
-		return new GDClientBuilder(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
+		return new GDClientBuilder(Optional.empty(), Optional.empty(), Optional.empty());
 	}
 
 	/**
@@ -75,12 +74,15 @@ public final class GDClientBuilder {
 	 * @param maxConnections the number of max connections
 	 * @return this (for method chaining purposes)
 	 * @throws IllegalArgumentException if maxConnections is &lt; 1
+	 * 
+	 * @deprecated Limiting max connections is no longer supported. It caused too
+	 *             many issues as it involved having a fixed pool of connections.
+	 *             Reactor netty has a bug that causes the pool to break and make
+	 *             requests become indefinitely stuck at trying to acquire a
+	 *             connection.
 	 */
+	@Deprecated
 	public GDClientBuilder withMaxConnections(int maxConnections) {
-		if (maxConnections < 1) {
-			throw new IllegalArgumentException("maxConnections must be >= 1");
-		}
-		this.maxConnections = Optional.of(maxConnections);
 		return this;
 	}
 
@@ -106,7 +108,7 @@ public final class GDClientBuilder {
 	 * @return {@link AnonymousGDClient}
 	 */
 	public AnonymousGDClient buildAnonymous() {
-		return new AnonymousGDClient(host.orElse(Routes.BASE_URL), cacheTtl.orElse(DEFAULT_CACHE_TTL), maxConnections.orElse(DEFAULT_MAX_CONNECTIONS),
+		return new AnonymousGDClient(host.orElse(Routes.BASE_URL), cacheTtl.orElse(DEFAULT_CACHE_TTL),
 				requestTimeout.orElse(DEFAULT_REQUEST_TIMEOUT));
 	}
 	
@@ -127,7 +129,7 @@ public final class GDClientBuilder {
 		AnonymousGDClient client = buildAnonymous();
 		try {
 			long[] details = client.fetch(new GDLoginRequest(client, username, password, "jdash-client")).block();
-			return new AuthenticatedGDClient(details[0], details[1], username, password, client.getHost(), client.getCacheTtl(), client.getMaxConnections(),
+			return new AuthenticatedGDClient(details[0], details[1], username, password, client.getHost(), client.getCacheTtl(),
 					client.getRequestTimeout());
 		} catch (GDClientException e) {
 			throw new GDLoginFailedException(e);
@@ -148,7 +150,7 @@ public final class GDClientBuilder {
 		return Mono.fromCallable(this::buildAnonymous)
 				.flatMap(anonClient -> anonClient.fetch(new GDLoginRequest(anonClient, credentials.username, credentials.password, "jdash-client"))
 						.map(details -> new AuthenticatedGDClient(details[0], details[1], credentials.username, credentials.password,
-								anonClient.getHost(), anonClient.getCacheTtl(), anonClient.getMaxConnections(), anonClient.getRequestTimeout()))
+								anonClient.getHost(), anonClient.getCacheTtl(), anonClient.getRequestTimeout()))
 						.onErrorMap(GDClientException.class, GDLoginFailedException::new));
 	}
 	

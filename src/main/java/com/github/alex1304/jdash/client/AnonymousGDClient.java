@@ -38,8 +38,8 @@ import reactor.core.publisher.Mono;
  * </ul>
  */
 public final class AnonymousGDClient extends AbstractGDClient {
-	AnonymousGDClient(String host, Duration cacheTtl, int maxConnections, Duration requestTimeout) {
-		super(host, cacheTtl, maxConnections, requestTimeout);
+	AnonymousGDClient(String host, Duration cacheTtl, Duration requestTimeout) {
+		super(host, cacheTtl, requestTimeout);
 	}
 	@Override
 	void putExtraParams(Map<String, String> params) {
