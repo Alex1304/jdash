@@ -1,6 +1,5 @@
 package com.github.alex1304.jdash;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -28,126 +27,105 @@ public class TestMain {
 				.buildAuthenticated(new Credentials(args[0], args[1]))
 				.block();
 		
+		Mono.when(
+		
 		client.getUserByAccountId(98006)
 			.doOnError(Throwable::printStackTrace)
-			.doOnSuccess(o -> printResult("Get user 98006", o))
-			.subscribe();
+			.doOnSuccess(o -> printResult("Get user 98006", o)),
 		
 		client.searchUser("RobTop")
 			.doOnError(Throwable::printStackTrace)
-			.doOnSuccess(o -> printResult("Search user RobTop", o))
-			.subscribe();
+			.doOnSuccess(o -> printResult("Search user RobTop", o)),
 		
 		client.getLevelById(10565740)
 			.doOnError(Throwable::printStackTrace)
-			.doOnSuccess(o -> printResult("Get level 10565740", o))
-			.subscribe();
+			.doOnSuccess(o -> printResult("Get level 10565740", o)),
 		
 		client.searchLevels("bloodbath", LevelSearchFilters.create(), 0)
 			.doOnError(Throwable::printStackTrace)
-			.doOnSuccess(o -> printResult("Search levels Bloodbath", o))
-			.subscribe();
+			.doOnSuccess(o -> printResult("Search levels Bloodbath", o)),
 		
 		client.searchLevels("sonic wave", LevelSearchFilters.create().withDifficulties(EnumSet.of(Difficulty.HARD)), 0)
 			.doOnError(Throwable::printStackTrace)
-			.doOnSuccess(o -> printResult("Search levels Sonic wave, filter: Difficulty.HARD", o))
-			.subscribe();
+			.doOnSuccess(o -> printResult("Search levels Sonic wave, filter: Difficulty.HARD", o)),
 		
 		client.getLevelById(52637920)
 			.doOnError(Throwable::printStackTrace)
 			.flatMap(GDLevel::download)
-			.doOnSuccess(o -> printResult("Download level 52637920", o))
-			.subscribe();
+			.doOnSuccess(o -> printResult("Download level 52637920", o)),
 		
 		client.getDailyLevel()
 			.doOnError(Throwable::printStackTrace)
-			.doOnSuccess(o -> printResult("Get Daily level info", o))
-			.subscribe();
+			.doOnSuccess(o -> printResult("Get Daily level info", o)),
 		
 		client.getWeeklyDemon()
 			.doOnError(Throwable::printStackTrace)
-			.doOnSuccess(o -> printResult("Get Weekly demon info", o))
-			.subscribe();
+			.doOnSuccess(o -> printResult("Get Weekly demon info", o)),
 		
 		client.getDailyLevel()
 			.flatMap(GDTimelyLevel::getLevel)
 			.doOnError(Throwable::printStackTrace)
-			.doOnSuccess(o -> printResult("Get Daily level download", o))
-			.subscribe();
+			.doOnSuccess(o -> printResult("Get Daily level download", o)),
 		
 		client.getWeeklyDemon()
 			.flatMap(GDTimelyLevel::getLevel)
 			.doOnError(Throwable::printStackTrace)
-			.doOnSuccess(o -> printResult("Get Weekly demon download", o))
-			.subscribe();
+			.doOnSuccess(o -> printResult("Get Weekly demon download", o)),
 		
 		client.browseAwardedLevels(LevelSearchFilters.create(), 0)
 			.doOnError(Throwable::printStackTrace)
-			.doOnSuccess(o -> printResult("Browse Awarded section", o))
-			.subscribe();
+			.doOnSuccess(o -> printResult("Browse Awarded section", o)),
 		
 		client.browseRecentLevels(LevelSearchFilters.create(), 0)
 			.doOnError(Throwable::printStackTrace)
-			.doOnSuccess(o -> printResult("Browse Recent section", o))
-			.subscribe();
+			.doOnSuccess(o -> printResult("Browse Recent section", o)),
 		
 		client.browseMagicLevels(LevelSearchFilters.create(), 0)
 			.doOnError(Throwable::printStackTrace)
-			.doOnSuccess(o -> printResult("Browse Magic section", o))
-			.subscribe();
+			.doOnSuccess(o -> printResult("Browse Magic section", o)),
 		
 		client.browseTrendingLevels(LevelSearchFilters.create(), 0)
 			.doOnError(Throwable::printStackTrace)
-			.doOnSuccess(o -> printResult("Browse Trending section", o))
-			.subscribe();
+			.doOnSuccess(o -> printResult("Browse Trending section", o)),
 		
 		
 		client.browseFeaturedLevels(0)
 			.doOnError(Throwable::printStackTrace)
-			.doOnSuccess(o -> printResult("Browse Featured section", o))
-			.subscribe();
+			.doOnSuccess(o -> printResult("Browse Featured section", o)),
 		
 		client.browseHallOfFameLevels(0)
 			.doOnError(Throwable::printStackTrace)
-			.doOnSuccess(o -> printResult("Browse Hall of Fame", o))
-			.subscribe();
+			.doOnSuccess(o -> printResult("Browse Hall of Fame", o)),
 		
 		client.getLevelsByUser(client.getUserByAccountId(98006).block(), 0)
 			.doOnError(Throwable::printStackTrace)
-			.doOnSuccess(o -> printResult("Get levels from Alex1304", o))
-			.subscribe();
+			.doOnSuccess(o -> printResult("Get levels from Alex1304", o)),
 		
 		client.browseAwardedLevels(LevelSearchFilters.create(), 0)
 			.flatMap(GDPaginator::goToNextPage)
 			.doOnError(Throwable::printStackTrace)
-			.doOnSuccess(o -> printResult("Browse second page of Awarded section", o))
-			.subscribe();
+			.doOnSuccess(o -> printResult("Browse second page of Awarded section", o)),
 		
 		client.browseFollowedIds(LevelSearchFilters.create(), new ArrayList<>(Arrays.asList(98006L, 71L)), 0)
 			.doOnError(Throwable::printStackTrace)
-			.doOnSuccess(o -> printResult("Following Alex1304 and RobTop", o))
-			.subscribe();
+			.doOnSuccess(o -> printResult("Following Alex1304 and RobTop", o)),
 		
 		client.getPrivateMessages(0)
 			.doOnError(Throwable::printStackTrace)
-			.doOnSuccess(o -> printResult("Private messages", o))
-			.subscribe();
+			.doOnSuccess(o -> printResult("Private messages", o)),
 		
 		client.getPrivateMessages(0)
 			.map(paginator -> paginator.asList().get(0))
 			.flatMap(GDMessage::getBody)
 			.doOnError(Throwable::printStackTrace)
-			.doOnSuccess(o -> printResult("First private message content", o))
-			.subscribe();
+			.doOnSuccess(o -> printResult("First private message content", o)),
 		
 		client.sendPrivateMessage(client.searchUser("Alex1304").block(), "Test", "Hello world!")
-			.doAfterSuccessOrError((success, error) -> {
-				if (error == null) printResult("Send message", "Message sent!");
-				else error.printStackTrace();
-			})
-			.subscribe();
+			.doOnSuccess(o -> printResult("Send message", "Message sent!"))
+			.doOnError(Throwable::printStackTrace)
 		
-		Mono.delay(Duration.ofSeconds(8)).block();
+		).block();
+		
 		System.out.println("End program");
 	}
 	

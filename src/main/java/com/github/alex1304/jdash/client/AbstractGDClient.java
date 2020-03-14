@@ -2,17 +2,12 @@ package com.github.alex1304.jdash.client;
 
 import java.io.IOException;
 import java.time.Duration;
-import java.time.Instant;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.StringJoiner;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.github.alex1304.jdash.entity.GDLevel;
 import com.github.alex1304.jdash.entity.GDSong;
@@ -30,6 +25,8 @@ import com.github.alex1304.jdash.exception.UserSearchDataNotFoundException;
 import com.github.alex1304.jdash.util.GDPaginator;
 import com.github.alex1304.jdash.util.LevelSearchFilters;
 import com.github.alex1304.jdash.util.LevelSearchStrategy;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -38,33 +35,34 @@ import reactor.netty.ByteBufFlux;
 import reactor.netty.http.client.HttpClient;
 import reactor.retry.Retry;
 import reactor.scheduler.forkjoin.ForkJoinPoolScheduler;
+import reactor.util.Logger;
+import reactor.util.Loggers;
 
 abstract class AbstractGDClient {
 	private static final String GAME_VERSION = "21";
 	private static final String BINARY_VERSION = "34";
 	private static final String SECRET = "Wmfd2893gb7";
-
-	private final Logger logger;
+	
+	private static final Logger LOGGER = Loggers.getLogger("jdash");
+	
 	private final Scheduler scheduler;
 	private String host;
 	private final HttpClient client;
-	private final Map<GDRequest<?>, Object> cache;
-	private final Map<GDRequest<?>, Instant> cacheTime;
+	private final Cache<GDRequest<?>, Object> cache;
 	private final Duration cacheTtl;
 	private final Duration requestTimeout;
 
 	AbstractGDClient(String host, Duration cacheTtl, Duration requestTimeout) {
-		this.logger = LoggerFactory.getLogger("jdash");
 		this.scheduler = ForkJoinPoolScheduler.create("jdash-client-forkjoin");
 		this.host = host;
 		this.client = HttpClient.create()
 				.baseUrl(host)
 				.headers(h -> h.add("Content-Type", "application/x-www-form-urlencoded"));
-		this.cache = new ConcurrentHashMap<>();
-		this.cacheTime = new ConcurrentHashMap<>();
+		this.cache = Caffeine.newBuilder()
+				.expireAfterAccess(cacheTtl)
+				.build();
 		this.cacheTtl = cacheTtl;
 		this.requestTimeout = requestTimeout;
-		cleanUpExpiredCacheEntries();
 	}
 
 	/**
@@ -79,7 +77,7 @@ abstract class AbstractGDClient {
 		// Returning immediately if the value is cached already
 		if (request.cacheable()) {
 			@SuppressWarnings("unchecked")
-			E cached = (E) cache.get(request);
+			E cached = (E) cache.getIfPresent(request);
 			if (cached != null) {
 				return Mono.just(cached);
 			}
@@ -96,7 +94,7 @@ abstract class AbstractGDClient {
 		params.forEach((k, v) -> sj.add(k + "=" + v));
 		String requestStr = sj.toString();
 		// Parsing, caching and returning the response
-		return client.doAfterRequest((httpreq, connection) -> logger.debug("Request sent: {}", request))
+		return client.doAfterRequest((httpreq, connection) -> LOGGER.debug("Request sent: {}", request))
 				.post()
 				.uri(request.getPath())
 				.send(ByteBufFlux.fromString(Flux.just(requestStr)))
@@ -109,7 +107,7 @@ abstract class AbstractGDClient {
 				})
 				.publishOn(scheduler)
 				.flatMap(responseStr -> {
-					logger.debug("Received response: {}", responseStr);
+					LOGGER.debug("Received response: {}", responseStr);
 					try {
 						E entity = request.parseResponse(responseStr.trim());
 						if (entity == null) {
@@ -117,9 +115,8 @@ abstract class AbstractGDClient {
 						}
 						if (request.cacheable()) {
 							cache.put(request, entity);
-							cacheTime.put(request, Instant.now());
 						}
-						logger.debug("Successfully parsed response into entity: {}", entity);
+						LOGGER.debug("Successfully parsed response into entity: {}", entity);
 						return Mono.just(entity);
 					} catch (GDClientException e) {
 						return Mono.error(e);
@@ -130,30 +127,15 @@ abstract class AbstractGDClient {
 				.retryWhen(Retry.anyOf(IOException.class)
 						.exponentialBackoffWithJitter(Duration.ofMillis(100), Duration.ofSeconds(10))
 						.doOnRetry(retryCtx -> {
-								logger.info("Retrying attempt {} in {}ms for failed request {} ({}: {})", retryCtx.iteration(),
+								LOGGER.info("Retrying attempt {} in {}ms for failed request {} ({}: {})", retryCtx.iteration(),
 										retryCtx.backoff().toMillis(), request, retryCtx.exception().getClass().getCanonicalName(), 
 										retryCtx.exception().getMessage() == null ? "(no message)" : retryCtx.exception().getMessage());
-								logger.debug("I/O error occured", retryCtx.exception());
+								LOGGER.debug("I/O error occured", retryCtx.exception());
 						}))
 				.timeout(requestTimeout);
 	}
 	
 	abstract void putExtraParams(Map<String, String> params);
-
-	private void cleanUpExpiredCacheEntries() {
-		Flux.interval(cacheTtl.dividedBy(10))
-				.map(__ -> Instant.now())
-				.doOnNext(now -> {
-					new HashMap<>(cacheTime).forEach((k, v) -> {
-						if (!Duration.between(v, now).abs().minus(cacheTtl).isNegative()) {
-							cacheTime.remove(k);
-							cache.remove(k);
-						}
-					});
-				})
-				.doAfterTerminate(this::cleanUpExpiredCacheEntries)
-				.subscribe();
-	}
 
 	/**
 	 * Gets a Geometry Dash user from their accountID
@@ -501,7 +483,6 @@ abstract class AbstractGDClient {
 	 * Clears the cache of previous requests.
 	 */
 	public void clearCache() {
-		cache.clear();
-		cacheTime.clear();
+		cache.invalidateAll();
 	}
 }
