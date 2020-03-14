@@ -31,10 +31,10 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
+import reactor.core.scheduler.Schedulers;
 import reactor.netty.ByteBufFlux;
 import reactor.netty.http.client.HttpClient;
 import reactor.retry.Retry;
-import reactor.scheduler.forkjoin.ForkJoinPoolScheduler;
 import reactor.util.Logger;
 import reactor.util.Loggers;
 
@@ -53,7 +53,7 @@ abstract class AbstractGDClient {
 	private final Duration requestTimeout;
 
 	AbstractGDClient(String host, Duration cacheTtl, Duration requestTimeout) {
-		this.scheduler = ForkJoinPoolScheduler.create("jdash-client-forkjoin");
+		this.scheduler = Schedulers.boundedElastic();
 		this.host = host;
 		this.client = HttpClient.create()
 				.baseUrl(host)
