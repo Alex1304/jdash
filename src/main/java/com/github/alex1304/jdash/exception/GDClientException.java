@@ -7,6 +7,10 @@ public class GDClientException extends RuntimeException {
 		super();
 	}
 
+	public GDClientException(String message) {
+		super(message);
+	}
+
 	public GDClientException(Throwable cause) {
 		super(cause);
 	}

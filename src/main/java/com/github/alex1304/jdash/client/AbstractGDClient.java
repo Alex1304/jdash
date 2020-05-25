@@ -40,7 +40,7 @@ import reactor.util.Loggers;
 
 abstract class AbstractGDClient {
 	private static final String GAME_VERSION = "21";
-	private static final String BINARY_VERSION = "34";
+	private static final String BINARY_VERSION = "35";
 	private static final String SECRET = "Wmfd2893gb7";
 	
 	private static final Logger LOGGER = Loggers.getLogger("jdash");
@@ -57,7 +57,10 @@ abstract class AbstractGDClient {
 		this.host = host;
 		this.client = HttpClient.create()
 				.baseUrl(host)
-				.headers(h -> h.add("Content-Type", "application/x-www-form-urlencoded"));
+				.headers(h -> {
+					h.add("Content-Type", "application/x-www-form-urlencoded");
+					h.add("User-Agent", "");
+				});
 		this.cache = Caffeine.newBuilder()
 				.expireAfterAccess(cacheTtl)
 				.build();
