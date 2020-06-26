@@ -27,7 +27,7 @@ class GDUserProfileCommentRequest extends AbstractGDRequest<GDPaginator<GDCommen
 
     @Override
     public String getPath() {
-        return Routes.GET_PRIVATE_MESSAGES;
+        return Routes.GET_USER_COMMENT;
     }
 
     @Override

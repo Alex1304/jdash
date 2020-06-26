@@ -29,7 +29,7 @@ class GDLevelCommentRequest extends AbstractGDRequest<GDPaginator<GDComment>> {
 
     @Override
     public String getPath() {
-        return Routes.GET_PRIVATE_MESSAGES;
+        return Routes.GET_LEVEL_COMMENT;
     }
 
     @Override
