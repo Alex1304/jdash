@@ -1,9 +1,6 @@
 package com.github.alex1304.jdash.client;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 import com.github.alex1304.jdash.entity.GDUserSearchData;
 import com.github.alex1304.jdash.entity.IconType;
@@ -34,7 +31,7 @@ class GDUserRankingRequest extends AbstractAuthenticatedGDRequest<List<GDUserSea
 
     @Override
     List<GDUserSearchData> parseResponse0(String response) throws GDClientException {
-        ArrayList<GDUserSearchData> ranking = new ArrayList<>();
+        List<GDUserSearchData> ranking = new ArrayList<>();
         String[] users = response.split("\\|");
         for (String u : users) {
             Map<Integer, String> data = ParseUtils.splitToMap(u, ":");
@@ -52,6 +49,7 @@ class GDUserRankingRequest extends AbstractAuthenticatedGDRequest<List<GDUserSea
             String strName = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_NAME), "-");
             String strIconType = Utils.defaultStringIfEmptyOrNull(data.get(Indexes.USER_ICON_TYPE), "0");
             int iconTypeIndex = Integer.parseInt(strIconType);
+
             ranking.add(new GDUserSearchData(
                     Long.parseLong(strPlayerID),
                     strName,
@@ -66,6 +64,9 @@ class GDUserRankingRequest extends AbstractAuthenticatedGDRequest<List<GDUserSea
                     !strHasGlowOutline.equals("0"),
                     Integer.parseInt(strMainIconId),
                     IconType.values()[iconTypeIndex >= IconType.values().length ? 0 : iconTypeIndex]));
+        }
+        if(strategy.getVal().equals("friends")){
+            ranking.sort(((o1, o2) -> o2.getStars() - o1.getStars()));
         }
         return ranking;
     }
