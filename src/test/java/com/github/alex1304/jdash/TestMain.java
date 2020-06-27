@@ -132,7 +132,7 @@ public class TestMain {
 
 		client.getUserRanking(UserRankingStrategy.FRIENDS, 50)
 			.doOnError(Throwable::printStackTrace)
-			.doOnSuccess(o -> printResult("My global ranking", o)),
+			.doOnSuccess(o -> printResult("My friend ranking", o)),
 
 		client.getUserRanking(UserRankingStrategy.CREATORS, 200)
 			.map(list -> list.get(149).getCreatorPoints())
