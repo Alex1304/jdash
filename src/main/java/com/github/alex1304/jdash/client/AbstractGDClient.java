@@ -9,13 +9,8 @@ import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
-import com.github.alex1304.jdash.entity.GDLevel;
-import com.github.alex1304.jdash.entity.GDSong;
-import com.github.alex1304.jdash.entity.GDTimelyLevel;
+import com.github.alex1304.jdash.entity.*;
 import com.github.alex1304.jdash.entity.GDTimelyLevel.TimelyType;
-import com.github.alex1304.jdash.entity.GDUser;
-import com.github.alex1304.jdash.entity.GDUserProfileData;
-import com.github.alex1304.jdash.entity.GDUserSearchData;
 import com.github.alex1304.jdash.exception.BadResponseException;
 import com.github.alex1304.jdash.exception.CorruptedResponseContentException;
 import com.github.alex1304.jdash.exception.GDClientException;
@@ -415,6 +410,21 @@ abstract class AbstractGDClient {
 	}
 
 	/**
+	 * Gets comments of specific level in Geometry dash
+	 *
+	 * @param levelId the level ID to get comments
+	 * @param isRecent Whether to sort in recent order or not(then Most Liked.)
+	 * @param page the page number
+	 * @return a Mono emitting a paginator containing all comments in level. Note that if
+	 *         no comments are found, it will emit an empty paginator. (In this case,
+	 *         fortunately, Geometry Dash API does not return the same response
+	 *         when an actual error occurs while processing the request).
+	 */
+	public Mono<GDPaginator<GDComment>> getLevelCommentById(long levelId, boolean isRecent, int page){
+		return fetch(new GDLevelCommentRequest(this, levelId, isRecent, page));
+	}
+
+	/**
 	 * Gets data from a user provided by their profile. Unlike
 	 * {@link #getUserByAccountId(long)}, this doesn't include some data that is
 	 * only obtainable by using {@link #getUserDataFromSearch(String)}
@@ -437,6 +447,19 @@ abstract class AbstractGDClient {
 	 */
 	public Mono<GDUserSearchData> getUserDataFromSearch(String searchQuery) {
 		return fetch(new GDUserSearchDataRequest(this, searchQuery, 0)).map(paginator -> paginator.asList().get(0));
+	}
+
+	/**
+	 * Gets comments of specific user in Geometry dash
+	 * @param accountId this account ID to get comments
+	 * @param page the page number
+	 * @return a Mono emitting a paginator containing all comments in user. Note that if
+	 *         no comments are found, it will emit an empty paginator. (In this case,
+	 *         fortunately, Geometry Dash API does not return the same response
+	 *         when an actual error occurs while processing the request).
+	 */
+	public Mono<GDPaginator<GDComment>> getUserCommentByAccountId(long accountId, int page){
+		return fetch(new GDUserProfileCommentRequest(this, accountId, page));
 	}
 	
 	/**
