@@ -1,15 +1,18 @@
 package com.github.alex1304.jdash.client;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 import com.github.alex1304.jdash.entity.GDMessage;
 import com.github.alex1304.jdash.entity.GDUser;
+import com.github.alex1304.jdash.entity.GDUserSearchData;
 import com.github.alex1304.jdash.exception.BadResponseException;
 import com.github.alex1304.jdash.exception.CorruptedResponseContentException;
 import com.github.alex1304.jdash.exception.MissingAccessException;
 import com.github.alex1304.jdash.util.GDPaginator;
+import com.github.alex1304.jdash.util.UserRankingStrategy;
 import com.github.alex1304.jdash.util.robtopsweakcrypto.RobTopsWeakCrypto;
 
 import reactor.core.publisher.Mono;
@@ -118,6 +121,23 @@ public final class AuthenticatedGDClient extends AbstractGDClient {
 			throw new IllegalArgumentException("Cannot send a private message to an unregistered user");
 		}
 		return fetch(new GDMessageSendRequest(this, recipientAccountId, subject, body));
+	}
+
+	/**
+	 * Gets ranking of user with specific strategy, count.
+	 *
+	 * @param strategy the strategy of user ranking
+	 * @param count the number of users in the ranking to get
+	 * @return a Mono emitting a ranking list containing all users matching strategy.
+	 *		   To further explain the {@param count}, count=100 for Top100, creators list
+	 *		   count=50 for friends, global list. Exceptionally, a maximum about 1500 to 2,000
+	 *		   count can be used in for creators strategy.
+	 *
+	 * @throws UnsupportedOperationException if this client is not logged it to any
+	 *                                       account
+	 */
+	public Mono<List<GDUserSearchData>> getUserRanking(UserRankingStrategy strategy, int count){
+		return fetch(new GDUserRankingRequest(this, strategy, count));
 	}
 
 	/**
