@@ -3,33 +3,30 @@ package com.github.alex1304.jdash.client;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import com.github.alex1304.jdash.entity.GDComment;
 import com.github.alex1304.jdash.exception.GDClientException;
-import com.github.alex1304.jdash.util.GDPaginator;
-import com.github.alex1304.jdash.util.Indexes;
-import com.github.alex1304.jdash.util.ParseUtils;
-import com.github.alex1304.jdash.util.Routes;
-import com.github.alex1304.jdash.util.Utils;
+import com.github.alex1304.jdash.util.*;
 
 import reactor.util.function.Tuple3;
 
-class GDLevelCommentRequest extends AbstractGDRequest<GDPaginator<GDComment>> {
+class GDLevelCommentsRequest extends AbstractGDRequest<GDPaginator<GDComment>> {
 
     private final long levelId;
-    private final boolean isRecent;
+    private final LevelCommentFilter filter;
     private final int page;
 
-    GDLevelCommentRequest(AbstractGDClient client, long levelId, boolean isRecent, int page) {
+    GDLevelCommentsRequest(AbstractGDClient client, long levelId, LevelCommentFilter filter, int page) {
         super(client);
         this.levelId = levelId;
-        this.isRecent = isRecent;
+        this.filter = Objects.requireNonNull(filter);
         this.page = page;
     }
 
     @Override
     public String getPath() {
-        return Routes.GET_LEVEL_COMMENT;
+        return Routes.GET_LEVEL_COMMENTS;
     }
 
     @Override
@@ -37,11 +34,7 @@ class GDLevelCommentRequest extends AbstractGDRequest<GDPaginator<GDComment>> {
         params.put("levelID", "" + levelId);
         params.put("total", "" + 0);
         params.put("page", "" + page);
-        if(isRecent){
-            params.put("mode", "0");
-        } else {
-            params.put("mode", "1");
-        }
+        params.put("mode", filter.getVal());
     }
 
     @Override
@@ -68,21 +61,21 @@ class GDLevelCommentRequest extends AbstractGDRequest<GDPaginator<GDComment>> {
         }
         Tuple3<Integer, Integer, Integer>  pageInfo = ParseUtils.extractPageInfo(split1[1]);
         return new GDPaginator<>(commentList, page, pageInfo.getT3(), pageInfo.getT1(), newPage ->
-                client.fetch(new GDLevelCommentRequest(client, levelId, isRecent, newPage)));
+                client.fetch(new GDLevelCommentsRequest(client, levelId, filter, newPage)));
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof GDLevelCommentRequest)) {
+        if (!(obj instanceof GDLevelCommentsRequest)) {
             return false;
         }
-        GDLevelCommentRequest r = (GDLevelCommentRequest) obj;
-        return r.levelId == levelId && r.isRecent == isRecent && r.page == page;
+        GDLevelCommentsRequest r = (GDLevelCommentsRequest) obj;
+        return r.levelId == levelId && r.filter.getVal() == filter.getVal() && r.page == page;
     }
 
     @Override
     public int hashCode() {
-        return Long.hashCode(levelId) ^ (isRecent ? 1 : 0) ^ page;
+        return Long.hashCode(levelId) ^ Integer.parseInt(filter.getVal()) ^ page;
     }
 }
 
