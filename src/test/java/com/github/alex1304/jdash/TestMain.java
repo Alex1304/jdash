@@ -9,9 +9,10 @@ import com.github.alex1304.jdash.client.GDClientBuilder;
 import com.github.alex1304.jdash.client.GDClientBuilder.Credentials;
 import com.github.alex1304.jdash.entity.*;
 import com.github.alex1304.jdash.util.GDPaginator;
+import com.github.alex1304.jdash.util.LevelCommentFilter;
 import com.github.alex1304.jdash.util.LevelSearchFilters;
 
-import com.github.alex1304.jdash.util.UserRankingStrategy;
+import com.github.alex1304.jdash.util.LeaderboardType;
 import reactor.core.publisher.Mono;
 
 public class TestMain {
@@ -31,7 +32,7 @@ public class TestMain {
 			.doOnError(Throwable::printStackTrace)
 			.doOnSuccess(o -> printResult("Get user 98006", o)),
 
-		client.getUserCommentByAccountId(855735, 0)
+		client.getCommentsForUser(855735, 0)
 			.doOnError(Throwable::printStackTrace)
 			.doOnSuccess(o -> printResult("Get comments of user 855735", o)),
 
@@ -56,7 +57,7 @@ public class TestMain {
 			.flatMap(GDLevel::download)
 			.doOnSuccess(o -> printResult("Download level 52637920", o)),
 
-		client.getLevelCommentById(49994214, false, 0)
+		client.getCommentsForLevel(49994214, LevelCommentFilter.MOST_LIKED, 0)
 			.doOnError(Throwable::printStackTrace)
 			.doOnSuccess(o -> printResult("Get comments of level 49994214, mode: Most Liked", o)),
 		
@@ -130,11 +131,11 @@ public class TestMain {
 			.doOnSuccess(o -> printResult("Send message", "Message sent!"))
 			.doOnError(Throwable::printStackTrace),
 
-		client.getUserRanking(UserRankingStrategy.FRIENDS, 50)
+		client.getLeaderboard(LeaderboardType.FRIENDS, 50)
 			.doOnError(Throwable::printStackTrace)
 			.doOnSuccess(o -> printResult("My friend ranking", o)),
 
-		client.getUserRanking(UserRankingStrategy.CREATORS, 200)
+		client.getLeaderboard(LeaderboardType.CREATORS, 200)
 			.map(list -> list.get(149).getCreatorPoints())
 			.doOnError(Throwable::printStackTrace)
 			.doOnSuccess(o -> printResult("Creators ranking 150th user's cp", o))
