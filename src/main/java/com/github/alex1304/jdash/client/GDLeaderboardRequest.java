@@ -11,14 +11,14 @@ import com.github.alex1304.jdash.entity.IconType;
 import com.github.alex1304.jdash.exception.GDClientException;
 import com.github.alex1304.jdash.util.*;
 
-class GDUserRankingRequest extends AbstractAuthenticatedGDRequest<List<GDUserSearchData>> {
+class GDLeaderboardRequest extends AbstractAuthenticatedGDRequest<List<GDUserSearchData>> {
 
-    private UserRankingStrategy strategy;
+    private LeaderboardType type;
     private final int count;
 
-    GDUserRankingRequest(AuthenticatedGDClient client, UserRankingStrategy strategy, int count) {
+    GDLeaderboardRequest(AuthenticatedGDClient client, LeaderboardType type, int count) {
         super(client);
-        this.strategy = Objects.requireNonNull(strategy);
+        this.type = Objects.requireNonNull(type);
         this.count = count;
     }
 
@@ -29,7 +29,7 @@ class GDUserRankingRequest extends AbstractAuthenticatedGDRequest<List<GDUserSea
 
     @Override
     void putParams(Map<String, String> params) {
-        params.put("type", strategy.getVal());
+        params.put("type", type.getVal());
         params.put("count", "" + count);
     }
 
@@ -69,7 +69,7 @@ class GDUserRankingRequest extends AbstractAuthenticatedGDRequest<List<GDUserSea
                     Integer.parseInt(strMainIconId),
                     IconType.values()[iconTypeIndex >= IconType.values().length ? 0 : iconTypeIndex]));
         }
-        if(strategy.getVal().equals("friends")){
+        if(type.getVal().equals("friends")){
             ranking.sort(((o1, o2) -> o2.getStars() - o1.getStars()));
         }
         return ranking;
@@ -77,16 +77,16 @@ class GDUserRankingRequest extends AbstractAuthenticatedGDRequest<List<GDUserSea
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof GDUserRankingRequest)) {
+        if (!(obj instanceof GDLeaderboardRequest)) {
             return false;
         }
-        GDUserRankingRequest r = (GDUserRankingRequest) obj;
-        return r.strategy.getVal().equals(strategy.getVal()) && r.count == count;
+        GDLeaderboardRequest r = (GDLeaderboardRequest) obj;
+        return r.type.getVal().equals(type.getVal()) && r.count == count;
     }
 
     @Override
     public int hashCode() {
-        return strategy.getVal().hashCode() ^ count;
+        return type.getVal().hashCode() ^ count;
     }
 }
 
