@@ -1,6 +1,6 @@
 package com.github.alex1304.jdash.util;
 
-public enum UserRankingStrategy {
+public enum LeaderboardType {
     TOP100("top"),
     FRIENDS("friends"),
     GLOBAL("relative"),
@@ -8,7 +8,7 @@ public enum UserRankingStrategy {
 
     private final String val;
 
-    UserRankingStrategy(String val) {
+    LeaderboardType(String val) {
         this.val = val;
     }
 
