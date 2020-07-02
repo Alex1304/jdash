@@ -14,12 +14,12 @@ import com.github.alex1304.jdash.util.Utils;
 
 import reactor.util.function.Tuple3;
 
-class GDUserProfileCommentRequest extends AbstractGDRequest<GDPaginator<GDComment>> {
+class GDUserCommentsRequest extends AbstractGDRequest<GDPaginator<GDComment>> {
 
     private final long accountId;
     private final int page;
 
-    GDUserProfileCommentRequest(AbstractGDClient client, long accountId, int page) {
+    GDUserCommentsRequest(AbstractGDClient client, long accountId, int page) {
         super(client);
         this.accountId = accountId;
         this.page = page;
@@ -27,7 +27,7 @@ class GDUserProfileCommentRequest extends AbstractGDRequest<GDPaginator<GDCommen
 
     @Override
     public String getPath() {
-        return Routes.GET_USER_COMMENT;
+        return Routes.GET_USER_COMMENTS;
     }
 
     @Override
@@ -58,15 +58,15 @@ class GDUserProfileCommentRequest extends AbstractGDRequest<GDPaginator<GDCommen
         }
         Tuple3<Integer, Integer, Integer>  pageInfo = ParseUtils.extractPageInfo(split1[1]);
         return new GDPaginator<>(commentList, page, pageInfo.getT3(), pageInfo.getT1(), newPage ->
-                client.fetch(new GDUserProfileCommentRequest(client, accountId, newPage)));
+                client.fetch(new GDUserCommentsRequest(client, accountId, newPage)));
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof GDUserProfileCommentRequest)) {
+        if (!(obj instanceof GDUserCommentsRequest)) {
             return false;
         }
-        GDUserProfileCommentRequest r = (GDUserProfileCommentRequest) obj;
+        GDUserCommentsRequest r = (GDUserCommentsRequest) obj;
         return r.accountId == accountId && r.page == page;
     }
 
