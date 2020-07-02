@@ -12,7 +12,7 @@ import com.github.alex1304.jdash.exception.BadResponseException;
 import com.github.alex1304.jdash.exception.CorruptedResponseContentException;
 import com.github.alex1304.jdash.exception.MissingAccessException;
 import com.github.alex1304.jdash.util.GDPaginator;
-import com.github.alex1304.jdash.util.UserRankingStrategy;
+import com.github.alex1304.jdash.util.LeaderboardType;
 import com.github.alex1304.jdash.util.robtopsweakcrypto.RobTopsWeakCrypto;
 
 import reactor.core.publisher.Mono;
@@ -136,8 +136,8 @@ public final class AuthenticatedGDClient extends AbstractGDClient {
 	 * @throws UnsupportedOperationException if this client is not logged it to any
 	 *                                       account
 	 */
-	public Mono<List<GDUserSearchData>> getUserRanking(UserRankingStrategy strategy, int count){
-		return fetch(new GDUserRankingRequest(this, strategy, count));
+	public Mono<List<GDUserSearchData>> getLeaderboard(LeaderboardType strategy, int count){
+		return fetch(new GDLeaderboardRequest(this, strategy, count));
 	}
 
 	/**
