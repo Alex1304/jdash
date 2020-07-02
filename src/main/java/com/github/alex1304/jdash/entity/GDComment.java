@@ -69,7 +69,7 @@ public final class GDComment extends AbstractGDEntity {
     public String toString() {
         return "GDUserSearchData [senderID=" + senderID + ", senderName=" + senderName + ", body="
                 + body + ", likes=" + likes + ", uploadedTimestamp=" + uploadedTimestamp + ", percentage=" + percentage
-                + ", senderRole=" + senderRole + ", senderData=" + senderData.toString() + ", id=" + id + "]";
+                + ", senderRole=" + senderRole + ", id=" + id + "]";
     }
 }
 
