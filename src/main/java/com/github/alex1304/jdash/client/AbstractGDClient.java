@@ -414,7 +414,7 @@ abstract class AbstractGDClient {
 	 * Gets comments of specific level in Geometry dash
 	 *
 	 * @param levelId the level ID to get comments
-	 * @param filter Whether to sort in recent order or not(then Most Liked.)
+	 * @param filter the filter to sort comments
 	 * @param page the page number
 	 * @return a Mono emitting a paginator containing all comments in level. Note that if
 	 *         no comments are found, it will emit an empty paginator. (In this case,
