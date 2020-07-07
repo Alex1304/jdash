@@ -14,13 +14,13 @@ import reactor.util.function.Tuple3;
 class GDLevelCommentsRequest extends AbstractGDRequest<GDPaginator<GDComment>> {
 
     private final long levelId;
-    private final LevelCommentFilter filter;
+    private final CommentSortMode filter;
     private final int page;
 
-    GDLevelCommentsRequest(AbstractGDClient client, long levelId, LevelCommentFilter filter, int page) {
+    GDLevelCommentsRequest(AbstractGDClient client, long levelId, CommentSortMode mode, int page) {
         super(client);
         this.levelId = levelId;
-        this.filter = Objects.requireNonNull(filter);
+        this.filter = Objects.requireNonNull(mode);
         this.page = page;
     }
 
