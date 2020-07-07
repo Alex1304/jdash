@@ -18,7 +18,7 @@ import com.github.alex1304.jdash.exception.NoTimelyAvailableException;
 import com.github.alex1304.jdash.exception.SongNotAllowedForUseException;
 import com.github.alex1304.jdash.exception.UserSearchDataNotFoundException;
 import com.github.alex1304.jdash.util.GDPaginator;
-import com.github.alex1304.jdash.util.LevelCommentFilter;
+import com.github.alex1304.jdash.util.CommentSortMode;
 import com.github.alex1304.jdash.util.LevelSearchFilters;
 import com.github.alex1304.jdash.util.LevelSearchStrategy;
 import com.github.benmanes.caffeine.cache.Cache;
@@ -414,15 +414,15 @@ abstract class AbstractGDClient {
 	 * Gets comments of specific level in Geometry dash
 	 *
 	 * @param levelId the level ID to get comments
-	 * @param filter the filter to sort comments
+	 * @param mode the mode to sort comments
 	 * @param page the page number
 	 * @return a Mono emitting a paginator containing all comments in level. Note that if
 	 *         no comments are found, it will emit an empty paginator. (In this case,
 	 *         fortunately, Geometry Dash API does not return the same response
 	 *         when an actual error occurs while processing the request).
 	 */
-	public Mono<GDPaginator<GDComment>> getCommentsForLevel(long levelId, LevelCommentFilter filter, int page){
-		return fetch(new GDLevelCommentsRequest(this, levelId, filter, page));
+	public Mono<GDPaginator<GDComment>> getCommentsForLevel(long levelId, CommentSortMode mode, int page){
+		return fetch(new GDLevelCommentsRequest(this, levelId, mode, page));
 	}
 
 	/**
