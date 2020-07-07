@@ -9,7 +9,7 @@ import com.github.alex1304.jdash.client.GDClientBuilder;
 import com.github.alex1304.jdash.client.GDClientBuilder.Credentials;
 import com.github.alex1304.jdash.entity.*;
 import com.github.alex1304.jdash.util.GDPaginator;
-import com.github.alex1304.jdash.util.LevelCommentFilter;
+import com.github.alex1304.jdash.util.CommentSortMode;
 import com.github.alex1304.jdash.util.LevelSearchFilters;
 
 import com.github.alex1304.jdash.util.LeaderboardType;
@@ -57,7 +57,7 @@ public class TestMain {
 			.flatMap(GDLevel::download)
 			.doOnSuccess(o -> printResult("Download level 52637920", o)),
 
-		client.getCommentsForLevel(49994214, LevelCommentFilter.MOST_LIKED, 0)
+		client.getCommentsForLevel(49994214, CommentSortMode.MOST_LIKED, 0)
 			.doOnError(Throwable::printStackTrace)
 			.doOnSuccess(o -> printResult("Get comments of level 49994214, mode: Most Liked", o)),
 		
