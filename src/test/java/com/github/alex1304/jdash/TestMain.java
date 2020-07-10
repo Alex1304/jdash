@@ -7,13 +7,12 @@ import java.util.EnumSet;
 import com.github.alex1304.jdash.client.AuthenticatedGDClient;
 import com.github.alex1304.jdash.client.GDClientBuilder;
 import com.github.alex1304.jdash.client.GDClientBuilder.Credentials;
-import com.github.alex1304.jdash.entity.Difficulty;
-import com.github.alex1304.jdash.entity.GDLevel;
-import com.github.alex1304.jdash.entity.GDMessage;
-import com.github.alex1304.jdash.entity.GDTimelyLevel;
+import com.github.alex1304.jdash.entity.*;
 import com.github.alex1304.jdash.util.GDPaginator;
+import com.github.alex1304.jdash.util.CommentSortMode;
 import com.github.alex1304.jdash.util.LevelSearchFilters;
 
+import com.github.alex1304.jdash.util.LeaderboardType;
 import reactor.core.publisher.Mono;
 
 public class TestMain {
@@ -32,7 +31,11 @@ public class TestMain {
 		client.getUserByAccountId(98006)
 			.doOnError(Throwable::printStackTrace)
 			.doOnSuccess(o -> printResult("Get user 98006", o)),
-		
+
+		client.getCommentsForUser(855735, 0)
+			.doOnError(Throwable::printStackTrace)
+			.doOnSuccess(o -> printResult("Get comments of user 855735", o)),
+
 		client.searchUser("RobTop")
 			.doOnError(Throwable::printStackTrace)
 			.doOnSuccess(o -> printResult("Search user RobTop", o)),
@@ -53,6 +56,10 @@ public class TestMain {
 			.doOnError(Throwable::printStackTrace)
 			.flatMap(GDLevel::download)
 			.doOnSuccess(o -> printResult("Download level 52637920", o)),
+
+		client.getCommentsForLevel(49994214, CommentSortMode.MOST_LIKED, 0)
+			.doOnError(Throwable::printStackTrace)
+			.doOnSuccess(o -> printResult("Get comments of level 49994214, mode: Most Liked", o)),
 		
 		client.getDailyLevel()
 			.doOnError(Throwable::printStackTrace)
@@ -122,8 +129,17 @@ public class TestMain {
 		
 		client.sendPrivateMessage(client.searchUser("Alex1304").block(), "Test", "Hello world!")
 			.doOnSuccess(o -> printResult("Send message", "Message sent!"))
+			.doOnError(Throwable::printStackTrace),
+
+		client.getLeaderboard(LeaderboardType.FRIENDS, 50)
 			.doOnError(Throwable::printStackTrace)
-		
+			.doOnSuccess(o -> printResult("My friend ranking", o)),
+
+		client.getLeaderboard(LeaderboardType.CREATORS, 200)
+			.map(list -> list.get(149).getCreatorPoints())
+			.doOnError(Throwable::printStackTrace)
+			.doOnSuccess(o -> printResult("Creators ranking 150th user's cp", o))
+
 		).block();
 		
 		System.out.println("End program");

@@ -89,4 +89,14 @@ public final class Indexes {
 	public static final int MESSAGE_BODY = 5;
 	public static final int MESSAGE_TIMESTAMP = 7;
 	public static final int MESSAGE_IS_READ = 8;
+
+	/* Comment data */
+
+	public static final int COMMENT_BODY = 2;
+	public static final int COMMENT_SENDER_ID = 3;
+	public static final int COMMENT_LIKES = 4;
+	public static final int COMMENT_ID = 6;
+	public static final int COMMENT_UPLOADED_TIMESTAMP = 9;
+	public static final int COMMENT_PERCENTAGE = 10;
+	public static final int COMMENT_SENDER_ROLE = 11;
 }
