@@ -95,7 +95,6 @@ public class TestMain {
 			.doOnError(Throwable::printStackTrace)
 			.doOnSuccess(o -> printResult("Browse Trending section", o)),
 		
-		
 		client.browseFeaturedLevels(0)
 			.doOnError(Throwable::printStackTrace)
 			.doOnSuccess(o -> printResult("Browse Featured section", o)),
@@ -128,8 +127,8 @@ public class TestMain {
 			.doOnSuccess(o -> printResult("First private message content", o)),
 		
 		client.sendPrivateMessage(client.searchUser("Alex1304").block(), "Test", "Hello world!")
-			.doOnSuccess(o -> printResult("Send message", "Message sent!"))
-			.doOnError(Throwable::printStackTrace),
+			.doOnError(Throwable::printStackTrace)
+			.doOnSuccess(o -> printResult("Send message", "Message sent!")),
 
 		client.getLeaderboard(LeaderboardType.FRIENDS, 50)
 			.doOnError(Throwable::printStackTrace)
@@ -138,7 +137,31 @@ public class TestMain {
 		client.getLeaderboard(LeaderboardType.CREATORS, 200)
 			.map(list -> list.get(149).getCreatorPoints())
 			.doOnError(Throwable::printStackTrace)
-			.doOnSuccess(o -> printResult("Creators ranking 150th user's cp", o))
+			.doOnSuccess(o -> printResult("Creators ranking 150th user's cp", o)),
+
+		client.getPrivateFriends()
+			.doOnError(Throwable::printStackTrace)
+			.doOnSuccess(o -> printResult("My friend list", o)),
+
+		client.getBlockedUsers()
+			.doOnError(Throwable::printStackTrace)
+			.doOnSuccess(o -> printResult("Here are some bad guys", o)),
+
+		client.blockUser(12109603)
+			.doOnError(Throwable::printStackTrace)
+			.doOnSuccess(o -> printResult("Go away!", "User blocked!")),
+
+		client.unblockUser(12109603)
+			.doOnError(Throwable::printStackTrace)
+			.doOnSuccess(o -> printResult("I'll forgive you..", "User unblocked!")),
+
+		client.rateStars(62152040, 10, "jdash-client")
+			.doOnError(Throwable::printStackTrace)
+			.doOnSuccess(o -> printResult("Rate Ocular Miracle to 10*", "Rating sent!")),
+
+		client.rateDemon(52374843, DemonDifficulty.EXTREME)
+			.doOnError(Throwable::printStackTrace)
+			.doOnSuccess(o -> printResult("Rate Zodiac to Extreme demon", "Rating sent!"))
 
 		).block();
 		
