@@ -94,9 +94,9 @@ class GDLevelSearchRequest extends AbstractGDRequest<GDPaginator<GDLevel>> {
 		if (filters.getDemon().isPresent()) {
 			params.put("demonFilter", "" + (filters.getDemon().get().ordinal() + 1));
 		}
-		if ((filters.hasToggle(Toggle.ONLY_COMPLETED) || filters.hasToggle(Toggle.UNCOMPLETED)) && !filters.getCompletedLevels().isEmpty()) {
-			params.put("completedLevels", "(" + String.join(",", filters.getCompletedLevels().stream()
-					.map(GDLevel::getId).map(String::valueOf).collect(Collectors.toSet())) + ")");
+		if ((filters.hasToggle(Toggle.ONLY_COMPLETED) || filters.hasToggle(Toggle.UNCOMPLETED)) && !filters.getCompletedIds().isEmpty()) {
+			params.put("completedLevels", "(" + String.join(",", filters.getCompletedIds().stream()
+					.map(String::valueOf).collect(Collectors.toSet())) + ")");
 		}
 		if (!followed.isEmpty()) {
 			params.put("followed", String.join(",", followed.stream().map(String::valueOf).collect(Collectors.toSet())));

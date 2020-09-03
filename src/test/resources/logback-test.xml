@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="true" scanPeriod="10 seconds">
 	<logger name="io.netty" level="INFO" />
-	<logger name="reactor.netty" level="INFO" />
-	<logger name="jdash" level="INFO" />
+	<logger name="reactor" level="INFO" />
+	<logger name="jdash" level="DEBUG" />
 
 	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>

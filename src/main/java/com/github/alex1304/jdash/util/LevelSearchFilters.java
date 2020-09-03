@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.github.alex1304.jdash.entity.DemonDifficulty;
 import com.github.alex1304.jdash.entity.Difficulty;
@@ -25,7 +26,7 @@ public final class LevelSearchFilters {
 	private EnumSet<Difficulty> difficulties;
 	private Optional<DemonDifficulty> demon;
 	private Optional<GDSong> song;
-	private Collection<? extends GDLevel> completedLevels;
+	private Collection<Long> completedIds;
 
 	private LevelSearchFilters(EnumSet<Toggle> toggles, EnumSet<Length> lengths, EnumSet<Difficulty> difficulties,
 			Optional<DemonDifficulty> demon, Optional<GDSong> song) {
@@ -34,7 +35,7 @@ public final class LevelSearchFilters {
 		this.difficulties = difficulties;
 		this.demon = demon;
 		this.song = song;
-		this.completedLevels = Collections.emptySet();
+		this.completedIds = Collections.emptySet();
 	}
 
 	/**
@@ -135,8 +136,21 @@ public final class LevelSearchFilters {
 	 * @param completedLevels a Collection of levels that are considered "completed"
 	 * @return this (for method chaining purposes)
 	 */
+	@Deprecated
 	public LevelSearchFilters withCompletedLevels(Collection<? extends GDLevel> completedLevels) {
-		this.completedLevels = Objects.requireNonNull(completedLevels);
+		this.completedIds = Objects.requireNonNull(completedLevels).stream().map(GDLevel::getId).collect(Collectors.toList());
+		return this;
+	}
+
+	/**
+	 * Defines the list of IDs of completed levels. Only relevant if either
+	 * {@link Toggle#ONLY_COMPLETED} or {@link Toggle#UNCOMPLETED} is set on.
+	 * 
+	 * @param completedIds a Collection of level IDs that are considered "completed"
+	 * @return this (for method chaining purposes)
+	 */
+	public LevelSearchFilters withCompletedIds(Collection<Long> completedIds) {
+		this.completedIds = Objects.requireNonNull(completedIds);
 		return this;
 	}
 
@@ -171,14 +185,14 @@ public final class LevelSearchFilters {
 		return toggles.contains(t);
 	}
 
-	public Collection<? extends GDLevel> getCompletedLevels() {
-		return Collections.unmodifiableCollection(completedLevels);
+	public Collection<Long> getCompletedIds() {
+		return Collections.unmodifiableCollection(completedIds);
 	}
 
 	@Override
 	public int hashCode() {
 		return toggles.hashCode() ^ lengths.hashCode() ^ difficulties.hashCode() ^ demon.hashCode() ^ song.hashCode()
-				^ completedLevels.hashCode();
+				^ completedIds.hashCode();
 	}
 
 	@Override
