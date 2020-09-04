@@ -20,9 +20,4 @@ public final class BadResponseException extends GDClientException {
 	public HttpClientResponse getResponse() {
 		return response;
 	}
-
-	@Override
-	public String toString() {
-		return response.status().codeAsText() + " " + response.status().reasonPhrase();
-	}
 }
