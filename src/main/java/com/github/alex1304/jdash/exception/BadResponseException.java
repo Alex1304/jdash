@@ -13,7 +13,8 @@ public final class BadResponseException extends GDClientException {
 	private final HttpClientResponse response;
 	
 	public BadResponseException(HttpClientResponse response) {
-		this.response = Objects.requireNonNull(response);
+		super(response.status().toString());
+		this.response = response;
 	}
 	
 	public HttpClientResponse getResponse() {

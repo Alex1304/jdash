@@ -53,7 +53,10 @@ abstract class AbstractGDClient {
 		this.host = host;
 		this.client = HttpClient.create()
 				.baseUrl(host)
-				.headers(h -> h.add("Content-Type", "application/x-www-form-urlencoded"));
+				.headers(h -> {
+					h.add("Content-Type", "application/x-www-form-urlencoded");
+					h.add("User-Agent", "");
+				});
 		this.cache = Caffeine.newBuilder()
 				.expireAfterAccess(cacheTtl)
 				.build();
