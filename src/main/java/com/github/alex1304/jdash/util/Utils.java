@@ -150,7 +150,7 @@ public final class Utils {
 			}
 			return sb.toString();
 		} catch (NoSuchAlgorithmException e) {
-			return str;
+			throw new AssertionError("Encrypting failed");
 		}
 	}
 
