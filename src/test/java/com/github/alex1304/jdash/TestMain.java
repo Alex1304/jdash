@@ -139,7 +139,7 @@ public class TestMain {
 			.doOnError(Throwable::printStackTrace)
 			.doOnSuccess(o -> printResult("Creators ranking 150th user's cp", o)),
 
-		client.getPrivateFriends()
+		client.getFriends()
 			.doOnError(Throwable::printStackTrace)
 			.doOnSuccess(o -> printResult("My friend list", o)),
 

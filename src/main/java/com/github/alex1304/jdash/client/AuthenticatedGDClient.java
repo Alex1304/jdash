@@ -215,7 +215,7 @@ public final class AuthenticatedGDClient extends AbstractGDClient {
 	 * @throws UnsupportedOperationException if this client is not logged it to any
 	 *                                       account
 	 */
-	public Mono<List<GDUserSearchData>> getPrivateFriends(){
+	public Mono<List<GDUserSearchData>> getFriends(){
 		return fetch(new GDFriendListRequest(this));
 	}
 
