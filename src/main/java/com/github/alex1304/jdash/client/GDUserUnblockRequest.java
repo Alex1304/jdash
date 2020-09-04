@@ -1,6 +1,7 @@
 package com.github.alex1304.jdash.client;
 
 import com.github.alex1304.jdash.exception.GDClientException;
+import com.github.alex1304.jdash.exception.UnblockingUserFailedException;
 import com.github.alex1304.jdash.util.Routes;
 
 import java.util.Map;
@@ -27,7 +28,7 @@ class GDUserUnblockRequest extends AbstractAuthenticatedGDRequest<Void> {
     @Override
     Void parseResponse0(String response) throws GDClientException {
         if (!response.equals("1")) {
-            throw new IllegalArgumentException("Unknown response: " + response);
+            throw new UnblockingUserFailedException();
         }
         return null;
     }

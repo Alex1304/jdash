@@ -2,6 +2,7 @@ package com.github.alex1304.jdash.client;
 
 import com.github.alex1304.jdash.entity.Difficulty;
 import com.github.alex1304.jdash.exception.GDClientException;
+import com.github.alex1304.jdash.exception.RatingFailedException;
 import com.github.alex1304.jdash.util.Routes;
 import com.github.alex1304.jdash.util.Utils;
 
@@ -43,7 +44,7 @@ class GDLevelStarsRatingRequest extends AbstractAuthenticatedGDRequest<Void> {
     @Override
     Void parseResponse0(String response) throws GDClientException {
         if (!response.equals("1")) {
-            throw new IllegalArgumentException("Unknown response: " + response);
+            throw new RatingFailedException();
         }
         return null;
     }
