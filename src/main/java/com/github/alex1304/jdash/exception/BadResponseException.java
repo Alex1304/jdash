@@ -1,5 +1,7 @@
 package com.github.alex1304.jdash.exception;
 
+import java.util.Objects;
+
 import reactor.netty.http.client.HttpClientResponse;
 
 /**
