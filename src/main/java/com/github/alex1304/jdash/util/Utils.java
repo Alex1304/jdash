@@ -3,6 +3,9 @@ package com.github.alex1304.jdash.util;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
@@ -10,6 +13,7 @@ import java.util.Map;
 import com.github.alex1304.jdash.entity.DemonDifficulty;
 import com.github.alex1304.jdash.entity.Difficulty;
 import com.github.alex1304.jdash.entity.GDSong;
+import com.github.alex1304.jdash.util.robtopsweakcrypto.XORCipher;
 
 /**
  * Contains utility static methods 
@@ -20,6 +24,8 @@ import com.github.alex1304.jdash.entity.GDSong;
 public final class Utils {
 	private Utils() {
 	}
+
+	private static final String CHAR_TABLE= "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	
 	private static final Map<Integer, GDSong> AUDIO_TRACKS;
 	
@@ -131,6 +137,36 @@ public final class Utils {
 	
 	public static String b64Encode(String str) {
 		return Base64.getUrlEncoder().encodeToString(str.getBytes());
+	}
+
+	public static String sha1Encrypt(String str) {
+		try {
+			MessageDigest md = MessageDigest.getInstance("SHA-1");
+			md.update(str.getBytes(StandardCharsets.UTF_8));
+			byte[] digest = md.digest();
+			StringBuilder sb = new StringBuilder();
+			for(byte b : digest) {
+				sb.append(String.format("%02x", 0xff & b));
+			}
+			return sb.toString();
+		} catch (NoSuchAlgorithmException e) {
+			throw new AssertionError("Encrypting failed");
+		}
+	}
+
+	public static String randomString(int size) {
+		StringBuilder sb = new StringBuilder(size);
+		for(int i = 0; i < size; i++) {
+			int ran = (int) Math.floor(Math.random()*CHAR_TABLE.length());
+			sb.append(CHAR_TABLE.charAt(ran));
+		}
+		return sb.toString();
+	}
+
+	public static String buildChk(String key, String... args) {
+		String sha1 = sha1Encrypt(String.join("", args));
+		XORCipher xor = new XORCipher(key);
+		return b64Encode(xor.cipher(sha1));
 	}
 	
 	public static int partialParseInt(String str) {

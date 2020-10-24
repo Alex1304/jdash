@@ -5,9 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import com.github.alex1304.jdash.entity.GDMessage;
-import com.github.alex1304.jdash.entity.GDUser;
-import com.github.alex1304.jdash.entity.GDUserSearchData;
+import com.github.alex1304.jdash.entity.*;
 import com.github.alex1304.jdash.exception.BadResponseException;
 import com.github.alex1304.jdash.exception.CorruptedResponseContentException;
 import com.github.alex1304.jdash.exception.MissingAccessException;
@@ -124,6 +122,37 @@ public final class AuthenticatedGDClient extends AbstractGDClient {
 	}
 
 	/**
+	 * Rates stars to a level.
+	 *
+	 * @param levelID the ID of the level
+	 * @param star the stars to be reflected in rating
+	 * @param udid this string of udid
+	 * @return a Mono completing empty if succeeded, an error otherwise.
+	 * @throws UnsupportedOperationException if this client is not logged it to any
+	 * 										 account
+	 * @throws IllegalArgumentException      if star is less than 1 or more than 10,
+	 */
+	public Mono<Void> rateStars(long levelID, int star, String udid) {
+		if (star < 1 || star > 10) {
+			throw new IllegalArgumentException("Star count must be between 1 and 10");
+		}
+		return fetch(new GDLevelStarsRatingRequest(this, levelID, star, udid));
+	}
+
+	/**
+	 * Rates a demon difficulty to a level.
+	 *
+	 * @param levelID the ID of the level
+	 * @param difficulty the demon difficulty to be reflected in rating
+	 * @return a Mono completing empty if succeeded, an error otherwise.
+	 * @throws UnsupportedOperationException if this client is not logged it to any
+	 * 										 account
+	 */
+	public Mono<Void> rateDemon(long levelID, DemonDifficulty difficulty) {
+		return fetch(new GDLevelDemonRatingRequest(this, levelID, difficulty));
+	}
+
+	/**
 	 * Gets ranking of user with specific strategy, count.
 	 *
 	 * @param strategy the strategy of user ranking
@@ -138,6 +167,56 @@ public final class AuthenticatedGDClient extends AbstractGDClient {
 	 */
 	public Mono<List<GDUserSearchData>> getLeaderboard(LeaderboardType strategy, int count){
 		return fetch(new GDLeaderboardRequest(this, strategy, count));
+	}
+
+	/**
+	 * Gets the blocked users of the account that this client is logged on.
+	 *
+	 * @return a Mono emitting a list containing all blocked users.
+	 * @throws UnsupportedOperationException if this client is not logged it to any
+	 *                                       account
+	 */
+	public Mono<List<GDUserSearchData>> getBlockedUsers(){
+		return fetch(new GDBlockedUsersRequest(this));
+	}
+
+	/**
+	 * Block an user
+	 *
+	 * @param targetAccountID the ID of the target to block
+	 * @return a Mono completing empty if succeeded, an error otherwise.
+	 * @throws UnsupportedOperationException if this client is not logged it to any
+	 *                                       account
+	 * @throws IllegalArgumentException      if user isn't a registered user
+	 *                                       {@code (user.getAccountId() == 0)}
+	 */
+	public Mono<Void> blockUser(long targetAccountID){
+		return fetch(new GDUserBlockRequest(this, targetAccountID));
+	}
+
+	/**
+	 * Unblock an user
+	 *
+	 * @param targetAccountID the ID of the target to unblock
+	 * @return a Mono completing empty if succeeded, an error otherwise.
+	 * @throws UnsupportedOperationException if this client is not logged it to any
+	 *                                       account
+	 * @throws IllegalArgumentException      if user isn't a registered user
+	 *                                       {@code (user.getAccountId() == 0)}
+	 */
+	public Mono<Void> unblockUser(long targetAccountID){
+		return fetch(new GDUserUnblockRequest(this, targetAccountID));
+	}
+
+	/**
+	 * Gets the friends of the account that this client is logged on.
+	 *
+	 * @return a Mono emitting a list containing all friends.
+	 * @throws UnsupportedOperationException if this client is not logged it to any
+	 *                                       account
+	 */
+	public Mono<List<GDUserSearchData>> getFriends(){
+		return fetch(new GDFriendListRequest(this));
 	}
 
 	/**
