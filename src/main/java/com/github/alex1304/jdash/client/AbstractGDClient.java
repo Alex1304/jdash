@@ -30,9 +30,9 @@ import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 import reactor.netty.ByteBufFlux;
 import reactor.netty.http.client.HttpClient;
-import reactor.retry.Retry;
 import reactor.util.Logger;
 import reactor.util.Loggers;
+import reactor.util.retry.Retry;
 
 abstract class AbstractGDClient {
 	private static final String GAME_VERSION = "21";
@@ -123,13 +123,13 @@ abstract class AbstractGDClient {
 						return Mono.error(new CorruptedResponseContentException(e, request.getPath(), request.getParams(), responseStr));
 					}
 				})
-				.retryWhen(Retry.anyOf(IOException.class)
-						.exponentialBackoffWithJitter(Duration.ofMillis(100), Duration.ofSeconds(10))
-						.doOnRetry(retryCtx -> {
-								LOGGER.info("Retrying attempt {} in {}ms for failed request {} ({}: {})", retryCtx.iteration(),
-										retryCtx.backoff().toMillis(), request, retryCtx.exception().getClass().getCanonicalName(), 
-										retryCtx.exception().getMessage() == null ? "(no message)" : retryCtx.exception().getMessage());
-								LOGGER.debug("I/O error occured", retryCtx.exception());
+				.retryWhen(Retry.backoff(Long.MAX_VALUE, Duration.ofMillis(100))
+						.maxBackoff(Duration.ofSeconds(10))
+						.filter(IOException.class::isInstance)
+						.doBeforeRetry(retryCtx -> {
+								LOGGER.info("Retrying attempt {} for failed request {} ({})", retryCtx.totalRetriesInARow(),
+										request, retryCtx.failure());
+								LOGGER.debug("I/O error occured", retryCtx.failure());
 						}))
 				.timeout(requestTimeout);
 	}

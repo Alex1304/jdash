@@ -38,7 +38,12 @@ public class SpriteFactory {
 	public static final Map<Integer, Color> COLORS = colors();
 	
 	private static BufferedImage spriteImg;
-	private static Map<String, List<Sprite>> sprites;
+	private static final Map<String, List<Sprite>> SPRITES = new HashMap<>();
+	private static final Object LOCK = new Object();
+	private static volatile boolean loaded = false;
+	
+	private SpriteFactory() {
+	}
 	
 	public BufferedImage makeSprite(IconType type, int id, int color1Id, int color2Id, boolean withGlowOutline) {
 		if (!COLORS.containsKey(color1Id)) {
@@ -47,7 +52,7 @@ public class SpriteFactory {
 		if (!COLORS.containsKey(color2Id)) {
 			throw new IllegalArgumentException("Color2 ID=" + color2Id + " does not exist");
 		}
-		List<Sprite> spList = sprites.get(type.name() + id);
+		List<Sprite> spList = SPRITES.get(type.name() + id);
 		if (spList == null) {
 			throw new IllegalArgumentException("Sprite ID=" + id + " for icon type " + type.name() + " does not exist");
 		}
@@ -408,11 +413,10 @@ public class SpriteFactory {
 	
 	@Override
 	public String toString() {
-		return sprites.toString();
+		return SPRITES.toString();
 	}
 	
 	private static void loadSprites(XMLPropertyListConfiguration spritePlist) {
-		sprites = new HashMap<>();
 		final Map<String, IconType> prefixes = new LinkedHashMap<>();
 		prefixes.put("frames.player_ball_", IconType.BALL);
 		prefixes.put("frames.player_", IconType.CUBE);
@@ -427,7 +431,8 @@ public class SpriteFactory {
 		final Map<String, Map<String, double[]>> rectangles = new HashMap<>();
 		final Map<String, Map<String, Boolean>> rotatedStates = new HashMap<>();
 		Iterator<String> it = spritePlist.getKeys();
-		for (String key = (it.hasNext() ? it.next() : null) ; it.hasNext() ; key = it.next()) {
+		while (it.hasNext()) {
+			String key = it.next();
 			for (Entry<String, IconType> prefix : prefixes.entrySet()) {
 				if (key.startsWith(prefix.getKey())) {
 					String partKey = prefix.getValue().name() + Utils.partialParseInt(key.substring(prefix.getKey().length()));
@@ -495,7 +500,7 @@ public class SpriteFactory {
 				spList.add(new Sprite(spriteName, (int) offset[0], (int) offset[1], (int) size[0], (int) size[1], (int) sourceSize[0], (int) sourceSize[1],
 						new Rectangle((int) rectangle[0], (int) rectangle[1], (int) rectangle[2], (int) rectangle[3]), isRotated));
 			}
-			sprites.put(key, spList);
+			SPRITES.put(key, spList);
 		}
 	}
 	
@@ -558,19 +563,23 @@ public class SpriteFactory {
 
 	/**
 	 * Creates a new sprite factory. This method will load the sprite images in
-	 * memory, that's why an {@link IOException} needs to be checked when calling
-	 * this method.
+	 * memory.
 	 * 
 	 * @return the sprite factory
 	 * @throws SpriteLoadException if something goes wrong when loading the sprites.
 	 */
 	public static SpriteFactory create() throws SpriteLoadException {
 		try {
-			if (sprites == null) {
-				spriteImg = ImageIO.read(SpriteFactory.class.getResource("/GJ_GameSheet02-uhd.png"));
-				loadSprites(new Configurations()
-						.fileBased(XMLPropertyListConfiguration.class, SpriteFactory.class
-								.getResource("/GJ_GameSheet02-uhd.plist")));
+			if (!loaded) {
+				synchronized (LOCK) {
+					if (!loaded) {
+						spriteImg = ImageIO.read(SpriteFactory.class.getResource("/GJ_GameSheet02-uhd.png"));
+						loadSprites(new Configurations()
+								.fileBased(XMLPropertyListConfiguration.class, SpriteFactory.class
+										.getResource("/GJ_GameSheet02-uhd.plist")));
+						loaded = true;
+					}
+				}
 			}
 			return new SpriteFactory();
 		} catch (IOException | ConfigurationException e) {

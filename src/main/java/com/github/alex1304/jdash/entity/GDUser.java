@@ -66,32 +66,8 @@ public final class GDUser extends AbstractGDUser {
 				part1.getPrivateMessagePolicy(), part1.getCommmentHistoryPolicy(), part2.getMainIconType());
 	}
 
-	public long getAccountId() {
-		return accountId;
-	}
-
-	public int getStars() {
-		return stars;
-	}
-
-	public int getDemons() {
-		return demons;
-	}
-
 	public int getDiamonds() {
 		return diamonds;
-	}
-
-	public int getSecretCoins() {
-		return secretCoins;
-	}
-
-	public int getUserCoins() {
-		return userCoins;
-	}
-
-	public int getCreatorPoints() {
-		return creatorPoints;
 	}
 
 	public int getGlobalRank() {
@@ -132,14 +108,6 @@ public final class GDUser extends AbstractGDUser {
 
 	public boolean hasGlowOutline() {
 		return hasGlowOutline;
-	}
-
-	public int getColor1Id() {
-		return color1Id;
-	}
-
-	public int getColor2Id() {
-		return color2Id;
 	}
 
 	public int getMainIconId() {
