@@ -131,19 +131,23 @@ public class TestMain {
 			.doOnSuccess(o -> printResult("Send message", "Message sent!")),
 
 		client.getLeaderboard(LeaderboardType.FRIENDS, 50)
+			.collectList()
 			.doOnError(Throwable::printStackTrace)
 			.doOnSuccess(o -> printResult("My friend ranking", o)),
 
 		client.getLeaderboard(LeaderboardType.CREATORS, 200)
+			.collectList()
 			.map(list -> list.get(149).getCreatorPoints())
 			.doOnError(Throwable::printStackTrace)
 			.doOnSuccess(o -> printResult("Creators ranking 150th user's cp", o)),
 
 		client.getFriends()
+			.collectList()
 			.doOnError(Throwable::printStackTrace)
 			.doOnSuccess(o -> printResult("My friend list", o)),
 
 		client.getBlockedUsers()
+			.collectList()
 			.doOnError(Throwable::printStackTrace)
 			.doOnSuccess(o -> printResult("Here are some bad guys", o)),
 

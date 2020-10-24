@@ -1,11 +1,13 @@
 package com.github.alex1304.jdash.client;
 
 import java.time.Duration;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import com.github.alex1304.jdash.entity.*;
+import com.github.alex1304.jdash.entity.DemonDifficulty;
+import com.github.alex1304.jdash.entity.GDMessage;
+import com.github.alex1304.jdash.entity.GDUser;
+import com.github.alex1304.jdash.entity.GDUserSearchData;
 import com.github.alex1304.jdash.exception.BadResponseException;
 import com.github.alex1304.jdash.exception.CorruptedResponseContentException;
 import com.github.alex1304.jdash.exception.MissingAccessException;
@@ -13,6 +15,7 @@ import com.github.alex1304.jdash.util.GDPaginator;
 import com.github.alex1304.jdash.util.LeaderboardType;
 import com.github.alex1304.jdash.util.robtopsweakcrypto.RobTopsWeakCrypto;
 
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 /**
@@ -153,37 +156,34 @@ public final class AuthenticatedGDClient extends AbstractGDClient {
 	}
 
 	/**
-	 * Gets ranking of user with specific strategy, count.
+	 * Gets the leaderboard of the given type. You can select the maximum number of
+	 * users returned via the count parameter.
 	 *
-	 * @param strategy the strategy of user ranking
-	 * @param count the number of users in the ranking to get
-	 * @return a Mono emitting a ranking list containing all users matching strategy.
-	 *		   To further explain the {@param count}, count=100 for Top100, creators list
-	 *		   count=50 for friends, global list. Exceptionally, a maximum about 1500 to 2,000
-	 *		   count can be used in for creators strategy.
-	 *
+	 * @param type  the leaderboard type
+	 * @param count the maximum number of users to return
+	 * @return a Flux emitting the leaderboard results.
 	 * @throws UnsupportedOperationException if this client is not logged it to any
 	 *                                       account
 	 */
-	public Mono<List<GDUserSearchData>> getLeaderboard(LeaderboardType strategy, int count){
-		return fetch(new GDLeaderboardRequest(this, strategy, count));
+	public Flux<GDUserSearchData> getLeaderboard(LeaderboardType type, int count){
+		return fetch(new GDLeaderboardRequest(this, type, count)).flatMapMany(Flux::fromIterable);
 	}
 
 	/**
 	 * Gets the blocked users of the account that this client is logged on.
 	 *
-	 * @return a Mono emitting a list containing all blocked users.
+	 * @return a Flux emitting all blocked users.
 	 * @throws UnsupportedOperationException if this client is not logged it to any
 	 *                                       account
 	 */
-	public Mono<List<GDUserSearchData>> getBlockedUsers(){
-		return fetch(new GDBlockedUsersRequest(this));
+	public Flux<GDUserSearchData> getBlockedUsers(){
+		return fetch(new GDBlockedUsersRequest(this)).flatMapMany(Flux::fromIterable);
 	}
 
 	/**
-	 * Block an user
+	 * Blocks a user of the given ID.
 	 *
-	 * @param targetAccountID the ID of the target to block
+	 * @param targetAccountID the ID of the user to block
 	 * @return a Mono completing empty if succeeded, an error otherwise.
 	 * @throws UnsupportedOperationException if this client is not logged it to any
 	 *                                       account
@@ -195,9 +195,9 @@ public final class AuthenticatedGDClient extends AbstractGDClient {
 	}
 
 	/**
-	 * Unblock an user
+	 * Unblocks a user of the given ID.
 	 *
-	 * @param targetAccountID the ID of the target to unblock
+	 * @param targetAccountID the ID of the user to unblock
 	 * @return a Mono completing empty if succeeded, an error otherwise.
 	 * @throws UnsupportedOperationException if this client is not logged it to any
 	 *                                       account
@@ -209,14 +209,15 @@ public final class AuthenticatedGDClient extends AbstractGDClient {
 	}
 
 	/**
-	 * Gets the friends of the account that this client is logged on.
+	 * Gets the users that are friends with the account that this client is logged
+	 * on.
 	 *
-	 * @return a Mono emitting a list containing all friends.
+	 * @return a Flux emitting all friends.
 	 * @throws UnsupportedOperationException if this client is not logged it to any
 	 *                                       account
 	 */
-	public Mono<List<GDUserSearchData>> getFriends(){
-		return fetch(new GDFriendListRequest(this));
+	public Flux<GDUserSearchData> getFriends(){
+		return fetch(new GDFriendListRequest(this)).flatMapMany(Flux::fromIterable);
 	}
 
 	/**
