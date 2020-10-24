@@ -1,10 +1,10 @@
 package com.github.alex1304.jdash;
 
-import com.github.alex1304.jdash.client.AnonymousGDClient;
-import com.github.alex1304.jdash.client.GDClientBuilder;
-import com.github.alex1304.jdash.entity.GDLevel;
-import com.github.alex1304.jdash.entity.GDLevelData;
-import com.github.alex1304.jdash.util.Gzip;
+import com.github.alex1304.jdash.old.client.AnonymousGDClient;
+import com.github.alex1304.jdash.old.client.GDClientBuilder;
+import com.github.alex1304.jdash.old.entity.GDLevel;
+import com.github.alex1304.jdash.old.entity.GDLevelData;
+import com.github.alex1304.jdash.old.util.Gzip;
 
 public class ZipTestMain {
 

@@ -1,13 +1,13 @@
 package com.github.alex1304.jdash.entity;
 
-/**
- * Represents anything on Geometry Dash that has a unique ID (a user, a level, a private message...)
- */
+import com.github.alex1304.jdash.client.GDClient;
+
 public interface GDEntity {
+
 	/**
-	 * The unique identifier for the entity.
+	 * Gets the client backing this entity.
 	 * 
-	 * @return an ID
+	 * @return the client
 	 */
-	long getId();
+	GDClient client();
 }

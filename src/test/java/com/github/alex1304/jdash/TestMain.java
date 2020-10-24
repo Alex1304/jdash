@@ -4,15 +4,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
 
-import com.github.alex1304.jdash.client.AuthenticatedGDClient;
-import com.github.alex1304.jdash.client.GDClientBuilder;
-import com.github.alex1304.jdash.client.GDClientBuilder.Credentials;
-import com.github.alex1304.jdash.entity.*;
-import com.github.alex1304.jdash.util.GDPaginator;
-import com.github.alex1304.jdash.util.CommentSortMode;
-import com.github.alex1304.jdash.util.LevelSearchFilters;
+import com.github.alex1304.jdash.old.client.AuthenticatedGDClient;
+import com.github.alex1304.jdash.old.client.GDClientBuilder;
+import com.github.alex1304.jdash.old.client.GDClientBuilder.Credentials;
+import com.github.alex1304.jdash.old.entity.*;
+import com.github.alex1304.jdash.old.util.CommentSortMode;
+import com.github.alex1304.jdash.old.util.GDPaginator;
+import com.github.alex1304.jdash.old.util.LeaderboardType;
+import com.github.alex1304.jdash.old.util.LevelSearchFilters;
 
-import com.github.alex1304.jdash.util.LeaderboardType;
 import reactor.core.publisher.Mono;
 
 public class TestMain {

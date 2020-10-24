@@ -6,13 +6,13 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import com.github.alex1304.jdash.client.AnonymousGDClient;
-import com.github.alex1304.jdash.client.GDClientBuilder;
-import com.github.alex1304.jdash.entity.GDUser;
-import com.github.alex1304.jdash.entity.IconType;
-import com.github.alex1304.jdash.exception.SpriteLoadException;
 import com.github.alex1304.jdash.graphics.SpriteFactory;
-import com.github.alex1304.jdash.util.GDUserIconSet;
+import com.github.alex1304.jdash.old.client.AnonymousGDClient;
+import com.github.alex1304.jdash.old.client.GDClientBuilder;
+import com.github.alex1304.jdash.old.entity.GDUser;
+import com.github.alex1304.jdash.old.entity.IconType;
+import com.github.alex1304.jdash.old.exception.SpriteLoadException;
+import com.github.alex1304.jdash.old.util.GDUserIconSet;
 
 public class GraphicsTestMain {
 

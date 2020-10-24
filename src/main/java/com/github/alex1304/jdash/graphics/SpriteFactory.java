@@ -30,9 +30,9 @@ import org.apache.commons.configuration2.builder.fluent.Configurations;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.configuration2.plist.XMLPropertyListConfiguration;
 
-import com.github.alex1304.jdash.entity.IconType;
-import com.github.alex1304.jdash.exception.SpriteLoadException;
-import com.github.alex1304.jdash.util.Utils;
+import com.github.alex1304.jdash.old.entity.IconType;
+import com.github.alex1304.jdash.old.exception.SpriteLoadException;
+import com.github.alex1304.jdash.old.util.Utils;
 
 public class SpriteFactory {
 	public static final Map<Integer, Color> COLORS = colors();
