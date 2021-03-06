@@ -1,9 +1,6 @@
 package com.github.alex1304.jdash.client;
 
-import java.time.Duration;
-import java.util.Map;
-import java.util.Objects;
-
+import com.github.alex1304.jdash.cooldown.Cooldown;
 import com.github.alex1304.jdash.entity.DemonDifficulty;
 import com.github.alex1304.jdash.entity.GDMessage;
 import com.github.alex1304.jdash.entity.GDUser;
@@ -14,9 +11,12 @@ import com.github.alex1304.jdash.exception.MissingAccessException;
 import com.github.alex1304.jdash.util.GDPaginator;
 import com.github.alex1304.jdash.util.LeaderboardType;
 import com.github.alex1304.jdash.util.robtopsweakcrypto.RobTopsWeakCrypto;
-
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.time.Duration;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * An HTTP client specifically designed to make authenticated requests to
@@ -58,8 +58,8 @@ public final class AuthenticatedGDClient extends AbstractGDClient {
 	private final String passwordEncoded;
 
 	AuthenticatedGDClient(long accountID, long playerID, String username, String password, String host,
-			Duration cacheTtl, Duration requestTimeout) {
-		super(host, cacheTtl, requestTimeout);
+                          Duration cacheTtl, Duration requestTimeout, Cooldown cooldown) {
+		super(host, cacheTtl, requestTimeout, cooldown);
 		this.accountID = accountID;
 		this.playerID = playerID;
 		this.username = username;

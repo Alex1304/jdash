@@ -1,29 +1,15 @@
 package com.github.alex1304.jdash.client;
 
-import java.io.IOException;
-import java.time.Duration;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.StringJoiner;
-import java.util.stream.Collectors;
-
+import com.github.alex1304.jdash.cooldown.Cooldown;
 import com.github.alex1304.jdash.entity.*;
 import com.github.alex1304.jdash.entity.GDTimelyLevel.TimelyType;
-import com.github.alex1304.jdash.exception.BadResponseException;
-import com.github.alex1304.jdash.exception.CorruptedResponseContentException;
-import com.github.alex1304.jdash.exception.GDClientException;
-import com.github.alex1304.jdash.exception.NoTimelyAvailableException;
-import com.github.alex1304.jdash.exception.SongNotAllowedForUseException;
-import com.github.alex1304.jdash.exception.UserSearchDataNotFoundException;
-import com.github.alex1304.jdash.util.GDPaginator;
+import com.github.alex1304.jdash.exception.*;
 import com.github.alex1304.jdash.util.CommentSortMode;
+import com.github.alex1304.jdash.util.GDPaginator;
 import com.github.alex1304.jdash.util.LevelSearchFilters;
 import com.github.alex1304.jdash.util.LevelSearchStrategy;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
@@ -34,6 +20,11 @@ import reactor.util.Logger;
 import reactor.util.Loggers;
 import reactor.util.retry.Retry;
 
+import java.io.IOException;
+import java.time.Duration;
+import java.util.*;
+import java.util.stream.Collectors;
+
 abstract class AbstractGDClient {
 	private static final String GAME_VERSION = "21";
 	private static final String BINARY_VERSION = "35";
@@ -42,13 +33,14 @@ abstract class AbstractGDClient {
 	private static final Logger LOGGER = Loggers.getLogger("jdash");
 	
 	private final Scheduler scheduler;
-	private String host;
+	private final String host;
 	private final HttpClient client;
 	private final Cache<GDRequest<?>, Object> cache;
 	private final Duration cacheTtl;
 	private final Duration requestTimeout;
+	private final Cooldown cooldown;
 
-	AbstractGDClient(String host, Duration cacheTtl, Duration requestTimeout) {
+	AbstractGDClient(String host, Duration cacheTtl, Duration requestTimeout, Cooldown cooldown) {
 		this.scheduler = Schedulers.boundedElastic();
 		this.host = host;
 		this.client = HttpClient.create()
@@ -62,6 +54,7 @@ abstract class AbstractGDClient {
 				.build();
 		this.cacheTtl = cacheTtl;
 		this.requestTimeout = requestTimeout;
+		this.cooldown = cooldown;
 	}
 
 	/**
@@ -123,6 +116,7 @@ abstract class AbstractGDClient {
 						return Mono.error(new CorruptedResponseContentException(e, request.getPath(), request.getParams(), responseStr));
 					}
 				})
+                .doOnSubscribe(subscription -> cooldown.fire(0))
 				.retryWhen(Retry.backoff(Long.MAX_VALUE, Duration.ofMillis(100))
 						.maxBackoff(Duration.ofSeconds(10))
 						.filter(IOException.class::isInstance)
@@ -155,7 +149,7 @@ abstract class AbstractGDClient {
 						.map(u2l -> GDUser.aggregate(u1, u2l.asList().stream()
 								.filter(usr -> usr.getAccountId() == u1.getAccountId())
 								.findAny()
-								.orElseThrow(() -> new UserSearchDataNotFoundException()))));
+								.orElseThrow(UserSearchDataNotFoundException::new))));
 	}
 
 	/**
@@ -507,6 +501,15 @@ abstract class AbstractGDClient {
 	}
 
 	/**
+	 * Gets the cooldown applied globally to requests.
+	 *
+	 * @return Cooldown
+	 */
+    public Cooldown getCooldown() {
+        return cooldown;
+    }
+
+    /**
 	 * Clears the cache of previous requests.
 	 */
 	public void clearCache() {

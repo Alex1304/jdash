@@ -1,13 +1,13 @@
 package com.github.alex1304.jdash.client;
 
-import java.time.Duration;
-import java.util.Map;
-
+import com.github.alex1304.jdash.cooldown.Cooldown;
 import com.github.alex1304.jdash.exception.BadResponseException;
 import com.github.alex1304.jdash.exception.CorruptedResponseContentException;
 import com.github.alex1304.jdash.exception.MissingAccessException;
-
 import reactor.core.publisher.Mono;
+
+import java.time.Duration;
+import java.util.Map;
 
 /**
  * An HTTP client specifically designed to make anonymous requests to Geometry
@@ -38,8 +38,8 @@ import reactor.core.publisher.Mono;
  * </ul>
  */
 public final class AnonymousGDClient extends AbstractGDClient {
-	AnonymousGDClient(String host, Duration cacheTtl, Duration requestTimeout) {
-		super(host, cacheTtl, requestTimeout);
+	AnonymousGDClient(String host, Duration cacheTtl, Duration requestTimeout, Cooldown cooldown) {
+		super(host, cacheTtl, requestTimeout, cooldown);
 	}
 	@Override
 	void putExtraParams(Map<String, String> params) {

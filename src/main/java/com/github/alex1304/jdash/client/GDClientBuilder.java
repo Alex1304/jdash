@@ -1,15 +1,15 @@
 package com.github.alex1304.jdash.client;
 
+import com.github.alex1304.jdash.cooldown.Cooldown;
+import com.github.alex1304.jdash.exception.GDClientException;
+import com.github.alex1304.jdash.exception.GDLoginFailedException;
+import com.github.alex1304.jdash.util.Routes;
+import reactor.core.publisher.Mono;
+
 import java.time.Duration;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.TimeoutException;
-
-import com.github.alex1304.jdash.exception.GDClientException;
-import com.github.alex1304.jdash.exception.GDLoginFailedException;
-import com.github.alex1304.jdash.util.Routes;
-
-import reactor.core.publisher.Mono;
 
 /**
  * Builds a Geometry Dash client step by step.
@@ -22,16 +22,19 @@ public final class GDClientBuilder {
 
 	private Optional<String> host;
 	private Optional<Duration> cacheTtl;
-	private Optional<Duration> requestTimeout; 
+	private Optional<Duration> requestTimeout;
+	private Optional<Cooldown> cooldown;
 
-	private GDClientBuilder(Optional<String> host, Optional<Duration> cacheTtl, Optional<Duration> requestTimeout) {
+	private GDClientBuilder(Optional<String> host, Optional<Duration> cacheTtl, Optional<Duration> requestTimeout,
+                            Optional<Cooldown> cooldown) {
 		this.host = host;
 		this.cacheTtl = cacheTtl;
 		this.requestTimeout = requestTimeout;
+		this.cooldown = cooldown;
 	}
 
 	public static GDClientBuilder create() {
-		return new GDClientBuilder(Optional.empty(), Optional.empty(), Optional.empty());
+		return new GDClientBuilder(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
 	}
 
 	/**
@@ -103,13 +106,26 @@ public final class GDClientBuilder {
 	}
 
 	/**
+	 * Specifies a cooldown for requests. This is useful to mitigate the risk of getting IP banned from official
+     * Geometry Dash servers in case too many requests are sent.
+	 *
+	 * @param cooldown the cooldown to apply globally
+	 * @return this (for method chaining purposes)
+	 */
+	public GDClientBuilder withCooldown(Cooldown cooldown) {
+		Objects.requireNonNull(cooldown);
+		this.cooldown = Optional.of(cooldown);
+		return this;
+	}
+
+	/**
 	 * Builds an anonymous Geometry Dash client.
 	 * 
 	 * @return {@link AnonymousGDClient}
 	 */
 	public AnonymousGDClient buildAnonymous() {
 		return new AnonymousGDClient(host.orElse(Routes.BASE_URL), cacheTtl.orElse(DEFAULT_CACHE_TTL),
-				requestTimeout.orElse(DEFAULT_REQUEST_TIMEOUT));
+				requestTimeout.orElse(DEFAULT_REQUEST_TIMEOUT), cooldown.orElse(Cooldown.none()));
 	}
 	
 	/**
@@ -130,7 +146,7 @@ public final class GDClientBuilder {
 		try {
 			long[] details = client.fetch(new GDLoginRequest(client, username, password, "jdash-client")).block();
 			return new AuthenticatedGDClient(details[0], details[1], username, password, client.getHost(), client.getCacheTtl(),
-					client.getRequestTimeout());
+					client.getRequestTimeout(), client.getCooldown());
 		} catch (GDClientException e) {
 			throw new GDLoginFailedException(e);
 		}
@@ -150,7 +166,8 @@ public final class GDClientBuilder {
 		return Mono.fromCallable(this::buildAnonymous)
 				.flatMap(anonClient -> anonClient.fetch(new GDLoginRequest(anonClient, credentials.username, credentials.password, "jdash-client"))
 						.map(details -> new AuthenticatedGDClient(details[0], details[1], credentials.username, credentials.password,
-								anonClient.getHost(), anonClient.getCacheTtl(), anonClient.getRequestTimeout()))
+								anonClient.getHost(), anonClient.getCacheTtl(), anonClient.getRequestTimeout(),
+                                anonClient.getCooldown()))
 						.onErrorMap(GDClientException.class, GDLoginFailedException::new));
 	}
 	
