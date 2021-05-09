@@ -2,7 +2,6 @@
 
 [![Maven Central](https://img.shields.io/maven-central/v/com.github.alex1304/jdash.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.github.alex1304%22%20AND%20a:%22jdash%22) [![Documentation Status](https://readthedocs.org/projects/jdash/badge/?version=latest)](https://jdash.readthedocs.io/en/latest/?badge=latest)
 
-
 A Java library for Geometry Dash.
 
 # Features
@@ -30,7 +29,8 @@ In a Maven project, add the following dependency to your `pom.xml`:
 </dependencies>
 ```
 
-Or download the latest version at the [releases](https://github.com/Alex1304/jdash/releases) page, and add all required JAR files into the build path of your Java project.
+Or download the latest version at the [releases](https://github.com/Alex1304/jdash/releases) page, and add all required
+JAR files into the build path of your Java project.
 
 # How to use it ?
 
@@ -39,24 +39,24 @@ There are many ways to use the library. Here are a few examples:
 ## Anonymous client, blocking style
 
 ```Java
-import com.github.alex1304.jdash.client.AnonymousGDClient;
-import com.github.alex1304.jdash.client.GDClientBuilder;
-import com.github.alex1304.jdash.entity.GDLevel;
-import com.github.alex1304.jdash.entity.GDUser;
+import jdash.jdash.client.AnonymousGDClient;
+import jdash.jdash.client.GDClientBuilder;
+import jdash.entity.GDLevel;
+import jdash.jdash.entity.GDUser;
 
 public class TestMain {
 
-	public static void main(String[] args) {
-		// Build an anonymous client
-		AnonymousGDClient client = GDClientBuilder.create().buildAnonymous();
-		// Fetch level of ID 10565740
-		GDLevel level = client.getLevelById(10565740).block();
-		// Fetch user of name "RobTop"
-		GDUser user = client.searchUser("RobTop").block();
-		// Do stuff with them, for example print them
-		System.out.println(level);
-		System.out.println(user);
-	}
+    public static void main(String[] args) {
+        // Build an anonymous client
+        AnonymousGDClient client = GDClientBuilder.create().buildAnonymous();
+        // Fetch level of ID 10565740
+        GDLevel level = client.getLevelById(10565740).block();
+        // Fetch user of name "RobTop"
+        GDUser user = client.searchUser("RobTop").block();
+        // Do stuff with them, for example print them
+        System.out.println(level);
+        System.out.println(user);
+    }
 
 }
 
@@ -65,24 +65,24 @@ public class TestMain {
 ## Anonymous client, non-blocking style
 
 ```Java
-import com.github.alex1304.jdash.client.AnonymousGDClient;
-import com.github.alex1304.jdash.client.GDClientBuilder;
+import jdash.jdash.client.AnonymousGDClient;
+import jdash.jdash.client.GDClientBuilder;
 
 public class TestMain {
 
-	public static void main(String[] args) throws Exception {
-		// Build an anonymous client
-		AnonymousGDClient client = GDClientBuilder.create().buildAnonymous();
-		// Fetch level of ID 10565740 then print it
-		client.getLevelById(10565740).doOnSuccess(level -> System.out.println(level)).subscribe();
-		// Fetch user of name "RobTop" then print it
-		client.searchUser("RobTop").doOnSuccess(user -> System.out.println(user)).subscribe();
-		// The above calls are non-blocking, meaning that you can do something else in parallel while the client is doing its job!
-		// Let's put that in evidence:
-		System.out.println("Start another long-running task here...");
-		Thread.sleep(5000);
-		System.out.println("Bye!");
-	}
+    public static void main(String[] args) throws Exception {
+        // Build an anonymous client
+        AnonymousGDClient client = GDClientBuilder.create().buildAnonymous();
+        // Fetch level of ID 10565740 then print it
+        client.getLevelById(10565740).doOnSuccess(level -> System.out.println(level)).subscribe();
+        // Fetch user of name "RobTop" then print it
+        client.searchUser("RobTop").doOnSuccess(user -> System.out.println(user)).subscribe();
+        // The above calls are non-blocking, meaning that you can do something else in parallel while the client is doing its job!
+        // Let's put that in evidence:
+        System.out.println("Start another long-running task here...");
+        Thread.sleep(5000);
+        System.out.println("Bye!");
+    }
 
 }
 
@@ -91,36 +91,36 @@ public class TestMain {
 ## Authenticated client
 
 ```Java
-import com.github.alex1304.jdash.client.AuthenticatedGDClient;
-import com.github.alex1304.jdash.client.GDClientBuilder;
-import com.github.alex1304.jdash.entity.GDMessage;
-import com.github.alex1304.jdash.exception.GDLoginFailedException;
-import com.github.alex1304.jdash.util.GDPaginator;
+import jdash.jdash.client.AuthenticatedGDClient;
+import jdash.jdash.client.GDClientBuilder;
+import jdash.jdash.entity.GDMessage;
+import jdash.jdash.exception.LoginFailedException;
+import jdash.jdash.util.GDPaginator;
 
 public class TestMain {
 
-	public static void main(String[] args) throws Exception {
-		// Build an anonymous client
-		try {
-			AuthenticatedGDClient client = GDClientBuilder.create().buildAuthenticated(new Credentials("MyUsername", "MyP@ssw0rd")).block();
-			// With an authenticated client, you can do cool stuff like this:
-			client.getPrivateMessages(0).doOnSuccess(messages -> {
-				for (GDMessage message : messages) {
-					System.out.println(message);
-				}
-			}).subscribe();
-			// Pretty self-explanatory, right? It's fetching your in-game private messages!
-			// Here's a blocking version:
-			GDPaginator<GDMessage> messages = client.getPrivateMessages(0).block();
-			for (GDMessage message : messages) {
-				System.out.println(message);
-			}
-			// GDPaginator is basically a List but with extra metadata info related to pagination
-			// (number of pages, number of items per page, etc). RTFM for more details.
-		} catch (GDLoginFailedException e) {
-			System.err.println("Oops! Login failed.");
-		}
-	}
+    public static void main(String[] args) throws Exception {
+        // Build an anonymous client
+        try {
+            AuthenticatedGDClient client = GDClientBuilder.create().buildAuthenticated(new Credentials("MyUsername", "MyP@ssw0rd")).block();
+            // With an authenticated client, you can do cool stuff like this:
+            client.getPrivateMessages(0).doOnSuccess(messages -> {
+                for (GDMessage message : messages) {
+                    System.out.println(message);
+                }
+            }).subscribe();
+            // Pretty self-explanatory, right? It's fetching your in-game private messages!
+            // Here's a blocking version:
+            GDPaginator<GDMessage> messages = client.getPrivateMessages(0).block();
+            for (GDMessage message : messages) {
+                System.out.println(message);
+            }
+            // GDPaginator is basically a List but with extra metadata info related to pagination
+            // (number of pages, number of items per page, etc). RTFM for more details.
+        } catch (GDLoginFailedException e) {
+            System.err.println("Oops! Login failed.");
+        }
+    }
 
 }
 
@@ -134,7 +134,9 @@ MIT
 
 # Contribute
 
-Issues and Pull requests are more than welcome ! There is no guide that tells how to structure them, but if you explain clearly what you did in your pull request, we will be able to dicuss about it and getting it eventually merged. This is the same for issues, feel free to submit them as long as they are clear.
+Issues and Pull requests are more than welcome ! There is no guide that tells how to structure them, but if you explain
+clearly what you did in your pull request, we will be able to dicuss about it and getting it eventually merged. This is
+the same for issues, feel free to submit them as long as they are clear.
 
 # Contact
 
