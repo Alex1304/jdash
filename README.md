@@ -41,8 +41,8 @@ There are many ways to use the library. Here are a few examples:
 ```Java
 import jdash.jdash.client.AnonymousGDClient;
 import jdash.jdash.client.GDClientBuilder;
-import jdash.entity.GDLevel;
-import jdash.jdash.entity.GDUser;
+import jdash.common.entity.GDLevel;
+import jdash.jdash.common.entity.GDUser;
 
 public class TestMain {
 
@@ -93,8 +93,8 @@ public class TestMain {
 ```Java
 import jdash.jdash.client.AuthenticatedGDClient;
 import jdash.jdash.client.GDClientBuilder;
-import jdash.jdash.entity.GDMessage;
-import jdash.jdash.exception.LoginFailedException;
+import jdash.jdash.common.entity.GDMessage;
+import jdash.jdash.client.exception.LoginFailedException;
 import jdash.jdash.util.GDPaginator;
 
 public class TestMain {
