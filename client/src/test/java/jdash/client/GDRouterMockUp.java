@@ -14,21 +14,33 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
-public class GDRouterMockUp implements GDRouter {
+public final class GDRouterMockUp implements GDRouter {
 
     private static final Map<GDRequest, String> SAMPLES = Map.ofEntries(
             Map.entry(GDRequest.of(GDRequests.LEVEL_SEARCH)
                     .addParameters(GDRequests.commonParams())
-                    .addParameters(LevelSearchFilter.create().toParams())
+                    .addParameters(LevelSearchFilter.create().toMap())
                     .addParameter("page", 0)
                     .addParameter("type", LevelSearchType.REGULAR.getVal())
-                    .addParameter("str", 10565740), "getLevelById_10565740"),
+                    .addParameter("str", 10565740), "getLevelById"),
             Map.entry(GDRequest.of(GDRequests.LEVEL_SEARCH)
                     .addParameters(GDRequests.commonParams())
-                    .addParameters(LevelSearchFilter.create().toParams())
+                    .addParameters(LevelSearchFilter.create().toMap())
                     .addParameter("page", 0)
                     .addParameter("type", LevelSearchType.REGULAR.getVal())
-                    .addParameter("str", "Bloodbath"), "searchLevels_bloodbath")
+                    .addParameter("str", "Bloodbath"), "searchLevels"),
+            Map.entry(GDRequest.of(GDRequests.LOGIN)
+                    .addParameter("userName", "Alex1304")
+                    .addParameter("password", "F3keP4ssw0rd")
+                    .addParameter("udid", "jdash-client")
+                    .addParameter("secret", "Wmfv3899gc9"), "login"),
+            Map.entry(GDRequest.of(GDRequests.GET_USER_INFO)
+                    .addParameters(GDRequests.commonParams())
+                    .addParameter("targetAccountID", 98006), "getUserByAccountId"),
+            Map.entry(GDRequest.of(GDRequests.USER_SEARCH)
+                    .addParameters(GDRequests.commonParams())
+                    .addParameter("str", "Alex1304")
+                    .addParameter("page", 0), "searchUsers")
     );
 
     private int requestCount;

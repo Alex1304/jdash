@@ -4,7 +4,7 @@ import jdash.client.request.GDRequest;
 
 import java.util.Optional;
 
-public class NoOpCache implements GDCache {
+public final class NoOpCache implements GDCache {
 
     static final NoOpCache INSTANCE = new NoOpCache();
 

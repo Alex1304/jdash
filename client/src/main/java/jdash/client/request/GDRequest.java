@@ -1,12 +1,15 @@
 package jdash.client.request;
 
 import jdash.client.cache.GDCache;
+import jdash.client.response.GDResponse;
+import jdash.client.response.impl.GDCachedObjectResponse;
+import jdash.client.response.impl.GDSerializedSourceResponse;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class GDRequest {
+public final class GDRequest {
 
     private final String uri;
     private final Map<String, String> params = new HashMap<>();

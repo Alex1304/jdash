@@ -3,9 +3,11 @@ package jdash.common.entity;
 import jdash.common.IconType;
 import jdash.common.PrivacySetting;
 import jdash.common.Role;
+import org.immutables.value.Value;
 
 import java.util.Optional;
 
+@Value.Immutable
 public interface GDUser {
 
     long playerId();
@@ -21,6 +23,8 @@ public interface GDUser {
     int color1Id();
 
     int color2Id();
+
+    boolean hasGlowOutline();
 
     int stars();
 
@@ -47,8 +51,6 @@ public interface GDUser {
     Optional<Integer> spiderIconId();
 
     Optional<Integer> deathEffectId();
-
-    Optional<Boolean> hasGlowOutline();
 
     Optional<Integer> mainIconId();
 

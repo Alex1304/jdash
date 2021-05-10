@@ -9,7 +9,7 @@ import java.util.Objects;
 /**
  * Allows to generate user icons.
  */
-public class GDUserIconSet {
+public final class GDUserIconSet {
 
     private final GDUser user;
     private final SpriteFactory factory;

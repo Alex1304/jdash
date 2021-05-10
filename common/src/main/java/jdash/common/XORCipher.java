@@ -8,7 +8,7 @@ package jdash.common;
  * 
  * See https://en.wikipedia.org/wiki/XOR_cipher
  */
-public class XORCipher {
+public final class XORCipher {
 	
 	private byte[] key;
 

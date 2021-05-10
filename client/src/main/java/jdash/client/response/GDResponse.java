@@ -1,4 +1,4 @@
-package jdash.client.request;
+package jdash.client.response;
 
 import reactor.core.publisher.Mono;
 

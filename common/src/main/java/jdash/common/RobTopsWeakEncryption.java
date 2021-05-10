@@ -6,7 +6,7 @@ import jdash.common.internal.InternalUtils;
  * Provides methods to encrypt some data such as private
  * messages, level passwords and account passwords.
  */
-public class RobTopsWeakEncryption {
+public final class RobTopsWeakEncryption {
 
 	private static final XORCipher GD_MESSAGE_BODY_XOR_CIPHER = new XORCipher("14251");
 	private static final XORCipher LEVEL_PASS_XOR_CIPHER = new XORCipher("26364");

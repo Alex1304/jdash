@@ -4,7 +4,7 @@ import jdash.client.request.GDRequest;
 
 import java.util.Objects;
 
-public final class CorruptedResponseContentException extends GDClientException {
+public class CorruptedResponseContentException extends GDClientException {
 
     private final GDRequest request;
     private final String responseContent;

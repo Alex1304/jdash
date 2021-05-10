@@ -1,14 +1,15 @@
-package jdash.client.request;
+package jdash.client.response.impl;
 
+import jdash.client.response.GDResponse;
 import reactor.core.publisher.Mono;
 
 import java.util.function.Function;
 
-class GDCachedObjectResponse implements GDResponse {
+public final class GDCachedObjectResponse implements GDResponse {
 
     private final Object cached;
 
-    GDCachedObjectResponse(Object cached) {
+    public GDCachedObjectResponse(Object cached) {
         this.cached = cached;
     }
 

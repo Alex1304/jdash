@@ -1,12 +1,11 @@
 package jdash.client;
 
-import jdash.common.DemonDifficulty;
-import jdash.common.Difficulty;
-import jdash.common.Length;
-import jdash.common.LevelSearchFilter;
+import jdash.client.exception.MissingAccessException;
+import jdash.common.*;
 import jdash.common.entity.GDLevel;
 import jdash.common.entity.ImmutableGDLevel;
 import jdash.common.entity.ImmutableGDSong;
+import jdash.common.entity.ImmutableGDUser;
 import jdash.common.internal.InternalUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,7 +14,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class GDClientTest {
+public final class GDClientTest {
 
     private GDCacheMockUp cache;
     private GDRouterMockUp router;
@@ -46,6 +45,13 @@ public class GDClientTest {
         assertEquals(1, router.getRequestCount()); // Check that it didn't hit the router (requestCount didn't
                                                             // increment). It means it properly hit the cache.
         assertEquals(response2, response); // Check the new response is consistent with the first one
+    }
+
+    @Test
+    public void loginTest() {
+        assertFalse(client.isAuthenticated());
+        assertTrue(client.login("Alex1304", "F3keP4ssw0rd").block().isAuthenticated());
+        assertThrows(MissingAccessException.class, client.login("Alex1304", "WrongPassword")::block);
     }
 
     @Test
@@ -96,6 +102,63 @@ public class GDClientTest {
                 .map(GDLevel::id)
                 .collectList()
                 .block();
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void getUserByAccountIdTest() {
+        var expected = ImmutableGDUser.builder()
+                .commentHistoryPolicy(PrivacySetting.OPENED_TO_ALL)
+                .privateMessagePolicy(PrivacySetting.OPENED_TO_ALL)
+                .hasFriendRequestsEnabled(true)
+                .role(Role.MODERATOR)
+                .twitch("gd_alex1304")
+                .twitter("gd_alex1304")
+                .youtube("UC0hFAVN-GAbZYuf_Hfk1Iog")
+                .deathEffectId(0)
+                .hasGlowOutline(true)
+                .spiderIconId(15)
+                .robotIconId(21)
+                .waveIconId(24)
+                .ballIconId(30)
+                .accountId(98006)
+                .ufoIconId(3)
+                .shipIconId(7)
+                .cubeIconId(29)
+                .globalRank(33266)
+                .diamonds(19336)
+                .demons(46)
+                .creatorPoints(21)
+                .stars(5658)
+                .userCoins(818)
+                .color2Id(9)
+                .color1Id(12)
+                .secretCoins(100)
+                .name("Alex1304")
+                .playerId(4063664)
+                .build();
+        var actual = client.getUserByAccountId(98006).block();
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void searchUsersTest() {
+        var expected = ImmutableGDUser.builder()
+                .hasGlowOutline(true)
+                .accountId(98006)
+                .demons(23)
+                .creatorPoints(21)
+                .stars(3411)
+                .userCoins(545)
+                .color2Id(9)
+                .color1Id(12)
+                .secretCoins(100)
+                .name("Alex1304")
+                .playerId(4063664)
+                .mainIconId(29)
+                .mainIconType(IconType.CUBE)
+                .build();
+        var actual = client.searchUsers("Alex1304", 0).blockFirst();
         assertEquals(expected, actual);
     }
 }

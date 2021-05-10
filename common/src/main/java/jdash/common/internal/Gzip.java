@@ -8,7 +8,7 @@ import java.util.zip.GZIPOutputStream;
 /**
  * https://myadventuresincoding.wordpress.com/2016/01/02/java-simple-gzip-utility-to-compress-and-decompress-a-string/
  */
-public class Gzip {
+public final class Gzip {
 
     public static byte[] zip(final String str) {
         if ((str == null) || (str.length() == 0)) {

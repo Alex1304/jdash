@@ -19,7 +19,7 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.Predicate;
 
-public class SpriteFactory {
+public final class SpriteFactory {
     public static final Map<Integer, Color> COLORS = colors();
 
     private final BufferedImage spriteImg;

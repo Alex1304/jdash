@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-public class GDCacheMockUp implements GDCache {
+public final class GDCacheMockUp implements GDCache {
 
     private final Map<GDRequest, Object> map = new HashMap<>();
 

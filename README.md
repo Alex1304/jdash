@@ -44,7 +44,7 @@ import jdash.jdash.client.GDClientBuilder;
 import jdash.common.entity.GDLevel;
 import jdash.jdash.common.entity.GDUser;
 
-public class TestMain {
+public final class TestMain {
 
     public static void main(String[] args) {
         // Build an anonymous client
@@ -68,7 +68,7 @@ public class TestMain {
 import jdash.jdash.client.AnonymousGDClient;
 import jdash.jdash.client.GDClientBuilder;
 
-public class TestMain {
+public final class TestMain {
 
     public static void main(String[] args) throws Exception {
         // Build an anonymous client
@@ -97,7 +97,7 @@ import jdash.jdash.common.entity.GDMessage;
 import jdash.jdash.client.exception.LoginFailedException;
 import jdash.jdash.util.GDPaginator;
 
-public class TestMain {
+public final class TestMain {
 
     public static void main(String[] args) throws Exception {
         // Build an anonymous client

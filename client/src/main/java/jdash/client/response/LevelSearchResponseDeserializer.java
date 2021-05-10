@@ -1,4 +1,4 @@
-package jdash.common.internal;
+package jdash.client.response;
 
 import jdash.common.Length;
 import jdash.common.entity.GDLevel;
@@ -14,7 +14,7 @@ import static jdash.common.internal.Indexes.*;
 import static jdash.common.internal.InternalUtils.*;
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 
-public class LevelSearchResultDeserializer implements Function<String, List<GDLevel>> {
+class LevelSearchResponseDeserializer implements Function<String, List<GDLevel>> {
 
     @Override
     public List<GDLevel> apply(String response) {

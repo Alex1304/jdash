@@ -8,125 +8,123 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Allows to define search filters for levels.
+ * Allows to define search filters for levels. This class is immutable.
  */
 public final class LevelSearchFilter {
 
-    private EnumSet<Toggle> toggles;
-    private EnumSet<Length> lengths;
-    private EnumSet<Difficulty> difficulties;
-    private DemonDifficulty demon;
-    private GDSong song;
-    private Collection<? extends GDLevel> completedLevels;
+    private final EnumSet<Toggle> toggles;
+    private final EnumSet<Length> lengths;
+    private final EnumSet<Difficulty> difficulties;
+    private final DemonDifficulty demon;
+    private final GDSong song;
+    private final Collection<? extends GDLevel> completedLevels;
 
     private LevelSearchFilter(EnumSet<Toggle> toggles, EnumSet<Length> lengths, EnumSet<Difficulty> difficulties,
-                              DemonDifficulty demon, GDSong song) {
+                              DemonDifficulty demon, GDSong song, Collection<? extends GDLevel> completedLevels) {
         this.toggles = toggles;
         this.lengths = lengths;
         this.difficulties = difficulties;
         this.demon = demon;
         this.song = song;
-        this.completedLevels = Set.of();
+        this.completedLevels = completedLevels;
     }
 
     /**
-     * Creates a new instance of search filters.
+     * Creates a new instance of search filter with default values.
      *
      * @return a new instance of {@link LevelSearchFilter}
      */
     public static LevelSearchFilter create() {
         return new LevelSearchFilter(EnumSet.noneOf(Toggle.class), EnumSet.noneOf(Length.class),
-                EnumSet.noneOf(Difficulty.class), null, null);
+                EnumSet.noneOf(Difficulty.class), null, null, Set.of());
     }
 
     /**
-     * Defines which options are toggled on.
+     * Returns a copy of this {@link LevelSearchFilter} with the given set of toggles.
      *
      * @param toggles the set of toggles that are on
-     * @return this (for method chaining purposes)
+     * @return a new LevelSearchFilter with the updated filters
      */
     public LevelSearchFilter withToggles(EnumSet<Toggle> toggles) {
-        this.toggles = Objects.requireNonNull(toggles);
-        return this;
+        Objects.requireNonNull(toggles);
+        return new LevelSearchFilter(toggles, lengths, difficulties, demon, song, completedLevels);
     }
 
     /**
-     * Defines the level lengths to filter on.
+     * Returns a copy of this {@link LevelSearchFilter} with the given set of lengths.
      *
      * @param lengths the set of lengths
-     * @return this (for method chaining purposes)
+     * @return a new LevelSearchFilter with the updated filters
      */
     public LevelSearchFilter withLengths(EnumSet<Length> lengths) {
-        this.lengths = Objects.requireNonNull(lengths);
-        return this;
+        Objects.requireNonNull(lengths);
+        return new LevelSearchFilter(toggles, lengths, difficulties, demon, song, completedLevels);
     }
 
     /**
-     * Defines the level difficulties to filter on.
+     * Returns a copy of this {@link LevelSearchFilter} with the given set of difficulties.
      *
      * @param difficulties the set of difficulties
-     * @return this (for method chaining purposes)
+     * @return a new LevelSearchFilter with the updated filters
      */
     public LevelSearchFilter withDifficulties(EnumSet<Difficulty> difficulties) {
-        this.difficulties = Objects.requireNonNull(difficulties);
-        return this;
+        Objects.requireNonNull(difficulties);
+        return new LevelSearchFilter(toggles, lengths, difficulties, demon, song, completedLevels);
     }
 
     /**
-     * Defines the demon filter.
+     * Returns a copy of this {@link LevelSearchFilter} with the given demon filter.
      *
-     * @param demonDiff the demon difficulty to filter on
-     * @return this (for method chaining purposes)
+     * @param demon the demon difficulty to filter on.
+     * @return a new LevelSearchFilter with the updated filters
      */
-    public LevelSearchFilter withDemonFilter(DemonDifficulty demonDiff) {
-        this.demon = Objects.requireNonNull(demonDiff);
-        return this;
+    public LevelSearchFilter withDemonFilter(DemonDifficulty demon) {
+        Objects.requireNonNull(demon);
+        return new LevelSearchFilter(toggles, lengths, difficulties, demon, song, completedLevels);
     }
 
     /**
-     * Removes any demon filter previously defined by a previous call of {@link #withDemonFilter(DemonDifficulty)}.
+     * Returns a copy of this {@link LevelSearchFilter} but without the demon filter.
      *
-     * @return this (for method chaining purposes)
+     * @return a new LevelSearchFilter with the updated filters
      */
-    public LevelSearchFilter removeDemonFilter() {
-        this.demon = null;
-        return this;
+    public LevelSearchFilter withoutDemonFilter() {
+        return new LevelSearchFilter(toggles, lengths, difficulties, null, song, completedLevels);
     }
 
     /**
-     * Defines the song filter.
+     * Returns a copy of this {@link LevelSearchFilter} with the given song filter.
      *
      * @param isCustom whether to filter on a custom song or a regular one
-     * @param songId   the ID of the song to filter on. If the previous pareameter was set to <code>false</code>, then
-     *                 it refers to the index of the level that has the song in game (Stereo Madness is 1, Back On Track
-     *                 is 2, and so on)
-     * @return this (for method chaining purposes)
+     * @param songId   the ID of the song to filter on. If the previous parameter was set to <code>false</code>, then
+     *                 it refers to the index of the level that has the song in game (Stereo Madness is 0, Back On Track
+     *                 is 1, and so on)
+     * @return a new LevelSearchFilter with the updated filters
      */
     public LevelSearchFilter withSongFilter(boolean isCustom, long songId) {
-        this.song = isCustom ? GDSong.unknownSong(songId) : InternalUtils.getAudioTrack((int) songId);
-        return this;
+        return new LevelSearchFilter(toggles, lengths, difficulties, demon,
+                isCustom ? GDSong.unknownSong(songId) : InternalUtils.getAudioTrack((int) songId), completedLevels);
     }
 
     /**
-     * Removes any song filter defined by a previous call of {@link #withSongFilter(boolean, long)}.
+     * Returns a copy of this {@link LevelSearchFilter} but without the song filter.
      *
-     * @return this (for method chaining purposes)
+     * @return a new LevelSearchFilter with the updated filters
      */
-    public LevelSearchFilter removeSongFilter() {
-        this.song = null;
-        return this;
+    public LevelSearchFilter withoutSongFilter() {
+        return new LevelSearchFilter(toggles, lengths, difficulties, demon, null, completedLevels);
     }
 
     /**
-     * Defines the list of completed levels. Only relevant if either {@link Toggle#ONLY_COMPLETED} or {@link
-     * Toggle#UNCOMPLETED} is set on.
+     * Returns a copy of this {@link LevelSearchFilter} with the given list of completed levels. Only relevant if either
+     * {@link Toggle#ONLY_COMPLETED} or {@link Toggle#UNCOMPLETED} is set on.
      *
      * @param completedLevels a Collection of levels that are considered "completed"
-     * @return this (for method chaining purposes)
+     * @return a new LevelSearchFilter with the updated filters
      */
     public LevelSearchFilter withCompletedLevels(Collection<? extends GDLevel> completedLevels) {
-        this.completedLevels = Objects.requireNonNull(completedLevels);
-        return this;
+        Objects.requireNonNull(completedLevels);
+        return new LevelSearchFilter(toggles, lengths, difficulties, demon, song, completedLevels);
     }
 
     public EnumSet<Toggle> getToggles() {
@@ -141,7 +139,7 @@ public final class LevelSearchFilter {
         return difficulties;
     }
 
-    public Optional<DemonDifficulty> getDemon() {
+    public Optional<DemonDifficulty> getDemonFilter() {
         return Optional.ofNullable(demon);
     }
 
@@ -156,6 +154,7 @@ public final class LevelSearchFilter {
      * @return true if included, false otherwise
      */
     public boolean hasToggle(Toggle t) {
+        Objects.requireNonNull(t);
         return toggles.contains(t);
     }
 
@@ -164,11 +163,13 @@ public final class LevelSearchFilter {
     }
 
     /**
-     * Gives a map representation of this filter.
+     * Gives a map representation of this filter, that can be directly sent as request parameters by a web client to
+     * Geometry Dash servers. The returned {@link Map} is unmodifiable and won't reflect changes made to this {@link
+     * LevelSearchFilter} after this call.
      *
      * @return a map
      */
-    public Map<String, String> toParams() {
+    public Map<String, String> toMap() {
         var params = new HashMap<String, String>();
         if (!difficulties.isEmpty()) {
             params.put("diff", difficulties.stream()
@@ -205,7 +206,7 @@ public final class LevelSearchFilter {
                     .map(String::valueOf)
                     .collect(Collectors.joining(",")) + ")");
         }
-        return params;
+        return Collections.unmodifiableMap(params);
     }
 
     @Override

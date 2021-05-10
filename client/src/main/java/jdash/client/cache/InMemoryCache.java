@@ -6,7 +6,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class InMemoryCache implements GDCache {
+public final class InMemoryCache implements GDCache {
 
     private final ConcurrentHashMap<GDRequest, Object> map = new ConcurrentHashMap<>();
 
