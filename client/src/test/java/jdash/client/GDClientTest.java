@@ -2,15 +2,14 @@ package jdash.client;
 
 import jdash.client.exception.MissingAccessException;
 import jdash.common.*;
-import jdash.common.entity.GDLevel;
-import jdash.common.entity.ImmutableGDLevel;
-import jdash.common.entity.ImmutableGDSong;
-import jdash.common.entity.ImmutableGDUser;
+import jdash.common.entity.*;
 import jdash.common.internal.InternalUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -33,7 +32,8 @@ public final class GDClientTest {
     public void cacheTest() {
         assertTrue(cache.getMap().isEmpty()); // Ensure the cache is empty at first
 
-        var response = client.getLevelById(10565740).block(); // Make a request
+        var response = client.findLevelById(10565740).block(); // Make a request
+        assertNotNull(response);
         assertEquals(1, router.getRequestCount()); // Check that it hit the router
         assertEquals(1, cache.getMap().size()); // Check that the response was added to cache
 
@@ -41,7 +41,7 @@ public final class GDClientTest {
         var cached = cache.getMap().values().stream().findAny().orElseThrow();
         assertEquals(List.of(response), cached);
 
-        var response2 = client.getLevelById(10565740).block(); // Make the same request again
+        var response2 = client.findLevelById(10565740).block(); // Make the same request again
         assertEquals(1, router.getRequestCount()); // Check that it didn't hit the router (requestCount didn't
                                                             // increment). It means it properly hit the cache.
         assertEquals(response2, response); // Check the new response is consistent with the first one
@@ -50,12 +50,14 @@ public final class GDClientTest {
     @Test
     public void loginTest() {
         assertFalse(client.isAuthenticated());
-        assertTrue(client.login("Alex1304", "F3keP4ssw0rd").block().isAuthenticated());
+        var newClient = client.login("Alex1304", "F3keP4ssw0rd").block();
+        assertNotNull(newClient);
+        assertTrue(newClient.isAuthenticated());
         assertThrows(MissingAccessException.class, client.login("Alex1304", "WrongPassword")::block);
     }
 
     @Test
-    public void getLevelByIdTest() {
+    public void findLevelByIdTest() {
         var expected = ImmutableGDLevel.builder()
                 .coinCount(0)
                 .creatorId(503085)
@@ -90,15 +92,15 @@ public final class GDClientTest {
                         .build())
                 .stars(10)
                 .build();
-        var actual = client.getLevelById(10565740).block();
+        var actual = client.findLevelById(10565740).block();
         assertEquals(expected, actual);
     }
 
     @Test
-    public void searchLevelsTest() {
+    public void browseLevelsTest() {
         var expected = List.of(10565740L, 10792915L, 21761387L, 13615973L, 10578973L, 35717743L, 11797073L,
                 38601659L, 19274064L, 10978435L);
-        var actual = client.searchLevels("Bloodbath", LevelSearchFilter.create(), 0)
+        var actual = client.browseLevels(LevelBrowseMode.REGULAR, "Bloodbath", null, 0)
                 .map(GDLevel::id)
                 .collectList()
                 .block();
@@ -106,7 +108,7 @@ public final class GDClientTest {
     }
 
     @Test
-    public void getUserByAccountIdTest() {
+    public void getUserProfileTest() {
         var expected = ImmutableGDUser.builder()
                 .commentHistoryPolicy(PrivacySetting.OPENED_TO_ALL)
                 .privateMessagePolicy(PrivacySetting.OPENED_TO_ALL)
@@ -137,7 +139,7 @@ public final class GDClientTest {
                 .name("Alex1304")
                 .playerId(4063664)
                 .build();
-        var actual = client.getUserByAccountId(98006).block();
+        var actual = client.getUserProfile(98006).block();
         assertEquals(expected, actual);
     }
 
@@ -160,5 +162,101 @@ public final class GDClientTest {
                 .build();
         var actual = client.searchUsers("Alex1304", 0).blockFirst();
         assertEquals(expected, actual);
+    }
+
+    @Test
+    public void getSongInfoTest() {
+        var expected = ImmutableGDSong.builder()
+                .id(844899)
+                .songTitle("~:Space soup:~")
+                .songAuthorName("lchavasse")
+                .songSize("8.79")
+                .isCustom(true)
+                .downloadUrl(InternalUtils.urlDecode("https%3A%2F%2Faudio.ngfiles.com%2F844000%2F844899_Space-soup" +
+                        ".mp3%3Ff1548488779"))
+                .build();
+        var actual = client.getSongInfo(844899).block();
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void downloadLevelTest() {
+        var expected = ImmutableGDLevel.builder()
+                .coinCount(0)
+                .creatorId(503085)
+                .demonDifficulty(DemonDifficulty.EXTREME)
+                .description("Whose blood will be spilt in the Bloodbath? Who will the victors be? How many will " +
+                        "survive? Good luck...")
+                .difficulty(Difficulty.INSANE)
+                .downloads(26746554)
+                .likes(1506769)
+                .featuredScore(10330)
+                .gameVersion(21)
+                .hasCoinsVerified(false)
+                .id(10565740)
+                .isAuto(false)
+                .isDemon(true)
+                .isEpic(false)
+                .length(Length.LONG)
+                .levelVersion(3)
+                .name("Bloodbath")
+                .objectCount(24746)
+                .originalLevelId(7679228)
+                .requestedStars(0)
+                .song(GDSong.unknownSong(467339))
+                .stars(10)
+                .uploadedAgo("5 years")
+                .updatedAgo("6 months")
+                .isCopyable(false)
+                .build();
+        var actual = client.downloadLevel(10565740).block();
+        assertNotNull(actual);
+        assertEquals(expected.withData(actual.data()), actual);
+    }
+
+    @Test
+    public void getDailyLevelInfoTest() {
+        var expected = ImmutableGDTimelyInfo.builder()
+                .number(1623)
+                .nextIn(Duration.ofSeconds(27231))
+                .build();
+        var actual = client.getDailyLevelInfo().block();
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void getWeeklyDemonInfoTest() {
+        var expected = ImmutableGDTimelyInfo.builder()
+                .number(194)
+                .nextIn(Duration.ofSeconds(459229))
+                .build();
+        var actual = client.getWeeklyDemonInfo().block();
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void getCommentsForLevelTest() {
+        var expectedFirstComment = ImmutableGDComment.builder()
+                .id(52732574)
+                .authorPlayerId(43568619)
+                .authorAccountId(7702228)
+                .authorName("iIKappali")
+                .content("i love my life ;)")
+                .likes(44564)
+                .postedAgo("3 years")
+                .percentage(99)
+                .build();
+        var expectedTop10Ids = List.of(52732574L, 7869561L, 53363972L, 52808092L, 22585688L, 34959218L, 27087361L,
+                39618945L, 61020768L, 51507881L);
+        var actual = client.getCommentsForLevel(10565740, CommentSortMode.MOST_LIKED, 0, 40)
+                .take(10)
+                .collectList()
+                .block();
+        assertNotNull(actual);
+        assertEquals(10, actual.size());
+        assertEquals(expectedFirstComment, actual.get(0));
+        assertEquals(expectedTop10Ids, actual.stream().map(GDComment::id).collect(Collectors.toList()));
+        assertFalse(actual.get(1).color().isEmpty());
+        assertEquals(0x4BFF4B, actual.get(1).color().orElseThrow());
     }
 }

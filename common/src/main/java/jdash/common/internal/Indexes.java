@@ -23,8 +23,8 @@ public final class Indexes {
     public static final int LEVEL_FEATURED_SCORE = 19;
     public static final int LEVEL_IS_AUTO = 25;
     public static final int LEVEL_PASS = 27;
-    public static final int LEVEL_UPLOADED_TIMESTAMP = 28;
-    public static final int LEVEL_LAST_UPDATED_TIMESTAMP = 29;
+    public static final int LEVEL_UPLOADED_AGO = 28;
+    public static final int LEVEL_UPDATED_AGO = 29;
     public static final int LEVEL_ORIGINAL = 30;
     public static final int LEVEL_SONG_ID = 35;
     public static final int LEVEL_COIN_COUNT = 37;
@@ -40,9 +40,9 @@ public final class Indexes {
     public static final int SONG_AUTHOR = 4;
     public static final int SONG_SIZE = 5;
     public static final int SONG_URL = 10;
-    public static final int USER_NAME = 1;
 
     /* User data */
+    public static final int USER_NAME = 1;
     public static final int USER_PLAYER_ID = 2;
     public static final int USER_STARS = 3;
     public static final int USER_DEMONS = 4;
@@ -85,12 +85,14 @@ public final class Indexes {
     public static final int COMMENT_BODY = 2;
 
     /* Comment data */
-    public static final int COMMENT_SENDER_ID = 3;
+    public static final int COMMENT_CONTENT = 2;
+    public static final int COMMENT_AUTHOR_PLAYER_ID = 3;
     public static final int COMMENT_LIKES = 4;
     public static final int COMMENT_ID = 6;
-    public static final int COMMENT_UPLOADED_TIMESTAMP = 9;
+    public static final int COMMENT_POSTED_AGO = 9;
     public static final int COMMENT_PERCENTAGE = 10;
-    public static final int COMMENT_SENDER_ROLE = 11;
+    public static final int COMMENT_AUTHOR_ROLE = 11;
+    public static final int COMMENT_COLOR = 12;
     private Indexes() {
     }
 }

@@ -9,19 +9,19 @@ public final class GDRequests {
 
     /* Routes */
     public static final String BASE_URL = "www.boomlings.com/database";
-    public static final String GET_USER_INFO = "/getGJUserInfo20.php";
-    public static final String USER_SEARCH = "/getGJUsers20.php";
-    public static final String USER_SCORES = "/getGJScores20.php";
-    public static final String GET_USER_COMMENTS = "/getGJAccountComments20.php";
-    public static final String DOWNLOAD_LEVEL = "/downloadGJLevel22.php";
-    public static final String GET_LEVEL_COMMENTS = "/getGJComments21.php";
-    public static final String LEVEL_SEARCH = "/getGJLevels21.php";
-    public static final String GET_SONG_INFO = "/getGJSongInfo.php";
-    public static final String GET_PRIVATE_MESSAGES = "/getGJMessages20.php";
-    public static final String READ_PRIVATE_MESSAGE = "/downloadGJMessage20.php";
-    public static final String SEND_PRIVATE_MESSAGE = "/uploadGJMessage20.php";
-    public static final String GET_TIMELY = "/getGJDailyLevel.php";
-    public static final String LOGIN = "/accounts/loginGJAccount.php";
+    public static final String GET_GJ_USER_INFO_20 = "/getGJUserInfo20.php";
+    public static final String GET_GJ_USERS_20 = "/getGJUsers20.php";
+    public static final String GET_GJ_SCORES_20 = "/getGJScores20.php";
+    public static final String GET_GJ_ACCOUNT_COMMENTS_20 = "/getGJAccountComments20.php";
+    public static final String DOWNLOAD_GJ_LEVEL_22 = "/downloadGJLevel22.php";
+    public static final String GET_GJ_COMMENTS_21 = "/getGJComments21.php";
+    public static final String GET_GJ_LEVELS_21 = "/getGJLevels21.php";
+    public static final String GET_GJ_SONG_INFO = "/getGJSongInfo.php";
+    public static final String GET_GJ_MESSAGES_20 = "/getGJMessages20.php";
+    public static final String DOWNLOAD_GJ_MESSAGE_20 = "/downloadGJMessage20.php";
+    public static final String UPLOAD_GJ_MESSAGE_20 = "/uploadGJMessage20.php";
+    public static final String GET_GJ_DAILY_LEVEL = "/getGJDailyLevel.php";
+    public static final String LOGIN_GJ_ACCOUNT = "/accounts/loginGJAccount.php";
 
     /* Params */
     public static final String GAME_VERSION = "21";

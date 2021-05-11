@@ -1,6 +1,6 @@
 package jdash.common;
 
-public enum LevelSearchType {
+public enum LevelBrowseMode {
     REGULAR(0),
     MOST_DOWNLOADED(1),
     MOST_LIKED(2),
@@ -13,13 +13,13 @@ public enum LevelSearchType {
     FOLLOWED(12),
     HALL_OF_FAME(16);
 
-    private final int val;
+    private final int type;
 
-    LevelSearchType(int val) {
-        this.val = val;
+    LevelBrowseMode(int type) {
+        this.type = type;
     }
 
-    public int getVal() {
-        return val;
+    public int getType() {
+        return type;
     }
 }

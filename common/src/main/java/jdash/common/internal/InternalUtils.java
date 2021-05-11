@@ -2,17 +2,18 @@ package jdash.common.internal;
 
 import jdash.common.DemonDifficulty;
 import jdash.common.Difficulty;
+import jdash.common.Length;
 import jdash.common.entity.GDSong;
+import jdash.common.entity.ImmutableGDLevel;
 import jdash.common.entity.ImmutableGDSong;
-import org.apache.commons.lang3.StringUtils;
+import jdash.common.entity.ImmutableGDUser;
 
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+
+import static jdash.common.internal.Indexes.*;
 
 public final class InternalUtils {
     private static final Map<Integer, GDSong> AUDIO_TRACKS;
@@ -109,11 +110,11 @@ public final class InternalUtils {
 
         for (String songRD : arraySongsRD) {
             Map<Integer, String> songMap = splitToMap(songRD, "~\\|~");
-            long songID = Long.parseLong(StringUtils.defaultIfEmpty(songMap.get(Indexes.SONG_ID), "0"));
-            String songTitle = StringUtils.defaultIfEmpty(songMap.get(Indexes.SONG_TITLE), "");
-            String songAuthor = StringUtils.defaultIfEmpty(songMap.get(Indexes.SONG_AUTHOR), "");
-            String songSize = StringUtils.defaultIfEmpty(songMap.get(Indexes.SONG_SIZE), "");
-            String songURL = urlDecode(StringUtils.defaultIfEmpty(songMap.get(Indexes.SONG_URL), ""));
+            long songID = Long.parseLong(songMap.getOrDefault(SONG_ID, "0"));
+            String songTitle = songMap.getOrDefault(SONG_TITLE, "");
+            String songAuthor = songMap.getOrDefault(SONG_AUTHOR, "");
+            String songSize = songMap.getOrDefault(SONG_SIZE, "");
+            String songURL = urlDecode(songMap.getOrDefault(SONG_URL, ""));
             result.put(songID, ImmutableGDSong.builder()
                     .id(songID)
                     .songAuthorName(songAuthor)
@@ -196,5 +197,48 @@ public final class InternalUtils {
 
     public static String b64Encode(String str) {
         return Base64.getUrlEncoder().encodeToString(str.getBytes());
+    }
+    
+    public static ImmutableGDLevel.Builder initLevelBuilder(String creatorName, Map<Integer, String> data) {
+        int length = Integer.parseInt(data.getOrDefault(LEVEL_LENGTH, "0"));
+        long levelId = Long.parseLong(data.getOrDefault(LEVEL_ID, "0"));
+        return ImmutableGDLevel.builder()
+                .id(levelId)
+                .name(data.getOrDefault(LEVEL_NAME, "-"))
+                .creatorId(Long.parseLong(data.getOrDefault(LEVEL_CREATOR_ID, "0")))
+                .description(b64Decode(data.getOrDefault(LEVEL_DESCRIPTION, "")))
+                .difficulty(valueToDifficulty(Integer.parseInt(data.getOrDefault(LEVEL_DIFFICULTY, "0"))))
+                .demonDifficulty(valueToDemonDifficulty(
+                        Integer.parseInt(data.getOrDefault(LEVEL_DEMON_DIFFICULTY, "0"))))
+                .stars(Integer.parseInt(data.getOrDefault(LEVEL_STARS, "0")))
+                .featuredScore(Integer.parseInt(data.getOrDefault(LEVEL_FEATURED_SCORE, "0")))
+                .isEpic(!data.getOrDefault(LEVEL_IS_EPIC, "0").equals("0"))
+                .downloads(Integer.parseInt(data.getOrDefault(LEVEL_DOWNLOADS, "0")))
+                .likes(Integer.parseInt(data.getOrDefault(LEVEL_LIKES, "0")))
+                .length(Length.values()[length >= Length.values().length ? 0 : length])
+                .coinCount(Integer.parseInt(data.getOrDefault(LEVEL_COIN_COUNT, "0")))
+                .hasCoinsVerified(data.getOrDefault(LEVEL_COIN_VERIFIED, "0").equals("1"))
+                .levelVersion(Integer.parseInt(data.getOrDefault(LEVEL_VERSION, "0")))
+                .gameVersion(Integer.parseInt(data.getOrDefault(LEVEL_GAME_VERSION, "0")))
+                .objectCount(Integer.parseInt(data.getOrDefault(LEVEL_OBJECT_COUNT, "0")))
+                .isDemon(data.getOrDefault(LEVEL_IS_DEMON, "0").equals("1"))
+                .isAuto(data.getOrDefault(LEVEL_IS_AUTO, "0").equals("1"))
+                .originalLevelId(Long.parseLong(data.getOrDefault(LEVEL_ORIGINAL, "0")))
+                .requestedStars(Integer.parseInt(data.getOrDefault(LEVEL_REQUESTED_STARS, "0")))
+                .creatorName(Optional.ofNullable(creatorName));
+    }
+
+    public static ImmutableGDUser.Builder initUserBuilder(Map<Integer, String> data) {
+        return ImmutableGDUser.builder()
+                .playerId(Long.parseLong(data.getOrDefault(USER_PLAYER_ID, "0")))
+                .name(data.getOrDefault(USER_NAME, "-"))
+                .secretCoins(Integer.parseInt(data.getOrDefault(USER_SECRET_COINS, "0")))
+                .userCoins(Integer.parseInt(data.getOrDefault(USER_USER_COINS, "0")))
+                .color1Id(Integer.parseInt(data.getOrDefault(USER_COLOR_1, "0")))
+                .color2Id(Integer.parseInt(data.getOrDefault(USER_COLOR_2, "0")))
+                .accountId(Long.parseLong(data.getOrDefault(USER_ACCOUNT_ID, "0")))
+                .stars(Integer.parseInt(data.getOrDefault(USER_STARS, "0")))
+                .creatorPoints(Integer.parseInt(data.getOrDefault(USER_CREATOR_POINTS, "0")))
+                .demons(Integer.parseInt(data.getOrDefault(USER_DEMONS, "0")));
     }
 }
