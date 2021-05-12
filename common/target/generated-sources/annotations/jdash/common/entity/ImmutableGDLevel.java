@@ -1,6 +1,5 @@
 package jdash.common.entity;
 
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -40,13 +39,9 @@ public final class ImmutableGDLevel implements GDLevel {
   private final boolean isAuto;
   private final long originalLevelId;
   private final int requestedStars;
+  private final long songId;
   private final GDSong song;
   private final String creatorName;
-  private final Boolean isCopyable;
-  private final Integer copyPasscode;
-  private final String uploadedAgo;
-  private final String updatedAgo;
-  private final ByteBuffer data;
 
   private ImmutableGDLevel(
       long id,
@@ -70,13 +65,9 @@ public final class ImmutableGDLevel implements GDLevel {
       boolean isAuto,
       long originalLevelId,
       int requestedStars,
+      long songId,
       GDSong song,
-      String creatorName,
-      Boolean isCopyable,
-      Integer copyPasscode,
-      String uploadedAgo,
-      String updatedAgo,
-      ByteBuffer data) {
+      String creatorName) {
     this.id = id;
     this.name = name;
     this.creatorId = creatorId;
@@ -98,13 +89,9 @@ public final class ImmutableGDLevel implements GDLevel {
     this.isAuto = isAuto;
     this.originalLevelId = originalLevelId;
     this.requestedStars = requestedStars;
+    this.songId = songId;
     this.song = song;
     this.creatorName = creatorName;
-    this.isCopyable = isCopyable;
-    this.copyPasscode = copyPasscode;
-    this.uploadedAgo = uploadedAgo;
-    this.updatedAgo = updatedAgo;
-    this.data = data;
   }
 
   /**
@@ -276,11 +263,19 @@ public final class ImmutableGDLevel implements GDLevel {
   }
 
   /**
+   * @return The value of the {@code songId} attribute
+   */
+  @Override
+  public long songId() {
+    return songId;
+  }
+
+  /**
    * @return The value of the {@code song} attribute
    */
   @Override
-  public GDSong song() {
-    return song;
+  public Optional<GDSong> song() {
+    return Optional.ofNullable(song);
   }
 
   /**
@@ -289,46 +284,6 @@ public final class ImmutableGDLevel implements GDLevel {
   @Override
   public Optional<String> creatorName() {
     return Optional.ofNullable(creatorName);
-  }
-
-  /**
-   * @return The value of the {@code isCopyable} attribute
-   */
-  @Override
-  public Optional<Boolean> isCopyable() {
-    return Optional.ofNullable(isCopyable);
-  }
-
-  /**
-   * @return The value of the {@code copyPasscode} attribute
-   */
-  @Override
-  public Optional<Integer> copyPasscode() {
-    return Optional.ofNullable(copyPasscode);
-  }
-
-  /**
-   * @return The value of the {@code uploadedAgo} attribute
-   */
-  @Override
-  public Optional<String> uploadedAgo() {
-    return Optional.ofNullable(uploadedAgo);
-  }
-
-  /**
-   * @return The value of the {@code updatedAgo} attribute
-   */
-  @Override
-  public Optional<String> updatedAgo() {
-    return Optional.ofNullable(updatedAgo);
-  }
-
-  /**
-   * @return The value of the {@code data} attribute
-   */
-  @Override
-  public Optional<ByteBuffer> data() {
-    return Optional.ofNullable(data);
   }
 
   /**
@@ -361,13 +316,9 @@ public final class ImmutableGDLevel implements GDLevel {
         this.isAuto,
         this.originalLevelId,
         this.requestedStars,
+        this.songId,
         this.song,
-        this.creatorName,
-        this.isCopyable,
-        this.copyPasscode,
-        this.uploadedAgo,
-        this.updatedAgo,
-        this.data);
+        this.creatorName);
   }
 
   /**
@@ -401,13 +352,9 @@ public final class ImmutableGDLevel implements GDLevel {
         this.isAuto,
         this.originalLevelId,
         this.requestedStars,
+        this.songId,
         this.song,
-        this.creatorName,
-        this.isCopyable,
-        this.copyPasscode,
-        this.uploadedAgo,
-        this.updatedAgo,
-        this.data);
+        this.creatorName);
   }
 
   /**
@@ -440,13 +387,9 @@ public final class ImmutableGDLevel implements GDLevel {
         this.isAuto,
         this.originalLevelId,
         this.requestedStars,
+        this.songId,
         this.song,
-        this.creatorName,
-        this.isCopyable,
-        this.copyPasscode,
-        this.uploadedAgo,
-        this.updatedAgo,
-        this.data);
+        this.creatorName);
   }
 
   /**
@@ -480,13 +423,9 @@ public final class ImmutableGDLevel implements GDLevel {
         this.isAuto,
         this.originalLevelId,
         this.requestedStars,
+        this.songId,
         this.song,
-        this.creatorName,
-        this.isCopyable,
-        this.copyPasscode,
-        this.uploadedAgo,
-        this.updatedAgo,
-        this.data);
+        this.creatorName);
   }
 
   /**
@@ -520,13 +459,9 @@ public final class ImmutableGDLevel implements GDLevel {
         this.isAuto,
         this.originalLevelId,
         this.requestedStars,
+        this.songId,
         this.song,
-        this.creatorName,
-        this.isCopyable,
-        this.copyPasscode,
-        this.uploadedAgo,
-        this.updatedAgo,
-        this.data);
+        this.creatorName);
   }
 
   /**
@@ -560,13 +495,9 @@ public final class ImmutableGDLevel implements GDLevel {
         this.isAuto,
         this.originalLevelId,
         this.requestedStars,
+        this.songId,
         this.song,
-        this.creatorName,
-        this.isCopyable,
-        this.copyPasscode,
-        this.uploadedAgo,
-        this.updatedAgo,
-        this.data);
+        this.creatorName);
   }
 
   /**
@@ -599,13 +530,9 @@ public final class ImmutableGDLevel implements GDLevel {
         this.isAuto,
         this.originalLevelId,
         this.requestedStars,
+        this.songId,
         this.song,
-        this.creatorName,
-        this.isCopyable,
-        this.copyPasscode,
-        this.uploadedAgo,
-        this.updatedAgo,
-        this.data);
+        this.creatorName);
   }
 
   /**
@@ -638,13 +565,9 @@ public final class ImmutableGDLevel implements GDLevel {
         this.isAuto,
         this.originalLevelId,
         this.requestedStars,
+        this.songId,
         this.song,
-        this.creatorName,
-        this.isCopyable,
-        this.copyPasscode,
-        this.uploadedAgo,
-        this.updatedAgo,
-        this.data);
+        this.creatorName);
   }
 
   /**
@@ -677,13 +600,9 @@ public final class ImmutableGDLevel implements GDLevel {
         this.isAuto,
         this.originalLevelId,
         this.requestedStars,
+        this.songId,
         this.song,
-        this.creatorName,
-        this.isCopyable,
-        this.copyPasscode,
-        this.uploadedAgo,
-        this.updatedAgo,
-        this.data);
+        this.creatorName);
   }
 
   /**
@@ -716,13 +635,9 @@ public final class ImmutableGDLevel implements GDLevel {
         this.isAuto,
         this.originalLevelId,
         this.requestedStars,
+        this.songId,
         this.song,
-        this.creatorName,
-        this.isCopyable,
-        this.copyPasscode,
-        this.uploadedAgo,
-        this.updatedAgo,
-        this.data);
+        this.creatorName);
   }
 
   /**
@@ -755,13 +670,9 @@ public final class ImmutableGDLevel implements GDLevel {
         this.isAuto,
         this.originalLevelId,
         this.requestedStars,
+        this.songId,
         this.song,
-        this.creatorName,
-        this.isCopyable,
-        this.copyPasscode,
-        this.uploadedAgo,
-        this.updatedAgo,
-        this.data);
+        this.creatorName);
   }
 
   /**
@@ -795,13 +706,9 @@ public final class ImmutableGDLevel implements GDLevel {
         this.isAuto,
         this.originalLevelId,
         this.requestedStars,
+        this.songId,
         this.song,
-        this.creatorName,
-        this.isCopyable,
-        this.copyPasscode,
-        this.uploadedAgo,
-        this.updatedAgo,
-        this.data);
+        this.creatorName);
   }
 
   /**
@@ -834,13 +741,9 @@ public final class ImmutableGDLevel implements GDLevel {
         this.isAuto,
         this.originalLevelId,
         this.requestedStars,
+        this.songId,
         this.song,
-        this.creatorName,
-        this.isCopyable,
-        this.copyPasscode,
-        this.uploadedAgo,
-        this.updatedAgo,
-        this.data);
+        this.creatorName);
   }
 
   /**
@@ -873,13 +776,9 @@ public final class ImmutableGDLevel implements GDLevel {
         this.isAuto,
         this.originalLevelId,
         this.requestedStars,
+        this.songId,
         this.song,
-        this.creatorName,
-        this.isCopyable,
-        this.copyPasscode,
-        this.uploadedAgo,
-        this.updatedAgo,
-        this.data);
+        this.creatorName);
   }
 
   /**
@@ -912,13 +811,9 @@ public final class ImmutableGDLevel implements GDLevel {
         this.isAuto,
         this.originalLevelId,
         this.requestedStars,
+        this.songId,
         this.song,
-        this.creatorName,
-        this.isCopyable,
-        this.copyPasscode,
-        this.uploadedAgo,
-        this.updatedAgo,
-        this.data);
+        this.creatorName);
   }
 
   /**
@@ -951,13 +846,9 @@ public final class ImmutableGDLevel implements GDLevel {
         this.isAuto,
         this.originalLevelId,
         this.requestedStars,
+        this.songId,
         this.song,
-        this.creatorName,
-        this.isCopyable,
-        this.copyPasscode,
-        this.uploadedAgo,
-        this.updatedAgo,
-        this.data);
+        this.creatorName);
   }
 
   /**
@@ -990,13 +881,9 @@ public final class ImmutableGDLevel implements GDLevel {
         this.isAuto,
         this.originalLevelId,
         this.requestedStars,
+        this.songId,
         this.song,
-        this.creatorName,
-        this.isCopyable,
-        this.copyPasscode,
-        this.uploadedAgo,
-        this.updatedAgo,
-        this.data);
+        this.creatorName);
   }
 
   /**
@@ -1029,13 +916,9 @@ public final class ImmutableGDLevel implements GDLevel {
         this.isAuto,
         this.originalLevelId,
         this.requestedStars,
+        this.songId,
         this.song,
-        this.creatorName,
-        this.isCopyable,
-        this.copyPasscode,
-        this.uploadedAgo,
-        this.updatedAgo,
-        this.data);
+        this.creatorName);
   }
 
   /**
@@ -1068,13 +951,9 @@ public final class ImmutableGDLevel implements GDLevel {
         value,
         this.originalLevelId,
         this.requestedStars,
+        this.songId,
         this.song,
-        this.creatorName,
-        this.isCopyable,
-        this.copyPasscode,
-        this.uploadedAgo,
-        this.updatedAgo,
-        this.data);
+        this.creatorName);
   }
 
   /**
@@ -1107,13 +986,9 @@ public final class ImmutableGDLevel implements GDLevel {
         this.isAuto,
         value,
         this.requestedStars,
+        this.songId,
         this.song,
-        this.creatorName,
-        this.isCopyable,
-        this.copyPasscode,
-        this.uploadedAgo,
-        this.updatedAgo,
-        this.data);
+        this.creatorName);
   }
 
   /**
@@ -1146,24 +1021,19 @@ public final class ImmutableGDLevel implements GDLevel {
         this.isAuto,
         this.originalLevelId,
         value,
+        this.songId,
         this.song,
-        this.creatorName,
-        this.isCopyable,
-        this.copyPasscode,
-        this.uploadedAgo,
-        this.updatedAgo,
-        this.data);
+        this.creatorName);
   }
 
   /**
-   * Copy the current immutable object by setting a value for the {@link GDLevel#song() song} attribute.
-   * A shallow reference equality check is used to prevent copying of the same value by returning {@code this}.
-   * @param value A new value for song
+   * Copy the current immutable object by setting a value for the {@link GDLevel#songId() songId} attribute.
+   * A value equality check is used to prevent copying of the same value by returning {@code this}.
+   * @param value A new value for songId
    * @return A modified copy of the {@code this} object
    */
-  public final ImmutableGDLevel withSong(GDSong value) {
-    if (this.song == value) return this;
-    GDSong newValue = Objects.requireNonNull(value, "song");
+  public final ImmutableGDLevel withSongId(long value) {
+    if (this.songId == value) return this;
     return new ImmutableGDLevel(
         this.id,
         this.name,
@@ -1186,13 +1056,81 @@ public final class ImmutableGDLevel implements GDLevel {
         this.isAuto,
         this.originalLevelId,
         this.requestedStars,
+        value,
+        this.song,
+        this.creatorName);
+  }
+
+  /**
+   * Copy the current immutable object by setting a <i>present</i> value for the optional {@link GDLevel#song() song} attribute.
+   * @param value The value for song
+   * @return A modified copy of {@code this} object
+   */
+  public final ImmutableGDLevel withSong(GDSong value) {
+    GDSong newValue = Objects.requireNonNull(value, "song");
+    if (this.song == newValue) return this;
+    return new ImmutableGDLevel(
+        this.id,
+        this.name,
+        this.creatorId,
+        this.description,
+        this.difficulty,
+        this.demonDifficulty,
+        this.stars,
+        this.featuredScore,
+        this.isEpic,
+        this.downloads,
+        this.likes,
+        this.length,
+        this.coinCount,
+        this.hasCoinsVerified,
+        this.levelVersion,
+        this.gameVersion,
+        this.objectCount,
+        this.isDemon,
+        this.isAuto,
+        this.originalLevelId,
+        this.requestedStars,
+        this.songId,
         newValue,
-        this.creatorName,
-        this.isCopyable,
-        this.copyPasscode,
-        this.uploadedAgo,
-        this.updatedAgo,
-        this.data);
+        this.creatorName);
+  }
+
+  /**
+   * Copy the current immutable object by setting an optional value for the {@link GDLevel#song() song} attribute.
+   * A shallow reference equality check is used on unboxed optional value to prevent copying of the same value by returning {@code this}.
+   * @param optional A value for song
+   * @return A modified copy of {@code this} object
+   */
+  @SuppressWarnings("unchecked") // safe covariant cast
+  public final ImmutableGDLevel withSong(Optional<? extends GDSong> optional) {
+    GDSong value = optional.orElse(null);
+    if (this.song == value) return this;
+    return new ImmutableGDLevel(
+        this.id,
+        this.name,
+        this.creatorId,
+        this.description,
+        this.difficulty,
+        this.demonDifficulty,
+        this.stars,
+        this.featuredScore,
+        this.isEpic,
+        this.downloads,
+        this.likes,
+        this.length,
+        this.coinCount,
+        this.hasCoinsVerified,
+        this.levelVersion,
+        this.gameVersion,
+        this.objectCount,
+        this.isDemon,
+        this.isAuto,
+        this.originalLevelId,
+        this.requestedStars,
+        this.songId,
+        value,
+        this.creatorName);
   }
 
   /**
@@ -1225,13 +1163,9 @@ public final class ImmutableGDLevel implements GDLevel {
         this.isAuto,
         this.originalLevelId,
         this.requestedStars,
+        this.songId,
         this.song,
-        newValue,
-        this.isCopyable,
-        this.copyPasscode,
-        this.uploadedAgo,
-        this.updatedAgo,
-        this.data);
+        newValue);
   }
 
   /**
@@ -1265,408 +1199,8 @@ public final class ImmutableGDLevel implements GDLevel {
         this.isAuto,
         this.originalLevelId,
         this.requestedStars,
+        this.songId,
         this.song,
-        value,
-        this.isCopyable,
-        this.copyPasscode,
-        this.uploadedAgo,
-        this.updatedAgo,
-        this.data);
-  }
-
-  /**
-   * Copy the current immutable object by setting a <i>present</i> value for the optional {@link GDLevel#isCopyable() isCopyable} attribute.
-   * @param value The value for isCopyable
-   * @return A modified copy of {@code this} object
-   */
-  public final ImmutableGDLevel withIsCopyable(boolean value) {
-    Boolean newValue = value;
-    if (Objects.equals(this.isCopyable, newValue)) return this;
-    return new ImmutableGDLevel(
-        this.id,
-        this.name,
-        this.creatorId,
-        this.description,
-        this.difficulty,
-        this.demonDifficulty,
-        this.stars,
-        this.featuredScore,
-        this.isEpic,
-        this.downloads,
-        this.likes,
-        this.length,
-        this.coinCount,
-        this.hasCoinsVerified,
-        this.levelVersion,
-        this.gameVersion,
-        this.objectCount,
-        this.isDemon,
-        this.isAuto,
-        this.originalLevelId,
-        this.requestedStars,
-        this.song,
-        this.creatorName,
-        newValue,
-        this.copyPasscode,
-        this.uploadedAgo,
-        this.updatedAgo,
-        this.data);
-  }
-
-  /**
-   * Copy the current immutable object by setting an optional value for the {@link GDLevel#isCopyable() isCopyable} attribute.
-   * An equality check is used on inner nullable value to prevent copying of the same value by returning {@code this}.
-   * @param optional A value for isCopyable
-   * @return A modified copy of {@code this} object
-   */
-  public final ImmutableGDLevel withIsCopyable(Optional<Boolean> optional) {
-    Boolean value = optional.orElse(null);
-    if (Objects.equals(this.isCopyable, value)) return this;
-    return new ImmutableGDLevel(
-        this.id,
-        this.name,
-        this.creatorId,
-        this.description,
-        this.difficulty,
-        this.demonDifficulty,
-        this.stars,
-        this.featuredScore,
-        this.isEpic,
-        this.downloads,
-        this.likes,
-        this.length,
-        this.coinCount,
-        this.hasCoinsVerified,
-        this.levelVersion,
-        this.gameVersion,
-        this.objectCount,
-        this.isDemon,
-        this.isAuto,
-        this.originalLevelId,
-        this.requestedStars,
-        this.song,
-        this.creatorName,
-        value,
-        this.copyPasscode,
-        this.uploadedAgo,
-        this.updatedAgo,
-        this.data);
-  }
-
-  /**
-   * Copy the current immutable object by setting a <i>present</i> value for the optional {@link GDLevel#copyPasscode() copyPasscode} attribute.
-   * @param value The value for copyPasscode
-   * @return A modified copy of {@code this} object
-   */
-  public final ImmutableGDLevel withCopyPasscode(int value) {
-    Integer newValue = value;
-    if (Objects.equals(this.copyPasscode, newValue)) return this;
-    return new ImmutableGDLevel(
-        this.id,
-        this.name,
-        this.creatorId,
-        this.description,
-        this.difficulty,
-        this.demonDifficulty,
-        this.stars,
-        this.featuredScore,
-        this.isEpic,
-        this.downloads,
-        this.likes,
-        this.length,
-        this.coinCount,
-        this.hasCoinsVerified,
-        this.levelVersion,
-        this.gameVersion,
-        this.objectCount,
-        this.isDemon,
-        this.isAuto,
-        this.originalLevelId,
-        this.requestedStars,
-        this.song,
-        this.creatorName,
-        this.isCopyable,
-        newValue,
-        this.uploadedAgo,
-        this.updatedAgo,
-        this.data);
-  }
-
-  /**
-   * Copy the current immutable object by setting an optional value for the {@link GDLevel#copyPasscode() copyPasscode} attribute.
-   * An equality check is used on inner nullable value to prevent copying of the same value by returning {@code this}.
-   * @param optional A value for copyPasscode
-   * @return A modified copy of {@code this} object
-   */
-  public final ImmutableGDLevel withCopyPasscode(Optional<Integer> optional) {
-    Integer value = optional.orElse(null);
-    if (Objects.equals(this.copyPasscode, value)) return this;
-    return new ImmutableGDLevel(
-        this.id,
-        this.name,
-        this.creatorId,
-        this.description,
-        this.difficulty,
-        this.demonDifficulty,
-        this.stars,
-        this.featuredScore,
-        this.isEpic,
-        this.downloads,
-        this.likes,
-        this.length,
-        this.coinCount,
-        this.hasCoinsVerified,
-        this.levelVersion,
-        this.gameVersion,
-        this.objectCount,
-        this.isDemon,
-        this.isAuto,
-        this.originalLevelId,
-        this.requestedStars,
-        this.song,
-        this.creatorName,
-        this.isCopyable,
-        value,
-        this.uploadedAgo,
-        this.updatedAgo,
-        this.data);
-  }
-
-  /**
-   * Copy the current immutable object by setting a <i>present</i> value for the optional {@link GDLevel#uploadedAgo() uploadedAgo} attribute.
-   * @param value The value for uploadedAgo
-   * @return A modified copy of {@code this} object
-   */
-  public final ImmutableGDLevel withUploadedAgo(String value) {
-    String newValue = Objects.requireNonNull(value, "uploadedAgo");
-    if (Objects.equals(this.uploadedAgo, newValue)) return this;
-    return new ImmutableGDLevel(
-        this.id,
-        this.name,
-        this.creatorId,
-        this.description,
-        this.difficulty,
-        this.demonDifficulty,
-        this.stars,
-        this.featuredScore,
-        this.isEpic,
-        this.downloads,
-        this.likes,
-        this.length,
-        this.coinCount,
-        this.hasCoinsVerified,
-        this.levelVersion,
-        this.gameVersion,
-        this.objectCount,
-        this.isDemon,
-        this.isAuto,
-        this.originalLevelId,
-        this.requestedStars,
-        this.song,
-        this.creatorName,
-        this.isCopyable,
-        this.copyPasscode,
-        newValue,
-        this.updatedAgo,
-        this.data);
-  }
-
-  /**
-   * Copy the current immutable object by setting an optional value for the {@link GDLevel#uploadedAgo() uploadedAgo} attribute.
-   * An equality check is used on inner nullable value to prevent copying of the same value by returning {@code this}.
-   * @param optional A value for uploadedAgo
-   * @return A modified copy of {@code this} object
-   */
-  public final ImmutableGDLevel withUploadedAgo(Optional<String> optional) {
-    String value = optional.orElse(null);
-    if (Objects.equals(this.uploadedAgo, value)) return this;
-    return new ImmutableGDLevel(
-        this.id,
-        this.name,
-        this.creatorId,
-        this.description,
-        this.difficulty,
-        this.demonDifficulty,
-        this.stars,
-        this.featuredScore,
-        this.isEpic,
-        this.downloads,
-        this.likes,
-        this.length,
-        this.coinCount,
-        this.hasCoinsVerified,
-        this.levelVersion,
-        this.gameVersion,
-        this.objectCount,
-        this.isDemon,
-        this.isAuto,
-        this.originalLevelId,
-        this.requestedStars,
-        this.song,
-        this.creatorName,
-        this.isCopyable,
-        this.copyPasscode,
-        value,
-        this.updatedAgo,
-        this.data);
-  }
-
-  /**
-   * Copy the current immutable object by setting a <i>present</i> value for the optional {@link GDLevel#updatedAgo() updatedAgo} attribute.
-   * @param value The value for updatedAgo
-   * @return A modified copy of {@code this} object
-   */
-  public final ImmutableGDLevel withUpdatedAgo(String value) {
-    String newValue = Objects.requireNonNull(value, "updatedAgo");
-    if (Objects.equals(this.updatedAgo, newValue)) return this;
-    return new ImmutableGDLevel(
-        this.id,
-        this.name,
-        this.creatorId,
-        this.description,
-        this.difficulty,
-        this.demonDifficulty,
-        this.stars,
-        this.featuredScore,
-        this.isEpic,
-        this.downloads,
-        this.likes,
-        this.length,
-        this.coinCount,
-        this.hasCoinsVerified,
-        this.levelVersion,
-        this.gameVersion,
-        this.objectCount,
-        this.isDemon,
-        this.isAuto,
-        this.originalLevelId,
-        this.requestedStars,
-        this.song,
-        this.creatorName,
-        this.isCopyable,
-        this.copyPasscode,
-        this.uploadedAgo,
-        newValue,
-        this.data);
-  }
-
-  /**
-   * Copy the current immutable object by setting an optional value for the {@link GDLevel#updatedAgo() updatedAgo} attribute.
-   * An equality check is used on inner nullable value to prevent copying of the same value by returning {@code this}.
-   * @param optional A value for updatedAgo
-   * @return A modified copy of {@code this} object
-   */
-  public final ImmutableGDLevel withUpdatedAgo(Optional<String> optional) {
-    String value = optional.orElse(null);
-    if (Objects.equals(this.updatedAgo, value)) return this;
-    return new ImmutableGDLevel(
-        this.id,
-        this.name,
-        this.creatorId,
-        this.description,
-        this.difficulty,
-        this.demonDifficulty,
-        this.stars,
-        this.featuredScore,
-        this.isEpic,
-        this.downloads,
-        this.likes,
-        this.length,
-        this.coinCount,
-        this.hasCoinsVerified,
-        this.levelVersion,
-        this.gameVersion,
-        this.objectCount,
-        this.isDemon,
-        this.isAuto,
-        this.originalLevelId,
-        this.requestedStars,
-        this.song,
-        this.creatorName,
-        this.isCopyable,
-        this.copyPasscode,
-        this.uploadedAgo,
-        value,
-        this.data);
-  }
-
-  /**
-   * Copy the current immutable object by setting a <i>present</i> value for the optional {@link GDLevel#data() data} attribute.
-   * @param value The value for data
-   * @return A modified copy of {@code this} object
-   */
-  public final ImmutableGDLevel withData(ByteBuffer value) {
-    ByteBuffer newValue = Objects.requireNonNull(value, "data");
-    if (this.data == newValue) return this;
-    return new ImmutableGDLevel(
-        this.id,
-        this.name,
-        this.creatorId,
-        this.description,
-        this.difficulty,
-        this.demonDifficulty,
-        this.stars,
-        this.featuredScore,
-        this.isEpic,
-        this.downloads,
-        this.likes,
-        this.length,
-        this.coinCount,
-        this.hasCoinsVerified,
-        this.levelVersion,
-        this.gameVersion,
-        this.objectCount,
-        this.isDemon,
-        this.isAuto,
-        this.originalLevelId,
-        this.requestedStars,
-        this.song,
-        this.creatorName,
-        this.isCopyable,
-        this.copyPasscode,
-        this.uploadedAgo,
-        this.updatedAgo,
-        newValue);
-  }
-
-  /**
-   * Copy the current immutable object by setting an optional value for the {@link GDLevel#data() data} attribute.
-   * A shallow reference equality check is used on unboxed optional value to prevent copying of the same value by returning {@code this}.
-   * @param optional A value for data
-   * @return A modified copy of {@code this} object
-   */
-  @SuppressWarnings("unchecked") // safe covariant cast
-  public final ImmutableGDLevel withData(Optional<? extends ByteBuffer> optional) {
-    ByteBuffer value = optional.orElse(null);
-    if (this.data == value) return this;
-    return new ImmutableGDLevel(
-        this.id,
-        this.name,
-        this.creatorId,
-        this.description,
-        this.difficulty,
-        this.demonDifficulty,
-        this.stars,
-        this.featuredScore,
-        this.isEpic,
-        this.downloads,
-        this.likes,
-        this.length,
-        this.coinCount,
-        this.hasCoinsVerified,
-        this.levelVersion,
-        this.gameVersion,
-        this.objectCount,
-        this.isDemon,
-        this.isAuto,
-        this.originalLevelId,
-        this.requestedStars,
-        this.song,
-        this.creatorName,
-        this.isCopyable,
-        this.copyPasscode,
-        this.uploadedAgo,
-        this.updatedAgo,
         value);
   }
 
@@ -1703,17 +1237,13 @@ public final class ImmutableGDLevel implements GDLevel {
         && isAuto == another.isAuto
         && originalLevelId == another.originalLevelId
         && requestedStars == another.requestedStars
-        && song.equals(another.song)
-        && Objects.equals(creatorName, another.creatorName)
-        && Objects.equals(isCopyable, another.isCopyable)
-        && Objects.equals(copyPasscode, another.copyPasscode)
-        && Objects.equals(uploadedAgo, another.uploadedAgo)
-        && Objects.equals(updatedAgo, another.updatedAgo)
-        && Objects.equals(data, another.data);
+        && songId == another.songId
+        && Objects.equals(song, another.song)
+        && Objects.equals(creatorName, another.creatorName);
   }
 
   /**
-   * Computes a hash code from attributes: {@code id}, {@code name}, {@code creatorId}, {@code description}, {@code difficulty}, {@code demonDifficulty}, {@code stars}, {@code featuredScore}, {@code isEpic}, {@code downloads}, {@code likes}, {@code length}, {@code coinCount}, {@code hasCoinsVerified}, {@code levelVersion}, {@code gameVersion}, {@code objectCount}, {@code isDemon}, {@code isAuto}, {@code originalLevelId}, {@code requestedStars}, {@code song}, {@code creatorName}, {@code isCopyable}, {@code copyPasscode}, {@code uploadedAgo}, {@code updatedAgo}, {@code data}.
+   * Computes a hash code from attributes: {@code id}, {@code name}, {@code creatorId}, {@code description}, {@code difficulty}, {@code demonDifficulty}, {@code stars}, {@code featuredScore}, {@code isEpic}, {@code downloads}, {@code likes}, {@code length}, {@code coinCount}, {@code hasCoinsVerified}, {@code levelVersion}, {@code gameVersion}, {@code objectCount}, {@code isDemon}, {@code isAuto}, {@code originalLevelId}, {@code requestedStars}, {@code songId}, {@code song}, {@code creatorName}.
    * @return hashCode value
    */
   @Override
@@ -1740,13 +1270,9 @@ public final class ImmutableGDLevel implements GDLevel {
     h += (h << 5) + Boolean.hashCode(isAuto);
     h += (h << 5) + Long.hashCode(originalLevelId);
     h += (h << 5) + requestedStars;
-    h += (h << 5) + song.hashCode();
+    h += (h << 5) + Long.hashCode(songId);
+    h += (h << 5) + Objects.hashCode(song);
     h += (h << 5) + Objects.hashCode(creatorName);
-    h += (h << 5) + Objects.hashCode(isCopyable);
-    h += (h << 5) + Objects.hashCode(copyPasscode);
-    h += (h << 5) + Objects.hashCode(uploadedAgo);
-    h += (h << 5) + Objects.hashCode(updatedAgo);
-    h += (h << 5) + Objects.hashCode(data);
     return h;
   }
 
@@ -1799,30 +1325,14 @@ public final class ImmutableGDLevel implements GDLevel {
     builder.append(", ");
     builder.append("requestedStars=").append(requestedStars);
     builder.append(", ");
-    builder.append("song=").append(song);
+    builder.append("songId=").append(songId);
+    if (song != null) {
+      builder.append(", ");
+      builder.append("song=").append(song);
+    }
     if (creatorName != null) {
       builder.append(", ");
       builder.append("creatorName=").append(creatorName);
-    }
-    if (isCopyable != null) {
-      builder.append(", ");
-      builder.append("isCopyable=").append(isCopyable);
-    }
-    if (copyPasscode != null) {
-      builder.append(", ");
-      builder.append("copyPasscode=").append(copyPasscode);
-    }
-    if (uploadedAgo != null) {
-      builder.append(", ");
-      builder.append("uploadedAgo=").append(uploadedAgo);
-    }
-    if (updatedAgo != null) {
-      builder.append(", ");
-      builder.append("updatedAgo=").append(updatedAgo);
-    }
-    if (data != null) {
-      builder.append(", ");
-      builder.append("data=").append(data);
     }
     return builder.append("}").toString();
   }
@@ -1868,13 +1378,9 @@ public final class ImmutableGDLevel implements GDLevel {
    *    .isAuto(boolean) // required {@link GDLevel#isAuto() isAuto}
    *    .originalLevelId(long) // required {@link GDLevel#originalLevelId() originalLevelId}
    *    .requestedStars(int) // required {@link GDLevel#requestedStars() requestedStars}
-   *    .song(jdash.common.entity.GDSong) // required {@link GDLevel#song() song}
+   *    .songId(long) // required {@link GDLevel#songId() songId}
+   *    .song(jdash.common.entity.GDSong) // optional {@link GDLevel#song() song}
    *    .creatorName(String) // optional {@link GDLevel#creatorName() creatorName}
-   *    .isCopyable(Boolean) // optional {@link GDLevel#isCopyable() isCopyable}
-   *    .copyPasscode(Integer) // optional {@link GDLevel#copyPasscode() copyPasscode}
-   *    .uploadedAgo(String) // optional {@link GDLevel#uploadedAgo() uploadedAgo}
-   *    .updatedAgo(String) // optional {@link GDLevel#updatedAgo() updatedAgo}
-   *    .data(java.nio.ByteBuffer) // optional {@link GDLevel#data() data}
    *    .build();
    * </pre>
    * @return A new ImmutableGDLevel builder
@@ -1913,7 +1419,7 @@ public final class ImmutableGDLevel implements GDLevel {
     private static final long INIT_BIT_IS_AUTO = 0x40000L;
     private static final long INIT_BIT_ORIGINAL_LEVEL_ID = 0x80000L;
     private static final long INIT_BIT_REQUESTED_STARS = 0x100000L;
-    private static final long INIT_BIT_SONG = 0x200000L;
+    private static final long INIT_BIT_SONG_ID = 0x200000L;
     private long initBits = 0x3fffffL;
 
     private long id;
@@ -1937,13 +1443,9 @@ public final class ImmutableGDLevel implements GDLevel {
     private boolean isAuto;
     private long originalLevelId;
     private int requestedStars;
+    private long songId;
     private GDSong song;
     private String creatorName;
-    private Boolean isCopyable;
-    private Integer copyPasscode;
-    private String uploadedAgo;
-    private String updatedAgo;
-    private ByteBuffer data;
 
     private Builder() {
     }
@@ -1978,30 +1480,14 @@ public final class ImmutableGDLevel implements GDLevel {
       isAuto(instance.isAuto());
       originalLevelId(instance.originalLevelId());
       requestedStars(instance.requestedStars());
-      song(instance.song());
+      songId(instance.songId());
+      Optional<GDSong> songOptional = instance.song();
+      if (songOptional.isPresent()) {
+        song(songOptional);
+      }
       Optional<String> creatorNameOptional = instance.creatorName();
       if (creatorNameOptional.isPresent()) {
         creatorName(creatorNameOptional);
-      }
-      Optional<Boolean> isCopyableOptional = instance.isCopyable();
-      if (isCopyableOptional.isPresent()) {
-        isCopyable(isCopyableOptional);
-      }
-      Optional<Integer> copyPasscodeOptional = instance.copyPasscode();
-      if (copyPasscodeOptional.isPresent()) {
-        copyPasscode(copyPasscodeOptional);
-      }
-      Optional<String> uploadedAgoOptional = instance.uploadedAgo();
-      if (uploadedAgoOptional.isPresent()) {
-        uploadedAgo(uploadedAgoOptional);
-      }
-      Optional<String> updatedAgoOptional = instance.updatedAgo();
-      if (updatedAgoOptional.isPresent()) {
-        updatedAgo(updatedAgoOptional);
-      }
-      Optional<ByteBuffer> dataOptional = instance.data();
-      if (dataOptional.isPresent()) {
-        data(dataOptional);
       }
       return this;
     }
@@ -2238,13 +1724,33 @@ public final class ImmutableGDLevel implements GDLevel {
     }
 
     /**
-     * Initializes the value for the {@link GDLevel#song() song} attribute.
-     * @param song The value for song 
+     * Initializes the value for the {@link GDLevel#songId() songId} attribute.
+     * @param songId The value for songId 
      * @return {@code this} builder for use in a chained invocation
+     */
+    public final Builder songId(long songId) {
+      this.songId = songId;
+      initBits &= ~INIT_BIT_SONG_ID;
+      return this;
+    }
+
+    /**
+     * Initializes the optional value {@link GDLevel#song() song} to song.
+     * @param song The value for song
+     * @return {@code this} builder for chained invocation
      */
     public final Builder song(GDSong song) {
       this.song = Objects.requireNonNull(song, "song");
-      initBits &= ~INIT_BIT_SONG;
+      return this;
+    }
+
+    /**
+     * Initializes the optional value {@link GDLevel#song() song} to song.
+     * @param song The value for song
+     * @return {@code this} builder for use in a chained invocation
+     */
+    public final Builder song(Optional<? extends GDSong> song) {
+      this.song = song.orElse(null);
       return this;
     }
 
@@ -2265,106 +1771,6 @@ public final class ImmutableGDLevel implements GDLevel {
      */
     public final Builder creatorName(Optional<String> creatorName) {
       this.creatorName = creatorName.orElse(null);
-      return this;
-    }
-
-    /**
-     * Initializes the optional value {@link GDLevel#isCopyable() isCopyable} to isCopyable.
-     * @param isCopyable The value for isCopyable
-     * @return {@code this} builder for chained invocation
-     */
-    public final Builder isCopyable(boolean isCopyable) {
-      this.isCopyable = isCopyable;
-      return this;
-    }
-
-    /**
-     * Initializes the optional value {@link GDLevel#isCopyable() isCopyable} to isCopyable.
-     * @param isCopyable The value for isCopyable
-     * @return {@code this} builder for use in a chained invocation
-     */
-    public final Builder isCopyable(Optional<Boolean> isCopyable) {
-      this.isCopyable = isCopyable.orElse(null);
-      return this;
-    }
-
-    /**
-     * Initializes the optional value {@link GDLevel#copyPasscode() copyPasscode} to copyPasscode.
-     * @param copyPasscode The value for copyPasscode
-     * @return {@code this} builder for chained invocation
-     */
-    public final Builder copyPasscode(int copyPasscode) {
-      this.copyPasscode = copyPasscode;
-      return this;
-    }
-
-    /**
-     * Initializes the optional value {@link GDLevel#copyPasscode() copyPasscode} to copyPasscode.
-     * @param copyPasscode The value for copyPasscode
-     * @return {@code this} builder for use in a chained invocation
-     */
-    public final Builder copyPasscode(Optional<Integer> copyPasscode) {
-      this.copyPasscode = copyPasscode.orElse(null);
-      return this;
-    }
-
-    /**
-     * Initializes the optional value {@link GDLevel#uploadedAgo() uploadedAgo} to uploadedAgo.
-     * @param uploadedAgo The value for uploadedAgo
-     * @return {@code this} builder for chained invocation
-     */
-    public final Builder uploadedAgo(String uploadedAgo) {
-      this.uploadedAgo = Objects.requireNonNull(uploadedAgo, "uploadedAgo");
-      return this;
-    }
-
-    /**
-     * Initializes the optional value {@link GDLevel#uploadedAgo() uploadedAgo} to uploadedAgo.
-     * @param uploadedAgo The value for uploadedAgo
-     * @return {@code this} builder for use in a chained invocation
-     */
-    public final Builder uploadedAgo(Optional<String> uploadedAgo) {
-      this.uploadedAgo = uploadedAgo.orElse(null);
-      return this;
-    }
-
-    /**
-     * Initializes the optional value {@link GDLevel#updatedAgo() updatedAgo} to updatedAgo.
-     * @param updatedAgo The value for updatedAgo
-     * @return {@code this} builder for chained invocation
-     */
-    public final Builder updatedAgo(String updatedAgo) {
-      this.updatedAgo = Objects.requireNonNull(updatedAgo, "updatedAgo");
-      return this;
-    }
-
-    /**
-     * Initializes the optional value {@link GDLevel#updatedAgo() updatedAgo} to updatedAgo.
-     * @param updatedAgo The value for updatedAgo
-     * @return {@code this} builder for use in a chained invocation
-     */
-    public final Builder updatedAgo(Optional<String> updatedAgo) {
-      this.updatedAgo = updatedAgo.orElse(null);
-      return this;
-    }
-
-    /**
-     * Initializes the optional value {@link GDLevel#data() data} to data.
-     * @param data The value for data
-     * @return {@code this} builder for chained invocation
-     */
-    public final Builder data(ByteBuffer data) {
-      this.data = Objects.requireNonNull(data, "data");
-      return this;
-    }
-
-    /**
-     * Initializes the optional value {@link GDLevel#data() data} to data.
-     * @param data The value for data
-     * @return {@code this} builder for use in a chained invocation
-     */
-    public final Builder data(Optional<? extends ByteBuffer> data) {
-      this.data = data.orElse(null);
       return this;
     }
 
@@ -2399,13 +1805,9 @@ public final class ImmutableGDLevel implements GDLevel {
           isAuto,
           originalLevelId,
           requestedStars,
+          songId,
           song,
-          creatorName,
-          isCopyable,
-          copyPasscode,
-          uploadedAgo,
-          updatedAgo,
-          data);
+          creatorName);
     }
 
     private String formatRequiredAttributesMessage() {
@@ -2431,7 +1833,7 @@ public final class ImmutableGDLevel implements GDLevel {
       if ((initBits & INIT_BIT_IS_AUTO) != 0) attributes.add("isAuto");
       if ((initBits & INIT_BIT_ORIGINAL_LEVEL_ID) != 0) attributes.add("originalLevelId");
       if ((initBits & INIT_BIT_REQUESTED_STARS) != 0) attributes.add("requestedStars");
-      if ((initBits & INIT_BIT_SONG) != 0) attributes.add("song");
+      if ((initBits & INIT_BIT_SONG_ID) != 0) attributes.add("songId");
       return "Cannot build GDLevel, some of required attributes are not set " + attributes;
     }
   }

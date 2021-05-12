@@ -1,6 +1,5 @@
 package jdash.common.entity;
 
-import jdash.common.Role;
 import org.immutables.value.Value;
 
 import java.util.Optional;
@@ -10,13 +9,7 @@ public interface GDComment {
 
     long id();
 
-    Optional<Long> authorPlayerId();
-
-    Optional<Long> authorAccountId();
-
-    Optional<String> authorName();
-
-    Optional<Role> authorRole();
+    Optional<GDUser> author();
 
     String content();
 

@@ -2,9 +2,10 @@ package jdash.client.response;
 
 import jdash.client.exception.SongNotAllowedForUseException;
 import jdash.common.entity.GDSong;
-import jdash.common.internal.InternalUtils;
 
 import java.util.function.Function;
+
+import static jdash.common.internal.InternalUtils.structureSongsInfo;
 
 public class SongInfoResponseDeserializer implements Function<String, GDSong> {
 
@@ -13,6 +14,6 @@ public class SongInfoResponseDeserializer implements Function<String, GDSong> {
         if (response.equals("-2")) {
             throw new SongNotAllowedForUseException();
         }
-        return InternalUtils.structureSongsInfo(response).values().stream().findFirst().orElseThrow();
+        return structureSongsInfo(response).values().stream().findFirst().orElseThrow();
     }
 }

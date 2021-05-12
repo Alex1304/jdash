@@ -45,7 +45,7 @@ public final class GDClient {
 
     private Map<String, String> authParams() {
         if (auth == null) {
-            return Map.of();
+            throw new IllegalStateException("Client must be authenticated to call this method");
         }
         return Map.of("accountId", "" + auth.accountId, "gjp", auth.gjp);
     }
@@ -131,19 +131,19 @@ public final class GDClient {
                 .flatMapMany(Flux::fromIterable);
     }
 
-    public Mono<GDLevel> downloadLevel(long levelId) {
+    public Mono<GDLevelDownload> downloadLevel(long levelId) {
         return GDRequest.of(GDRequests.DOWNLOAD_GJ_LEVEL_22)
                 .addParameters(GDRequests.commonParams())
                 .addParameter("levelID", levelId)
                 .execute(cache, router)
-                .deserialize(GDResponseDeserializers.downloadLevelResponse());
+                .deserialize(GDResponseDeserializers.levelDownloadResponse());
     }
 
-    public Mono<GDLevel> downloadDailyLevel() {
+    public Mono<GDLevelDownload> downloadDailyLevel() {
         return downloadLevel(-1);
     }
 
-    public Mono<GDLevel> downloadWeeklyDemon() {
+    public Mono<GDLevelDownload> downloadWeeklyDemon() {
         return downloadLevel(-2);
     }
 
@@ -163,7 +163,7 @@ public final class GDClient {
         return getTimelyInfo(1);
     }
 
-    public Mono<GDUser> getUserProfile(long accountId) {
+    public Mono<GDUserProfile> getUserProfile(long accountId) {
         return GDRequest.of(GDRequests.GET_GJ_USER_INFO_20)
                 .addParameters(GDRequests.commonParams())
                 .addParameter("targetAccountID", accountId)
@@ -171,7 +171,7 @@ public final class GDClient {
                 .deserialize(GDResponseDeserializers.userProfileResponse());
     }
 
-    public Flux<GDUser> searchUsers(String query, int page) {
+    public Flux<GDUserStats> searchUsers(String query, int page) {
         Objects.requireNonNull(query);
         return GDRequest.of(GDRequests.GET_GJ_USERS_20)
                 .addParameters(GDRequests.commonParams())
@@ -191,6 +191,7 @@ public final class GDClient {
     }
 
     public Flux<GDComment> getCommentsForLevel(long levelId, CommentSortMode sorting, int page, int count) {
+        Objects.requireNonNull(sorting);
         return GDRequest.of(GDRequests.GET_GJ_COMMENTS_21)
                 .addParameters(GDRequests.commonParams())
                 .addParameter("levelID", levelId)
@@ -200,6 +201,16 @@ public final class GDClient {
                 .addParameter("mode", sorting.ordinal())
                 .execute(cache, router)
                 .deserialize(GDResponseDeserializers.commentsResponse())
+                .flatMapMany(Flux::fromIterable);
+    }
+
+    public Flux<GDMessage> getPrivateMessages(int page) {
+        return GDRequest.of(GDRequests.GET_GJ_MESSAGES_20)
+                .addParameters(authParams())
+                .addParameters(GDRequests.commonParams())
+                .addParameter("page", page)
+                .execute(cache, router)
+                .deserialize(GDResponseDeserializers.privateMessagesResponse())
                 .flatMapMany(Flux::fromIterable);
     }
 

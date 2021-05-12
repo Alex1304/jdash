@@ -1,7 +1,7 @@
 package jdash.graphics;
 
 import jdash.common.IconType;
-import jdash.common.entity.GDUser;
+import jdash.common.entity.GDUserProfile;
 
 import java.awt.image.BufferedImage;
 import java.util.Objects;
@@ -11,12 +11,16 @@ import java.util.Objects;
  */
 public final class GDUserIconSet {
 
-    private final GDUser user;
+    private final GDUserProfile user;
     private final SpriteFactory factory;
 
-    public GDUserIconSet(GDUser user, SpriteFactory factory) {
+    private GDUserIconSet(GDUserProfile user, SpriteFactory factory) {
         this.user = Objects.requireNonNull(user);
         this.factory = Objects.requireNonNull(factory);
+    }
+
+    public static GDUserIconSet create(GDUserProfile user, SpriteFactory factory) {
+        return new GDUserIconSet(user, factory);
     }
 
     /**

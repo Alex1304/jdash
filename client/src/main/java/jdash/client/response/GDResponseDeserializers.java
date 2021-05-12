@@ -13,10 +13,12 @@ public final class GDResponseDeserializers {
     private static final UserProfileResponseDeserializer USER_PROFILE_RESPONSE = new UserProfileResponseDeserializer();
     private static final UserSearchResponseDeserializer USER_SEARCH_RESPONSE = new UserSearchResponseDeserializer();
     private static final SongInfoResponseDeserializer SONG_INFO_RESPONSE = new SongInfoResponseDeserializer();
-    private static final DownloadLevelResponseDeserializer DOWNLOAD_LEVEL_RESPONSE =
-            new DownloadLevelResponseDeserializer();
+    private static final LevelDownloadResponseDeserializer LEVEL_DOWNLOAD_RESPONSE =
+            new LevelDownloadResponseDeserializer();
     private static final TimelyInfoResponseDeserializer TIMELY_INFO_RESPONSE = new TimelyInfoResponseDeserializer();
     private static final CommentsResponseDeserializer COMMENTS_RESPONSE = new CommentsResponseDeserializer();
+    private static final PrivateMessagesResponseDeserializer PRIVATE_MESSAGES_RESPONSE =
+            new PrivateMessagesResponseDeserializer();
 
     private GDResponseDeserializers() {
         throw new AssertionError();
@@ -30,11 +32,11 @@ public final class GDResponseDeserializers {
         return LOGIN_RESPONSE;
     }
 
-    public static Function<String, GDUser> userProfileResponse() {
+    public static Function<String, GDUserProfile> userProfileResponse() {
         return USER_PROFILE_RESPONSE;
     }
 
-    public static Function<String, List<GDUser>> userSearchResponse() {
+    public static Function<String, List<GDUserStats>> userSearchResponse() {
         return USER_SEARCH_RESPONSE;
     }
 
@@ -42,8 +44,8 @@ public final class GDResponseDeserializers {
         return SONG_INFO_RESPONSE;
     }
 
-    public static Function<String, GDLevel> downloadLevelResponse() {
-        return DOWNLOAD_LEVEL_RESPONSE;
+    public static Function<String, GDLevelDownload> levelDownloadResponse() {
+        return LEVEL_DOWNLOAD_RESPONSE;
     }
 
     public static Function<String, GDTimelyInfo> timelyInfoResponse() {
@@ -52,5 +54,9 @@ public final class GDResponseDeserializers {
 
     public static Function<String, List<GDComment>> commentsResponse() {
         return COMMENTS_RESPONSE;
+    }
+
+    public static Function<String, List<GDMessage>> privateMessagesResponse() {
+        return PRIVATE_MESSAGES_RESPONSE;
     }
 }

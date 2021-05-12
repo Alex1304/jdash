@@ -1,15 +1,17 @@
 package jdash.client.response;
 
-import jdash.common.Role;
 import jdash.common.entity.GDComment;
+import jdash.common.entity.GDUser;
 import jdash.common.entity.ImmutableGDComment;
-import jdash.common.internal.InternalUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 
-import static java.util.function.Predicate.not;
 import static jdash.common.internal.Indexes.*;
+import static jdash.common.internal.InternalUtils.*;
 
 public class CommentsResponseDeserializer implements Function<String, List<GDComment>> {
 
@@ -17,33 +19,26 @@ public class CommentsResponseDeserializer implements Function<String, List<GDCom
     public List<GDComment> apply(String response) {
         var list = new ArrayList<GDComment>();
         for (var comment : response.split("#")[0].split("\\|")) {
-            var tokens = comment.split(":");
-            var commentData = InternalUtils.splitToMap(tokens[0], "~");
-            var authorData = tokens.length == 1 ? Map.<Integer, String>of()
-                    : InternalUtils.splitToMap(tokens[1], "~");
+            var parts = comment.split(":");
+            var commentData = splitToMap(parts[0], "~");
+            requireKeys(commentData, COMMENT_ID, COMMENT_CONTENT, COMMENT_LIKES, COMMENT_POSTED_AGO,
+                    COMMENT_AUTHOR_PLAYER_ID);
+            var authorData = splitToMap(parts[1], "~");
+            GDUser author = null;
+            if (!authorData.getOrDefault(USER_ACCOUNT_ID, "").isEmpty()) {
+                authorData.put(USER_PLAYER_ID, commentData.get(COMMENT_AUTHOR_PLAYER_ID));
+                authorData.put(USER_ROLE, commentData.getOrDefault(COMMENT_AUTHOR_ROLE, "0"));
+                author = buildUser(authorData);
+            }
             list.add(ImmutableGDComment.builder()
-                    .id(Long.parseLong(commentData.getOrDefault(COMMENT_ID, "0")))
-                    .authorPlayerId(Optional.ofNullable(commentData.get(COMMENT_AUTHOR_PLAYER_ID))
-                            .filter(not(String::isEmpty))
-                            .map(Long::parseLong))
-                    .authorAccountId(Optional.ofNullable(authorData.get(USER_ACCOUNT_ID))
-                            .filter(not(String::isEmpty))
-                            .map(Long::parseLong))
-                    .authorName(Optional.ofNullable(authorData.get(USER_NAME)))
-                    .authorRole(Optional.ofNullable(commentData.get(COMMENT_AUTHOR_ROLE))
-                            .map(Integer::parseInt)
-                            .map(role -> {
-                                var roles = Role.values();
-                                return roles[role < 0 || role >= roles.length ? 0 : role];
-                            }))
-                    .content(InternalUtils.b64Decode(commentData.getOrDefault(COMMENT_CONTENT, "")))
-                    .likes(Integer.parseInt(commentData.getOrDefault(COMMENT_LIKES, "0")))
-                    .postedAgo(commentData.getOrDefault(COMMENT_POSTED_AGO, "NA"))
+                    .id(Long.parseLong(commentData.get(COMMENT_ID)))
+                    .author(Optional.ofNullable(author))
+                    .content(b64Decode(commentData.get(COMMENT_CONTENT)))
+                    .likes(Integer.parseInt(commentData.get(COMMENT_LIKES)))
+                    .postedAgo(commentData.get(COMMENT_POSTED_AGO))
                     .percentage(Optional.ofNullable(commentData.get(COMMENT_PERCENTAGE))
-                            .filter(not(String::isEmpty))
                             .map(Integer::parseInt))
                     .color(Optional.ofNullable(commentData.get(COMMENT_COLOR))
-                            .filter(not(String::isEmpty))
                             .map(color -> {
                                 var rgb = Arrays.stream(color.split(","))
                                         .map(Integer::parseInt)

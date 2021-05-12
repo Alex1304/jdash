@@ -5,7 +5,6 @@ import jdash.common.Difficulty;
 import jdash.common.Length;
 import org.immutables.value.Value;
 
-import java.nio.ByteBuffer;
 import java.util.Optional;
 
 @Value.Immutable
@@ -53,17 +52,9 @@ public interface GDLevel {
 
     int requestedStars();
 
-    GDSong song();
+    long songId();
+
+    Optional<GDSong> song();
 
     Optional<String> creatorName();
-
-    Optional<Boolean> isCopyable();
-
-    Optional<Integer> copyPasscode();
-
-    Optional<String> uploadedAgo();
-
-    Optional<String> updatedAgo();
-
-    Optional<ByteBuffer> data();
 }

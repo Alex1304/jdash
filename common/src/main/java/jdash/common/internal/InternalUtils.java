@@ -1,12 +1,7 @@
 package jdash.common.internal;
 
-import jdash.common.DemonDifficulty;
-import jdash.common.Difficulty;
-import jdash.common.Length;
-import jdash.common.entity.GDSong;
-import jdash.common.entity.ImmutableGDLevel;
-import jdash.common.entity.ImmutableGDSong;
-import jdash.common.entity.ImmutableGDUser;
+import jdash.common.*;
+import jdash.common.entity.*;
 
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -16,32 +11,6 @@ import java.util.*;
 import static jdash.common.internal.Indexes.*;
 
 public final class InternalUtils {
-    private static final Map<Integer, GDSong> AUDIO_TRACKS;
-
-    static {
-        AUDIO_TRACKS = new HashMap<>();
-        AUDIO_TRACKS.put(0, GDSong.nativeSong("ForeverBound", "Stereo Madness"));
-        AUDIO_TRACKS.put(1, GDSong.nativeSong("DJVI", "Back On Track"));
-        AUDIO_TRACKS.put(2, GDSong.nativeSong("Step", "Polargeist"));
-        AUDIO_TRACKS.put(3, GDSong.nativeSong("DJVI", "Dry Out"));
-        AUDIO_TRACKS.put(4, GDSong.nativeSong("DJVI", "Base After Base"));
-        AUDIO_TRACKS.put(5, GDSong.nativeSong("DJVI", "Cant Let Go"));
-        AUDIO_TRACKS.put(6, GDSong.nativeSong("Waterflame", "Jumper"));
-        AUDIO_TRACKS.put(7, GDSong.nativeSong("Waterflame", "Time Machine"));
-        AUDIO_TRACKS.put(8, GDSong.nativeSong("DJVI", "Cycles"));
-        AUDIO_TRACKS.put(9, GDSong.nativeSong("DJVI", "xStep"));
-        AUDIO_TRACKS.put(10, GDSong.nativeSong("Waterflame", "Clutterfunk"));
-        AUDIO_TRACKS.put(11, GDSong.nativeSong("DJ-Nate", "Theory of Everything"));
-        AUDIO_TRACKS.put(12, GDSong.nativeSong("Waterflame", "Electroman Adventures"));
-        AUDIO_TRACKS.put(13, GDSong.nativeSong("DJ-Nate", "Clubstep"));
-        AUDIO_TRACKS.put(14, GDSong.nativeSong("DJ-Nate", "Electrodynamix"));
-        AUDIO_TRACKS.put(15, GDSong.nativeSong("Waterflame", "Hexagon Force"));
-        AUDIO_TRACKS.put(16, GDSong.nativeSong("Waterflame", "Blast Processing"));
-        AUDIO_TRACKS.put(17, GDSong.nativeSong("DJ-Nate", "Theory of Everything 2"));
-        AUDIO_TRACKS.put(18, GDSong.nativeSong("Waterflame", "Geometrical Dominator"));
-        AUDIO_TRACKS.put(19, GDSong.nativeSong("F-777", "Deadlocked"));
-        AUDIO_TRACKS.put(20, GDSong.nativeSong("MDK", "Fingerdash"));
-    }
 
     private InternalUtils() {
     }
@@ -69,8 +38,8 @@ public final class InternalUtils {
         Map<Integer, String> map = new HashMap<>();
         String[] splitted = str.split(regex);
 
-        for (int i = 0; i < splitted.length - 1; i += 2)
-            map.put(Integer.parseInt(splitted[i]), splitted[i + 1]);
+        for (int i = 0; i < splitted.length; i += 2)
+            map.put(Integer.parseInt(splitted[i]), i < splitted.length - 1 ? splitted[i + 1] : "");
 
         return map.isEmpty() ? Collections.emptyMap() : map;
     }
@@ -109,65 +78,19 @@ public final class InternalUtils {
         Map<Long, GDSong> result = new HashMap<>();
 
         for (String songRD : arraySongsRD) {
-            Map<Integer, String> songMap = splitToMap(songRD, "~\\|~");
-            long songID = Long.parseLong(songMap.getOrDefault(SONG_ID, "0"));
-            String songTitle = songMap.getOrDefault(SONG_TITLE, "");
-            String songAuthor = songMap.getOrDefault(SONG_AUTHOR, "");
-            String songSize = songMap.getOrDefault(SONG_SIZE, "");
-            String songURL = urlDecode(songMap.getOrDefault(SONG_URL, ""));
+            Map<Integer, String> data = splitToMap(songRD, "~\\|~");
+            requireKeys(data, SONG_ID, SONG_TITLE, SONG_ARTIST, SONG_SIZE, SONG_URL);
+            long songID = Long.parseLong(data.get(SONG_ID));
             result.put(songID, ImmutableGDSong.builder()
                     .id(songID)
-                    .songAuthorName(songAuthor)
-                    .songSize(songSize)
-                    .songTitle(songTitle)
-                    .downloadUrl(songURL)
-                    .isCustom(true)
+                    .artist(data.get(SONG_ARTIST))
+                    .size(data.get(SONG_SIZE))
+                    .title(data.get(SONG_TITLE))
+                    .downloadUrl(urlDecode(data.get(SONG_URL)))
                     .build());
         }
 
         return result;
-    }
-
-    /**
-     * Gets an audio track by its ID
-     *
-     * @param id - the audio track id
-     * @return GDSong
-     */
-    public static GDSong getAudioTrack(int id) {
-        return AUDIO_TRACKS.containsKey(id) ? AUDIO_TRACKS.get(id) : GDSong.nativeSong("-", "Unknown");
-    }
-
-    public static Difficulty valueToDifficulty(int value) {
-        switch (value) {
-            case 10:
-                return Difficulty.EASY;
-            case 20:
-                return Difficulty.NORMAL;
-            case 30:
-                return Difficulty.HARD;
-            case 40:
-                return Difficulty.HARDER;
-            case 50:
-                return Difficulty.INSANE;
-            default:
-                return Difficulty.NA;
-        }
-    }
-
-    public static DemonDifficulty valueToDemonDifficulty(int value) {
-        switch (value) {
-            case 3:
-                return DemonDifficulty.EASY;
-            case 4:
-                return DemonDifficulty.MEDIUM;
-            case 5:
-                return DemonDifficulty.INSANE;
-            case 6:
-                return DemonDifficulty.EXTREME;
-            default:
-                return DemonDifficulty.HARD;
-        }
     }
 
     public static String urlEncode(String str) {
@@ -199,46 +122,110 @@ public final class InternalUtils {
         return Base64.getUrlEncoder().encodeToString(str.getBytes());
     }
     
-    public static ImmutableGDLevel.Builder initLevelBuilder(String creatorName, Map<Integer, String> data) {
-        int length = Integer.parseInt(data.getOrDefault(LEVEL_LENGTH, "0"));
-        long levelId = Long.parseLong(data.getOrDefault(LEVEL_ID, "0"));
+    public static <T> T parseIndex(String str, T[] array) {
+        var value = Integer.parseInt(str);
+        return array[value >= array.length ? 0 : value];
+    }
+    
+    public static GDLevel buildLevel(Map<Integer, String> data, Map<Long, String> structuredCreatorsInfo,
+                                     Map<Long, GDSong> structuredSongsInfo) {
+        requireKeys(data, LEVEL_ID, LEVEL_NAME, LEVEL_CREATOR_ID, LEVEL_DESCRIPTION, LEVEL_DIFFICULTY,
+                LEVEL_DEMON_DIFFICULTY, LEVEL_STARS, LEVEL_FEATURED_SCORE, LEVEL_IS_EPIC, LEVEL_DOWNLOADS,
+                LEVEL_LIKES, LEVEL_LENGTH, LEVEL_COIN_COUNT, LEVEL_COIN_VERIFIED, LEVEL_VERSION, LEVEL_GAME_VERSION,
+                LEVEL_OBJECT_COUNT, LEVEL_IS_DEMON, LEVEL_IS_AUTO, LEVEL_ORIGINAL, LEVEL_REQUESTED_STARS,
+                LEVEL_SONG_ID, LEVEL_AUDIO_TRACK);
+        long songId = Long.parseLong(data.get(LEVEL_SONG_ID));
+        var song = songId > 0 ? Optional.ofNullable(structuredSongsInfo.get(songId))
+                : GDSong.getAudioTrack(Integer.parseInt(data.get(LEVEL_AUDIO_TRACK)));
+        var creatorName = structuredCreatorsInfo.get(Long.parseLong(data.get(LEVEL_CREATOR_ID)));
         return ImmutableGDLevel.builder()
-                .id(levelId)
-                .name(data.getOrDefault(LEVEL_NAME, "-"))
-                .creatorId(Long.parseLong(data.getOrDefault(LEVEL_CREATOR_ID, "0")))
-                .description(b64Decode(data.getOrDefault(LEVEL_DESCRIPTION, "")))
-                .difficulty(valueToDifficulty(Integer.parseInt(data.getOrDefault(LEVEL_DIFFICULTY, "0"))))
-                .demonDifficulty(valueToDemonDifficulty(
-                        Integer.parseInt(data.getOrDefault(LEVEL_DEMON_DIFFICULTY, "0"))))
-                .stars(Integer.parseInt(data.getOrDefault(LEVEL_STARS, "0")))
-                .featuredScore(Integer.parseInt(data.getOrDefault(LEVEL_FEATURED_SCORE, "0")))
-                .isEpic(!data.getOrDefault(LEVEL_IS_EPIC, "0").equals("0"))
-                .downloads(Integer.parseInt(data.getOrDefault(LEVEL_DOWNLOADS, "0")))
-                .likes(Integer.parseInt(data.getOrDefault(LEVEL_LIKES, "0")))
-                .length(Length.values()[length >= Length.values().length ? 0 : length])
-                .coinCount(Integer.parseInt(data.getOrDefault(LEVEL_COIN_COUNT, "0")))
-                .hasCoinsVerified(data.getOrDefault(LEVEL_COIN_VERIFIED, "0").equals("1"))
-                .levelVersion(Integer.parseInt(data.getOrDefault(LEVEL_VERSION, "0")))
-                .gameVersion(Integer.parseInt(data.getOrDefault(LEVEL_GAME_VERSION, "0")))
-                .objectCount(Integer.parseInt(data.getOrDefault(LEVEL_OBJECT_COUNT, "0")))
-                .isDemon(data.getOrDefault(LEVEL_IS_DEMON, "0").equals("1"))
-                .isAuto(data.getOrDefault(LEVEL_IS_AUTO, "0").equals("1"))
-                .originalLevelId(Long.parseLong(data.getOrDefault(LEVEL_ORIGINAL, "0")))
-                .requestedStars(Integer.parseInt(data.getOrDefault(LEVEL_REQUESTED_STARS, "0")))
-                .creatorName(Optional.ofNullable(creatorName));
+                .id(Long.parseLong(data.get(LEVEL_ID)))
+                .name(data.get(LEVEL_NAME))
+                .creatorId(Long.parseLong(data.get(LEVEL_CREATOR_ID)))
+                .description(b64Decode(data.get(LEVEL_DESCRIPTION)))
+                .difficulty(Difficulty.parse(data.get(LEVEL_DIFFICULTY)))
+                .demonDifficulty(DemonDifficulty.parse(data.get(LEVEL_DEMON_DIFFICULTY)))
+                .stars(Integer.parseInt(data.get(LEVEL_STARS)))
+                .featuredScore(Integer.parseInt(data.get(LEVEL_FEATURED_SCORE)))
+                .isEpic(!data.get(LEVEL_IS_EPIC).equals("0"))
+                .downloads(Integer.parseInt(data.get(LEVEL_DOWNLOADS)))
+                .likes(Integer.parseInt(data.get(LEVEL_LIKES)))
+                .length(Length.parse(data.get(LEVEL_LENGTH)))
+                .coinCount(Integer.parseInt(data.get(LEVEL_COIN_COUNT)))
+                .hasCoinsVerified(data.get(LEVEL_COIN_VERIFIED).equals("1"))
+                .levelVersion(Integer.parseInt(data.get(LEVEL_VERSION)))
+                .gameVersion(Integer.parseInt(data.get(LEVEL_GAME_VERSION)))
+                .objectCount(Integer.parseInt(data.get(LEVEL_OBJECT_COUNT)))
+                .isDemon(data.get(LEVEL_IS_DEMON).equals("1"))
+                .isAuto(data.get(LEVEL_IS_AUTO).equals("1"))
+                .originalLevelId(Long.parseLong(data.get(LEVEL_ORIGINAL)))
+                .requestedStars(Integer.parseInt(data.get(LEVEL_REQUESTED_STARS)))
+                .creatorName(Optional.ofNullable(creatorName))
+                .song(song)
+                .songId(songId)
+                .build();
     }
 
-    public static ImmutableGDUser.Builder initUserBuilder(Map<Integer, String> data) {
+    public static GDUser buildUser(Map<Integer, String> data) {
+        if (data.containsKey(USER_GLOW_OUTLINE_2)) {
+            data.put(USER_GLOW_OUTLINE, data.get(USER_GLOW_OUTLINE_2));
+        }
+        requireKeys(data, USER_PLAYER_ID, USER_NAME, USER_COLOR_1, USER_COLOR_2, USER_GLOW_OUTLINE);
         return ImmutableGDUser.builder()
-                .playerId(Long.parseLong(data.getOrDefault(USER_PLAYER_ID, "0")))
-                .name(data.getOrDefault(USER_NAME, "-"))
-                .secretCoins(Integer.parseInt(data.getOrDefault(USER_SECRET_COINS, "0")))
-                .userCoins(Integer.parseInt(data.getOrDefault(USER_USER_COINS, "0")))
-                .color1Id(Integer.parseInt(data.getOrDefault(USER_COLOR_1, "0")))
-                .color2Id(Integer.parseInt(data.getOrDefault(USER_COLOR_2, "0")))
+                .playerId(Long.parseLong(data.get(USER_PLAYER_ID)))
                 .accountId(Long.parseLong(data.getOrDefault(USER_ACCOUNT_ID, "0")))
-                .stars(Integer.parseInt(data.getOrDefault(USER_STARS, "0")))
-                .creatorPoints(Integer.parseInt(data.getOrDefault(USER_CREATOR_POINTS, "0")))
-                .demons(Integer.parseInt(data.getOrDefault(USER_DEMONS, "0")));
+                .name(data.get(USER_NAME))
+                .color1Id(Integer.parseInt(data.get(USER_COLOR_1)))
+                .color2Id(Integer.parseInt(data.get(USER_COLOR_2)))
+                .hasGlowOutline(!data.get(USER_GLOW_OUTLINE).matches("0?"))
+                .mainIconId(Optional.ofNullable(data.get(USER_ICON)).map(Integer::parseInt))
+                .mainIconType(Optional.ofNullable(data.get(USER_ICON_TYPE)).map(IconType::parse))
+                .role(Optional.ofNullable(data.get(USER_ROLE)).map(Role::parse))
+                .build();
+    }
+
+    public static GDUserStats buildUserStats(Map<Integer, String> data) {
+        requireKeys(data, USER_STARS, USER_SECRET_COINS, USER_USER_COINS, USER_DEMONS,
+                USER_CREATOR_POINTS);
+        return ImmutableGDUserStats.builder()
+                .from(buildUser(data))
+                .stars(Integer.parseInt(data.get(USER_STARS)))
+                .diamonds(Integer.parseInt(data.getOrDefault(USER_DIAMONDS, "0")))
+                .secretCoins(Integer.parseInt(data.get(USER_SECRET_COINS)))
+                .userCoins(Integer.parseInt(data.get(USER_USER_COINS)))
+                .demons(Integer.parseInt(data.get(USER_DEMONS)))
+                .creatorPoints(Integer.parseInt(data.get(USER_CREATOR_POINTS)))
+                .build();
+    }
+
+    public static GDUserProfile buildUserProfile(Map<Integer, String> data) {
+        requireKeys(data, USER_GLOBAL_RANK, USER_ICON_CUBE, USER_ICON_SHIP, USER_ICON_UFO, USER_ICON_BALL,
+                USER_ICON_WAVE, USER_ICON_ROBOT, USER_ICON_SPIDER, USER_YOUTUBE, USER_TWITTER,
+                USER_TWITCH, USER_FRIEND_REQUEST_POLICY, USER_PRIVATE_MESSAGE_POLICY, USER_COMMENT_HISTORY_POLICY);
+        return ImmutableGDUserProfile.builder()
+                .from(buildUserStats(data))
+                .globalRank(Integer.parseInt(data.get(USER_GLOBAL_RANK)))
+                .cubeIconId(Integer.parseInt(data.get(USER_ICON_CUBE)))
+                .shipIconId(Integer.parseInt(data.get(USER_ICON_SHIP)))
+                .ufoIconId(Integer.parseInt(data.get(USER_ICON_UFO)))
+                .ballIconId(Integer.parseInt(data.get(USER_ICON_BALL)))
+                .waveIconId(Integer.parseInt(data.get(USER_ICON_WAVE)))
+                .robotIconId(Integer.parseInt(data.get(USER_ICON_ROBOT)))
+                .spiderIconId(Integer.parseInt(data.get(USER_ICON_SPIDER)))
+                .youtube(data.get(USER_YOUTUBE))
+                .twitter(data.get(USER_TWITTER))
+                .twitch(data.get(USER_TWITCH))
+                .hasFriendRequestsEnabled(data.get(USER_FRIEND_REQUEST_POLICY).equals("0"))
+                .privateMessagePolicy(PrivacySetting.parse(data.get(USER_PRIVATE_MESSAGE_POLICY)))
+                .commentHistoryPolicy(PrivacySetting.parse(data.get(USER_COMMENT_HISTORY_POLICY)))
+                .build();
+    }
+
+    public static void requireKeys(Map<Integer, String> data, int... keys) {
+        for (var key : keys) {
+            if (!data.containsKey(key)) {
+                throw new IllegalStateException("Missing required key: " + key);
+            }
+        }
     }
 }

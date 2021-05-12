@@ -45,6 +45,13 @@ public final class GDClientTest {
         assertEquals(1, router.getRequestCount()); // Check that it didn't hit the router (requestCount didn't
                                                             // increment). It means it properly hit the cache.
         assertEquals(response2, response); // Check the new response is consistent with the first one
+
+        cache.clear();
+        assertTrue(cache.getMap().isEmpty()); // Ensure the cache cleared properly
+
+        client.withCacheDisabled().findLevelById(10565740).block(); // Make the same request but with cache off
+        assertEquals(2, router.getRequestCount()); // It should be hitting the router
+        assertTrue(cache.getMap().isEmpty()); // The cache should still be empty
     }
 
     @Test
@@ -81,14 +88,14 @@ public final class GDClientTest {
                 .objectCount(24746)
                 .originalLevelId(7679228)
                 .requestedStars(0)
+                .songId(467339)
                 .song(ImmutableGDSong.builder()
-                        .songAuthorName("Dimrain47")
-                        .songTitle("At the Speed of Light")
-                        .songSize("9.56")
+                        .artist("Dimrain47")
+                        .title("At the Speed of Light")
+                        .size("9.56")
                         .downloadUrl(InternalUtils.urlDecode("http%3A%2F%2Faudio.ngfiles" +
                                 ".com%2F467000%2F467339_At_the_Speed_of_Light_FINA.mp3"))
                         .id(467339)
-                        .isCustom(true)
                         .build())
                 .stars(10)
                 .build();
@@ -109,7 +116,7 @@ public final class GDClientTest {
 
     @Test
     public void getUserProfileTest() {
-        var expected = ImmutableGDUser.builder()
+        var expected = ImmutableGDUserProfile.builder()
                 .commentHistoryPolicy(PrivacySetting.OPENED_TO_ALL)
                 .privateMessagePolicy(PrivacySetting.OPENED_TO_ALL)
                 .hasFriendRequestsEnabled(true)
@@ -117,7 +124,6 @@ public final class GDClientTest {
                 .twitch("gd_alex1304")
                 .twitter("gd_alex1304")
                 .youtube("UC0hFAVN-GAbZYuf_Hfk1Iog")
-                .deathEffectId(0)
                 .hasGlowOutline(true)
                 .spiderIconId(15)
                 .robotIconId(21)
@@ -145,9 +151,10 @@ public final class GDClientTest {
 
     @Test
     public void searchUsersTest() {
-        var expected = ImmutableGDUser.builder()
+        var expected = ImmutableGDUserStats.builder()
                 .hasGlowOutline(true)
                 .accountId(98006)
+                .diamonds(0)
                 .demons(23)
                 .creatorPoints(21)
                 .stars(3411)
@@ -168,10 +175,9 @@ public final class GDClientTest {
     public void getSongInfoTest() {
         var expected = ImmutableGDSong.builder()
                 .id(844899)
-                .songTitle("~:Space soup:~")
-                .songAuthorName("lchavasse")
-                .songSize("8.79")
-                .isCustom(true)
+                .title("~:Space soup:~")
+                .artist("lchavasse")
+                .size("8.79")
                 .downloadUrl(InternalUtils.urlDecode("https%3A%2F%2Faudio.ngfiles.com%2F844000%2F844899_Space-soup" +
                         ".mp3%3Ff1548488779"))
                 .build();
@@ -181,7 +187,9 @@ public final class GDClientTest {
 
     @Test
     public void downloadLevelTest() {
-        var expected = ImmutableGDLevel.builder()
+        var actual = client.downloadLevel(10565740).block();
+        assertNotNull(actual);
+        var expected = ImmutableGDLevelDownload.builder()
                 .coinCount(0)
                 .creatorId(503085)
                 .demonDifficulty(DemonDifficulty.EXTREME)
@@ -203,15 +211,14 @@ public final class GDClientTest {
                 .objectCount(24746)
                 .originalLevelId(7679228)
                 .requestedStars(0)
-                .song(GDSong.unknownSong(467339))
+                .songId(467339)
                 .stars(10)
                 .uploadedAgo("5 years")
                 .updatedAgo("6 months")
                 .isCopyable(false)
+                .data(actual.data())
                 .build();
-        var actual = client.downloadLevel(10565740).block();
-        assertNotNull(actual);
-        assertEquals(expected.withData(actual.data()), actual);
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -238,9 +245,17 @@ public final class GDClientTest {
     public void getCommentsForLevelTest() {
         var expectedFirstComment = ImmutableGDComment.builder()
                 .id(52732574)
-                .authorPlayerId(43568619)
-                .authorAccountId(7702228)
-                .authorName("iIKappali")
+                .author(ImmutableGDUser.builder()
+                        .playerId(43568619)
+                        .accountId(7702228)
+                        .name("iIKappali")
+                        .color1Id(41)
+                        .color2Id(3)
+                        .hasGlowOutline(true)
+                        .role(Role.USER)
+                        .mainIconId(46)
+                        .mainIconType(IconType.CUBE)
+                        .build())
                 .content("i love my life ;)")
                 .likes(44564)
                 .postedAgo("3 years")

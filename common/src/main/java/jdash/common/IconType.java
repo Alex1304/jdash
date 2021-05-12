@@ -1,28 +1,32 @@
 package jdash.common;
 
 
-import jdash.common.entity.GDUser;
+import jdash.common.entity.GDUserProfile;
+import jdash.common.internal.InternalUtils;
 
 import java.util.Objects;
-import java.util.Optional;
-import java.util.function.Function;
+import java.util.function.ToIntFunction;
 
 public enum IconType {
-    CUBE(GDUser::cubeIconId),
-    SHIP(GDUser::shipIconId),
-    BALL(GDUser::ballIconId),
-    UFO(GDUser::ufoIconId),
-    WAVE(GDUser::waveIconId),
-    ROBOT(GDUser::robotIconId),
-    SPIDER(GDUser::spiderIconId);
+    CUBE(GDUserProfile::cubeIconId),
+    SHIP(GDUserProfile::shipIconId),
+    BALL(GDUserProfile::ballIconId),
+    UFO(GDUserProfile::ufoIconId),
+    WAVE(GDUserProfile::waveIconId),
+    ROBOT(GDUserProfile::robotIconId),
+    SPIDER(GDUserProfile::spiderIconId);
 
-    private final Function<GDUser, Optional<Integer>> idGetter;
+    private final ToIntFunction<GDUserProfile> idGetter;
 
-    IconType(Function<GDUser, Optional<Integer>> idGetter) {
+    IconType(ToIntFunction<GDUserProfile> idGetter) {
         this.idGetter = idGetter;
     }
 
-    public int idForUser(GDUser user) {
-        return idGetter.apply(Objects.requireNonNull(user)).orElse(0);
+    public static IconType parse(String str) {
+        return InternalUtils.parseIndex(str, IconType.values());
+    }
+
+    public int idForUser(GDUserProfile user) {
+        return idGetter.applyAsInt(Objects.requireNonNull(user));
     }
 }

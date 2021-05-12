@@ -4,9 +4,9 @@ package jdash.common.internal;
  * Index values used by the parser or the client to retrieve info on various things in Geometry Dash.
  */
 public final class Indexes {
-    public static final int LEVEL_ID = 1;
 
     /* GD Level data */
+    public static final int LEVEL_ID = 1;
     public static final int LEVEL_NAME = 2;
     public static final int LEVEL_DESCRIPTION = 3;
     public static final int LEVEL_DATA = 4;
@@ -33,11 +33,11 @@ public final class Indexes {
     public static final int LEVEL_IS_EPIC = 42;
     public static final int LEVEL_DEMON_DIFFICULTY = 43;
     public static final int LEVEL_OBJECT_COUNT = 45;
-    public static final int SONG_ID = 1;
 
     /* Song data */
+    public static final int SONG_ID = 1;
     public static final int SONG_TITLE = 2;
-    public static final int SONG_AUTHOR = 4;
+    public static final int SONG_ARTIST = 4;
     public static final int SONG_SIZE = 5;
     public static final int SONG_URL = 10;
 
@@ -70,19 +70,17 @@ public final class Indexes {
     public static final int USER_TWITTER = 44;
     public static final int USER_TWITCH = 45;
     public static final int USER_DIAMONDS = 46;
-    public static final int USER_DEATH_EFFECT = 47;
     public static final int USER_ROLE = 49;
     public static final int USER_COMMENT_HISTORY_POLICY = 50;
-    public static final int MESSAGE_ID = 1;
 
     /* Message data */
-    public static final int MESSAGE_SENDER_ID = 2;
-    public static final int MESSAGE_SENDER_NAME = 6;
+    public static final int MESSAGE_ID = 1;
+    public static final int MESSAGE_AUTHOR_ID = 2;
+    public static final int MESSAGE_AUTHOR_NAME = 6;
     public static final int MESSAGE_SUBJECT = 4;
     public static final int MESSAGE_BODY = 5;
-    public static final int MESSAGE_TIMESTAMP = 7;
+    public static final int MESSAGE_SENT_AGO = 7;
     public static final int MESSAGE_IS_READ = 8;
-    public static final int COMMENT_BODY = 2;
 
     /* Comment data */
     public static final int COMMENT_CONTENT = 2;

@@ -10,7 +10,7 @@ public class CorruptedResponseContentException extends GDClientException {
     private final String responseContent;
 
     public CorruptedResponseContentException(Throwable cause, GDRequest request, String responseContent) {
-        super(cause);
+        super("Error when parsing response for request " + request, cause);
         this.request = Objects.requireNonNull(request);
         this.responseContent = Objects.requireNonNull(responseContent);
     }

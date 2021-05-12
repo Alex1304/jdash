@@ -3,6 +3,7 @@ package jdash.common.entity;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import org.immutables.value.Generated;
 
 /**
@@ -15,25 +16,22 @@ import org.immutables.value.Generated;
 @SuppressWarnings({"all"})
 public final class ImmutableGDSong implements GDSong {
   private final long id;
-  private final String songAuthorName;
-  private final String songSize;
-  private final String songTitle;
+  private final String title;
+  private final String artist;
+  private final String size;
   private final String downloadUrl;
-  private final boolean isCustom;
 
   private ImmutableGDSong(
       long id,
-      String songAuthorName,
-      String songSize,
-      String songTitle,
-      String downloadUrl,
-      boolean isCustom) {
+      String title,
+      String artist,
+      String size,
+      String downloadUrl) {
     this.id = id;
-    this.songAuthorName = songAuthorName;
-    this.songSize = songSize;
-    this.songTitle = songTitle;
+    this.title = title;
+    this.artist = artist;
+    this.size = size;
     this.downloadUrl = downloadUrl;
-    this.isCustom = isCustom;
   }
 
   /**
@@ -45,43 +43,35 @@ public final class ImmutableGDSong implements GDSong {
   }
 
   /**
-   * @return The value of the {@code songAuthorName} attribute
+   * @return The value of the {@code title} attribute
    */
   @Override
-  public String songAuthorName() {
-    return songAuthorName;
+  public String title() {
+    return title;
   }
 
   /**
-   * @return The value of the {@code songSize} attribute
+   * @return The value of the {@code artist} attribute
    */
   @Override
-  public String songSize() {
-    return songSize;
+  public String artist() {
+    return artist;
   }
 
   /**
-   * @return The value of the {@code songTitle} attribute
+   * @return The value of the {@code size} attribute
    */
   @Override
-  public String songTitle() {
-    return songTitle;
+  public Optional<String> size() {
+    return Optional.ofNullable(size);
   }
 
   /**
    * @return The value of the {@code downloadUrl} attribute
    */
   @Override
-  public String downloadUrl() {
-    return downloadUrl;
-  }
-
-  /**
-   * @return The value of the {@code isCustom} attribute
-   */
-  @Override
-  public boolean isCustom() {
-    return isCustom;
+  public Optional<String> downloadUrl() {
+    return Optional.ofNullable(downloadUrl);
   }
 
   /**
@@ -92,66 +82,77 @@ public final class ImmutableGDSong implements GDSong {
    */
   public final ImmutableGDSong withId(long value) {
     if (this.id == value) return this;
-    return new ImmutableGDSong(value, this.songAuthorName, this.songSize, this.songTitle, this.downloadUrl, this.isCustom);
+    return new ImmutableGDSong(value, this.title, this.artist, this.size, this.downloadUrl);
   }
 
   /**
-   * Copy the current immutable object by setting a value for the {@link GDSong#songAuthorName() songAuthorName} attribute.
+   * Copy the current immutable object by setting a value for the {@link GDSong#title() title} attribute.
    * An equals check used to prevent copying of the same value by returning {@code this}.
-   * @param value A new value for songAuthorName
+   * @param value A new value for title
    * @return A modified copy of the {@code this} object
    */
-  public final ImmutableGDSong withSongAuthorName(String value) {
-    String newValue = Objects.requireNonNull(value, "songAuthorName");
-    if (this.songAuthorName.equals(newValue)) return this;
-    return new ImmutableGDSong(this.id, newValue, this.songSize, this.songTitle, this.downloadUrl, this.isCustom);
+  public final ImmutableGDSong withTitle(String value) {
+    String newValue = Objects.requireNonNull(value, "title");
+    if (this.title.equals(newValue)) return this;
+    return new ImmutableGDSong(this.id, newValue, this.artist, this.size, this.downloadUrl);
   }
 
   /**
-   * Copy the current immutable object by setting a value for the {@link GDSong#songSize() songSize} attribute.
+   * Copy the current immutable object by setting a value for the {@link GDSong#artist() artist} attribute.
    * An equals check used to prevent copying of the same value by returning {@code this}.
-   * @param value A new value for songSize
+   * @param value A new value for artist
    * @return A modified copy of the {@code this} object
    */
-  public final ImmutableGDSong withSongSize(String value) {
-    String newValue = Objects.requireNonNull(value, "songSize");
-    if (this.songSize.equals(newValue)) return this;
-    return new ImmutableGDSong(this.id, this.songAuthorName, newValue, this.songTitle, this.downloadUrl, this.isCustom);
+  public final ImmutableGDSong withArtist(String value) {
+    String newValue = Objects.requireNonNull(value, "artist");
+    if (this.artist.equals(newValue)) return this;
+    return new ImmutableGDSong(this.id, this.title, newValue, this.size, this.downloadUrl);
   }
 
   /**
-   * Copy the current immutable object by setting a value for the {@link GDSong#songTitle() songTitle} attribute.
-   * An equals check used to prevent copying of the same value by returning {@code this}.
-   * @param value A new value for songTitle
-   * @return A modified copy of the {@code this} object
+   * Copy the current immutable object by setting a <i>present</i> value for the optional {@link GDSong#size() size} attribute.
+   * @param value The value for size
+   * @return A modified copy of {@code this} object
    */
-  public final ImmutableGDSong withSongTitle(String value) {
-    String newValue = Objects.requireNonNull(value, "songTitle");
-    if (this.songTitle.equals(newValue)) return this;
-    return new ImmutableGDSong(this.id, this.songAuthorName, this.songSize, newValue, this.downloadUrl, this.isCustom);
+  public final ImmutableGDSong withSize(String value) {
+    String newValue = Objects.requireNonNull(value, "size");
+    if (Objects.equals(this.size, newValue)) return this;
+    return new ImmutableGDSong(this.id, this.title, this.artist, newValue, this.downloadUrl);
   }
 
   /**
-   * Copy the current immutable object by setting a value for the {@link GDSong#downloadUrl() downloadUrl} attribute.
-   * An equals check used to prevent copying of the same value by returning {@code this}.
-   * @param value A new value for downloadUrl
-   * @return A modified copy of the {@code this} object
+   * Copy the current immutable object by setting an optional value for the {@link GDSong#size() size} attribute.
+   * An equality check is used on inner nullable value to prevent copying of the same value by returning {@code this}.
+   * @param optional A value for size
+   * @return A modified copy of {@code this} object
+   */
+  public final ImmutableGDSong withSize(Optional<String> optional) {
+    String value = optional.orElse(null);
+    if (Objects.equals(this.size, value)) return this;
+    return new ImmutableGDSong(this.id, this.title, this.artist, value, this.downloadUrl);
+  }
+
+  /**
+   * Copy the current immutable object by setting a <i>present</i> value for the optional {@link GDSong#downloadUrl() downloadUrl} attribute.
+   * @param value The value for downloadUrl
+   * @return A modified copy of {@code this} object
    */
   public final ImmutableGDSong withDownloadUrl(String value) {
     String newValue = Objects.requireNonNull(value, "downloadUrl");
-    if (this.downloadUrl.equals(newValue)) return this;
-    return new ImmutableGDSong(this.id, this.songAuthorName, this.songSize, this.songTitle, newValue, this.isCustom);
+    if (Objects.equals(this.downloadUrl, newValue)) return this;
+    return new ImmutableGDSong(this.id, this.title, this.artist, this.size, newValue);
   }
 
   /**
-   * Copy the current immutable object by setting a value for the {@link GDSong#isCustom() isCustom} attribute.
-   * A value equality check is used to prevent copying of the same value by returning {@code this}.
-   * @param value A new value for isCustom
-   * @return A modified copy of the {@code this} object
+   * Copy the current immutable object by setting an optional value for the {@link GDSong#downloadUrl() downloadUrl} attribute.
+   * An equality check is used on inner nullable value to prevent copying of the same value by returning {@code this}.
+   * @param optional A value for downloadUrl
+   * @return A modified copy of {@code this} object
    */
-  public final ImmutableGDSong withIsCustom(boolean value) {
-    if (this.isCustom == value) return this;
-    return new ImmutableGDSong(this.id, this.songAuthorName, this.songSize, this.songTitle, this.downloadUrl, value);
+  public final ImmutableGDSong withDownloadUrl(Optional<String> optional) {
+    String value = optional.orElse(null);
+    if (Objects.equals(this.downloadUrl, value)) return this;
+    return new ImmutableGDSong(this.id, this.title, this.artist, this.size, value);
   }
 
   /**
@@ -167,26 +168,24 @@ public final class ImmutableGDSong implements GDSong {
 
   private boolean equalTo(int synthetic, ImmutableGDSong another) {
     return id == another.id
-        && songAuthorName.equals(another.songAuthorName)
-        && songSize.equals(another.songSize)
-        && songTitle.equals(another.songTitle)
-        && downloadUrl.equals(another.downloadUrl)
-        && isCustom == another.isCustom;
+        && title.equals(another.title)
+        && artist.equals(another.artist)
+        && Objects.equals(size, another.size)
+        && Objects.equals(downloadUrl, another.downloadUrl);
   }
 
   /**
-   * Computes a hash code from attributes: {@code id}, {@code songAuthorName}, {@code songSize}, {@code songTitle}, {@code downloadUrl}, {@code isCustom}.
+   * Computes a hash code from attributes: {@code id}, {@code title}, {@code artist}, {@code size}, {@code downloadUrl}.
    * @return hashCode value
    */
   @Override
   public int hashCode() {
     int h = 5381;
     h += (h << 5) + Long.hashCode(id);
-    h += (h << 5) + songAuthorName.hashCode();
-    h += (h << 5) + songSize.hashCode();
-    h += (h << 5) + songTitle.hashCode();
-    h += (h << 5) + downloadUrl.hashCode();
-    h += (h << 5) + Boolean.hashCode(isCustom);
+    h += (h << 5) + title.hashCode();
+    h += (h << 5) + artist.hashCode();
+    h += (h << 5) + Objects.hashCode(size);
+    h += (h << 5) + Objects.hashCode(downloadUrl);
     return h;
   }
 
@@ -196,14 +195,21 @@ public final class ImmutableGDSong implements GDSong {
    */
   @Override
   public String toString() {
-    return "GDSong{"
-        + "id=" + id
-        + ", songAuthorName=" + songAuthorName
-        + ", songSize=" + songSize
-        + ", songTitle=" + songTitle
-        + ", downloadUrl=" + downloadUrl
-        + ", isCustom=" + isCustom
-        + "}";
+    StringBuilder builder = new StringBuilder("GDSong{");
+    builder.append("id=").append(id);
+    builder.append(", ");
+    builder.append("title=").append(title);
+    builder.append(", ");
+    builder.append("artist=").append(artist);
+    if (size != null) {
+      builder.append(", ");
+      builder.append("size=").append(size);
+    }
+    if (downloadUrl != null) {
+      builder.append(", ");
+      builder.append("downloadUrl=").append(downloadUrl);
+    }
+    return builder.append("}").toString();
   }
 
   /**
@@ -227,11 +233,10 @@ public final class ImmutableGDSong implements GDSong {
    * <pre>
    * ImmutableGDSong.builder()
    *    .id(long) // required {@link GDSong#id() id}
-   *    .songAuthorName(String) // required {@link GDSong#songAuthorName() songAuthorName}
-   *    .songSize(String) // required {@link GDSong#songSize() songSize}
-   *    .songTitle(String) // required {@link GDSong#songTitle() songTitle}
-   *    .downloadUrl(String) // required {@link GDSong#downloadUrl() downloadUrl}
-   *    .isCustom(boolean) // required {@link GDSong#isCustom() isCustom}
+   *    .title(String) // required {@link GDSong#title() title}
+   *    .artist(String) // required {@link GDSong#artist() artist}
+   *    .size(String) // optional {@link GDSong#size() size}
+   *    .downloadUrl(String) // optional {@link GDSong#downloadUrl() downloadUrl}
    *    .build();
    * </pre>
    * @return A new ImmutableGDSong builder
@@ -250,19 +255,15 @@ public final class ImmutableGDSong implements GDSong {
   @Generated(from = "GDSong", generator = "Immutables")
   public static final class Builder {
     private static final long INIT_BIT_ID = 0x1L;
-    private static final long INIT_BIT_SONG_AUTHOR_NAME = 0x2L;
-    private static final long INIT_BIT_SONG_SIZE = 0x4L;
-    private static final long INIT_BIT_SONG_TITLE = 0x8L;
-    private static final long INIT_BIT_DOWNLOAD_URL = 0x10L;
-    private static final long INIT_BIT_IS_CUSTOM = 0x20L;
-    private long initBits = 0x3fL;
+    private static final long INIT_BIT_TITLE = 0x2L;
+    private static final long INIT_BIT_ARTIST = 0x4L;
+    private long initBits = 0x7L;
 
     private long id;
-    private String songAuthorName;
-    private String songSize;
-    private String songTitle;
+    private String title;
+    private String artist;
+    private String size;
     private String downloadUrl;
-    private boolean isCustom;
 
     private Builder() {
     }
@@ -277,11 +278,16 @@ public final class ImmutableGDSong implements GDSong {
     public final Builder from(GDSong instance) {
       Objects.requireNonNull(instance, "instance");
       id(instance.id());
-      songAuthorName(instance.songAuthorName());
-      songSize(instance.songSize());
-      songTitle(instance.songTitle());
-      downloadUrl(instance.downloadUrl());
-      isCustom(instance.isCustom());
+      title(instance.title());
+      artist(instance.artist());
+      Optional<String> sizeOptional = instance.size();
+      if (sizeOptional.isPresent()) {
+        size(sizeOptional);
+      }
+      Optional<String> downloadUrlOptional = instance.downloadUrl();
+      if (downloadUrlOptional.isPresent()) {
+        downloadUrl(downloadUrlOptional);
+      }
       return this;
     }
 
@@ -297,57 +303,64 @@ public final class ImmutableGDSong implements GDSong {
     }
 
     /**
-     * Initializes the value for the {@link GDSong#songAuthorName() songAuthorName} attribute.
-     * @param songAuthorName The value for songAuthorName 
+     * Initializes the value for the {@link GDSong#title() title} attribute.
+     * @param title The value for title 
      * @return {@code this} builder for use in a chained invocation
      */
-    public final Builder songAuthorName(String songAuthorName) {
-      this.songAuthorName = Objects.requireNonNull(songAuthorName, "songAuthorName");
-      initBits &= ~INIT_BIT_SONG_AUTHOR_NAME;
+    public final Builder title(String title) {
+      this.title = Objects.requireNonNull(title, "title");
+      initBits &= ~INIT_BIT_TITLE;
       return this;
     }
 
     /**
-     * Initializes the value for the {@link GDSong#songSize() songSize} attribute.
-     * @param songSize The value for songSize 
+     * Initializes the value for the {@link GDSong#artist() artist} attribute.
+     * @param artist The value for artist 
      * @return {@code this} builder for use in a chained invocation
      */
-    public final Builder songSize(String songSize) {
-      this.songSize = Objects.requireNonNull(songSize, "songSize");
-      initBits &= ~INIT_BIT_SONG_SIZE;
+    public final Builder artist(String artist) {
+      this.artist = Objects.requireNonNull(artist, "artist");
+      initBits &= ~INIT_BIT_ARTIST;
       return this;
     }
 
     /**
-     * Initializes the value for the {@link GDSong#songTitle() songTitle} attribute.
-     * @param songTitle The value for songTitle 
-     * @return {@code this} builder for use in a chained invocation
+     * Initializes the optional value {@link GDSong#size() size} to size.
+     * @param size The value for size
+     * @return {@code this} builder for chained invocation
      */
-    public final Builder songTitle(String songTitle) {
-      this.songTitle = Objects.requireNonNull(songTitle, "songTitle");
-      initBits &= ~INIT_BIT_SONG_TITLE;
+    public final Builder size(String size) {
+      this.size = Objects.requireNonNull(size, "size");
       return this;
     }
 
     /**
-     * Initializes the value for the {@link GDSong#downloadUrl() downloadUrl} attribute.
-     * @param downloadUrl The value for downloadUrl 
+     * Initializes the optional value {@link GDSong#size() size} to size.
+     * @param size The value for size
      * @return {@code this} builder for use in a chained invocation
+     */
+    public final Builder size(Optional<String> size) {
+      this.size = size.orElse(null);
+      return this;
+    }
+
+    /**
+     * Initializes the optional value {@link GDSong#downloadUrl() downloadUrl} to downloadUrl.
+     * @param downloadUrl The value for downloadUrl
+     * @return {@code this} builder for chained invocation
      */
     public final Builder downloadUrl(String downloadUrl) {
       this.downloadUrl = Objects.requireNonNull(downloadUrl, "downloadUrl");
-      initBits &= ~INIT_BIT_DOWNLOAD_URL;
       return this;
     }
 
     /**
-     * Initializes the value for the {@link GDSong#isCustom() isCustom} attribute.
-     * @param isCustom The value for isCustom 
+     * Initializes the optional value {@link GDSong#downloadUrl() downloadUrl} to downloadUrl.
+     * @param downloadUrl The value for downloadUrl
      * @return {@code this} builder for use in a chained invocation
      */
-    public final Builder isCustom(boolean isCustom) {
-      this.isCustom = isCustom;
-      initBits &= ~INIT_BIT_IS_CUSTOM;
+    public final Builder downloadUrl(Optional<String> downloadUrl) {
+      this.downloadUrl = downloadUrl.orElse(null);
       return this;
     }
 
@@ -360,17 +373,14 @@ public final class ImmutableGDSong implements GDSong {
       if (initBits != 0) {
         throw new IllegalStateException(formatRequiredAttributesMessage());
       }
-      return new ImmutableGDSong(id, songAuthorName, songSize, songTitle, downloadUrl, isCustom);
+      return new ImmutableGDSong(id, title, artist, size, downloadUrl);
     }
 
     private String formatRequiredAttributesMessage() {
       List<String> attributes = new ArrayList<>();
       if ((initBits & INIT_BIT_ID) != 0) attributes.add("id");
-      if ((initBits & INIT_BIT_SONG_AUTHOR_NAME) != 0) attributes.add("songAuthorName");
-      if ((initBits & INIT_BIT_SONG_SIZE) != 0) attributes.add("songSize");
-      if ((initBits & INIT_BIT_SONG_TITLE) != 0) attributes.add("songTitle");
-      if ((initBits & INIT_BIT_DOWNLOAD_URL) != 0) attributes.add("downloadUrl");
-      if ((initBits & INIT_BIT_IS_CUSTOM) != 0) attributes.add("isCustom");
+      if ((initBits & INIT_BIT_TITLE) != 0) attributes.add("title");
+      if ((initBits & INIT_BIT_ARTIST) != 0) attributes.add("artist");
       return "Cannot build GDSong, some of required attributes are not set " + attributes;
     }
   }
