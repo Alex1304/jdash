@@ -8,6 +8,7 @@ import jdash.client.request.GDRouter;
 import jdash.common.CommentSortMode;
 import jdash.common.LevelSearchFilter;
 import jdash.common.LevelBrowseMode;
+import jdash.common.RobTopsWeakEncryption;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
@@ -16,6 +17,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 public final class GDRouterMockUp implements GDRouter {
+
+    private static final Map<String, String> AUTH_PARAMS = Map.of("accountID", "1", "gjp",
+            RobTopsWeakEncryption.encodeGDAccountPassword("test"));
 
     private static final Map<GDRequest, String> SAMPLES = Map.ofEntries(
             Map.entry(GDRequest.of(GDRequests.GET_GJ_LEVELS_21)
@@ -60,7 +64,16 @@ public final class GDRouterMockUp implements GDRouter {
                     .addParameter("total", 0)
                     .addParameter("count", 40)
                     .addParameter("page", 0)
-                    .addParameter("mode", CommentSortMode.MOST_LIKED.ordinal()), "getCommentsForLevel")
+                    .addParameter("mode", CommentSortMode.MOST_LIKED.ordinal()), "getCommentsForLevel"),
+            Map.entry(GDRequest.of(GDRequests.GET_GJ_MESSAGES_20)
+                    .addParameters(AUTH_PARAMS)
+                    .addParameters(GDRequests.commonParams())
+                    .addParameter("page", 0)
+                    .addParameter("total", 0), "getPrivateMessages"),
+            Map.entry(GDRequest.of(GDRequests.DOWNLOAD_GJ_MESSAGE_20)
+                    .addParameters(AUTH_PARAMS)
+                    .addParameters(GDRequests.commonParams())
+                    .addParameter("messageID", 58947681), "downloadPrivateMessage")
     );
 
     private int requestCount;

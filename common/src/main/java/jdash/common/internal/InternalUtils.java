@@ -221,6 +221,21 @@ public final class InternalUtils {
                 .build();
     }
 
+    public static GDPrivateMessage buildMessage(Map<Integer, String> data) {
+        requireKeys(data, MESSAGE_ID, MESSAGE_USER_ACCOUNT_ID, MESSAGE_USER_NAME, MESSAGE_SUBJECT,
+                MESSAGE_IS_UNREAD, MESSAGE_SENT_AGO, MESSAGE_USER_PLAYER_ID, MESSAGE_IS_SENDER);
+        return ImmutableGDPrivateMessage.builder()
+                .id(Long.parseLong(data.get(MESSAGE_ID)))
+                .userAccountId(Long.parseLong(data.get(MESSAGE_USER_ACCOUNT_ID)))
+                .userPlayerId(Long.parseLong(data.get(MESSAGE_USER_PLAYER_ID)))
+                .userName(data.get(MESSAGE_USER_NAME))
+                .subject(b64Decode(data.get(MESSAGE_SUBJECT)))
+                .isUnread(!data.get(MESSAGE_IS_UNREAD).equals("1"))
+                .sentAgo(data.get(MESSAGE_SENT_AGO))
+                .isSender(data.get(MESSAGE_IS_SENDER).equals("1"))
+                .build();
+    }
+
     public static void requireKeys(Map<Integer, String> data, int... keys) {
         for (var key : keys) {
             if (!data.containsKey(key)) {

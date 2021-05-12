@@ -93,7 +93,7 @@ public final class TestMain {
 ```Java
 import jdash.jdash.client.AuthenticatedGDClient;
 import jdash.jdash.client.GDClientBuilder;
-import jdash.jdash.common.entity.GDMessage;
+import jdash.jdash.common.entity.GDPrivateMessage;
 import jdash.jdash.client.exception.LoginFailedException;
 import jdash.jdash.util.GDPaginator;
 

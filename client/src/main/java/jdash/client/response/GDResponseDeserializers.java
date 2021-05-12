@@ -19,6 +19,8 @@ public final class GDResponseDeserializers {
     private static final CommentsResponseDeserializer COMMENTS_RESPONSE = new CommentsResponseDeserializer();
     private static final PrivateMessagesResponseDeserializer PRIVATE_MESSAGES_RESPONSE =
             new PrivateMessagesResponseDeserializer();
+    private static final PrivateMessageDownloadResponseDeserializer PRIVATE_MESSAGE_DOWNLOAD_RESPONSE =
+            new PrivateMessageDownloadResponseDeserializer();
 
     private GDResponseDeserializers() {
         throw new AssertionError();
@@ -56,7 +58,11 @@ public final class GDResponseDeserializers {
         return COMMENTS_RESPONSE;
     }
 
-    public static Function<String, List<GDMessage>> privateMessagesResponse() {
+    public static Function<String, List<GDPrivateMessage>> privateMessagesResponse() {
         return PRIVATE_MESSAGES_RESPONSE;
+    }
+
+    public static Function<String, GDPrivateMessageDownload> privateMessageDownloadResponse() {
+        return PRIVATE_MESSAGE_DOWNLOAD_RESPONSE;
     }
 }

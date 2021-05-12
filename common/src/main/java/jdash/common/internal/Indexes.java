@@ -75,12 +75,14 @@ public final class Indexes {
 
     /* Message data */
     public static final int MESSAGE_ID = 1;
-    public static final int MESSAGE_AUTHOR_ID = 2;
-    public static final int MESSAGE_AUTHOR_NAME = 6;
+    public static final int MESSAGE_USER_ACCOUNT_ID = 2;
+    public static final int MESSAGE_USER_PLAYER_ID = 3;
     public static final int MESSAGE_SUBJECT = 4;
     public static final int MESSAGE_BODY = 5;
+    public static final int MESSAGE_USER_NAME = 6;
     public static final int MESSAGE_SENT_AGO = 7;
-    public static final int MESSAGE_IS_READ = 8;
+    public static final int MESSAGE_IS_UNREAD = 8;
+    public static final int MESSAGE_IS_SENDER = 9;
 
     /* Comment data */
     public static final int COMMENT_CONTENT = 2;

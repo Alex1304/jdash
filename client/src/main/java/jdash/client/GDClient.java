@@ -47,7 +47,7 @@ public final class GDClient {
         if (auth == null) {
             throw new IllegalStateException("Client must be authenticated to call this method");
         }
-        return Map.of("accountId", "" + auth.accountId, "gjp", auth.gjp);
+        return Map.of("accountID", "" + auth.accountId, "gjp", auth.gjp);
     }
 
     public GDClient withRouter(GDRouter router) {
@@ -204,14 +204,24 @@ public final class GDClient {
                 .flatMapMany(Flux::fromIterable);
     }
 
-    public Flux<GDMessage> getPrivateMessages(int page) {
+    public Flux<GDPrivateMessage> getPrivateMessages(int page) {
         return GDRequest.of(GDRequests.GET_GJ_MESSAGES_20)
                 .addParameters(authParams())
                 .addParameters(GDRequests.commonParams())
                 .addParameter("page", page)
+                .addParameter("total", 0)
                 .execute(cache, router)
                 .deserialize(GDResponseDeserializers.privateMessagesResponse())
                 .flatMapMany(Flux::fromIterable);
+    }
+
+    public Mono<GDPrivateMessageDownload> downloadPrivateMessage(int messageId) {
+        return GDRequest.of(GDRequests.DOWNLOAD_GJ_MESSAGE_20)
+                .addParameters(authParams())
+                .addParameters(GDRequests.commonParams())
+                .addParameter("messageID", messageId)
+                .execute(cache, router)
+                .deserialize(GDResponseDeserializers.privateMessageDownloadResponse());
     }
 
     private static class AuthenticationInfo {

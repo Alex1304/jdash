@@ -18,6 +18,7 @@ public final class GDClientTest {
     private GDCacheMockUp cache;
     private GDRouterMockUp router;
     private GDClient client;
+    private GDClient authClient;
 
     @BeforeEach
     public void setUp() {
@@ -26,6 +27,7 @@ public final class GDClientTest {
         client = GDClient.create()
                 .withCache(cache)
                 .withRouter(router);
+        authClient = client.withAuthentication(1, "test");
     }
 
     @Test
@@ -273,5 +275,43 @@ public final class GDClientTest {
         assertEquals(expectedTop10Ids, actual.stream().map(GDComment::id).collect(Collectors.toList()));
         assertFalse(actual.get(1).color().isEmpty());
         assertEquals(0x4BFF4B, actual.get(1).color().orElseThrow());
+    }
+
+    @Test
+    public void getPrivateMessagesTest() {
+        var expectedFirstMessage = ImmutableGDPrivateMessage.builder()
+                .id(58947681)
+                .userAccountId(14414152)
+                .userPlayerId(142565671)
+                .subject("hellow")
+                .userName("Andresgiln78")
+                .sentAgo("1 day")
+                .isUnread(true)
+                .isSender(false)
+                .build();
+        var expectedTop10Ids = List.of(58947681L, 58941413L, 58929342L,
+                58853706L, 58829707L, 58816845L, 58808850L, 58790947L, 58678031L, 58664382L);
+        var actual = authClient.getPrivateMessages(0).take(10).collectList().block();
+        assertNotNull(actual);
+        assertEquals(10, actual.size());
+        assertEquals(expectedFirstMessage, actual.get(0));
+        assertEquals(expectedTop10Ids, actual.stream().map(GDPrivateMessage::id).collect(Collectors.toList()));
+    }
+
+    @Test
+    public void downloadPrivateMessageTest() {
+        var expected = ImmutableGDPrivateMessageDownload.builder()
+                .id(58947681)
+                .userAccountId(14414152)
+                .userPlayerId(142565671)
+                .subject("hellow")
+                .userName("Andresgiln78")
+                .sentAgo("1 day")
+                .isUnread(true)
+                .isSender(false)
+                .body("hello :)")
+                .build();
+        var actual = authClient.downloadPrivateMessage(58947681).block();
+        assertEquals(expected, actual);
     }
 }
