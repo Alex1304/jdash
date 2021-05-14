@@ -5,7 +5,7 @@ import jdash.common.entity.ImmutableGDPrivateMessageDownload;
 
 import java.util.function.Function;
 
-import static jdash.common.RobTopsWeakEncryption.decodeGDMessageBody;
+import static jdash.common.RobTopsWeakEncryption.decodePrivateMessageBody;
 import static jdash.common.internal.Indexes.MESSAGE_BODY;
 import static jdash.common.internal.InternalUtils.*;
 
@@ -17,7 +17,7 @@ public class PrivateMessageDownloadResponseDeserializer implements Function<Stri
         requireKeys(data, MESSAGE_BODY);
         return ImmutableGDPrivateMessageDownload.builder()
                 .from(buildMessage(data))
-                .body(decodeGDMessageBody(data.get(MESSAGE_BODY)))
+                .body(decodePrivateMessageBody(data.get(MESSAGE_BODY)))
                 .build();
     }
 }

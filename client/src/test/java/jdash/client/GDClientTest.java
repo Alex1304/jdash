@@ -27,7 +27,7 @@ public final class GDClientTest {
         client = GDClient.create()
                 .withCache(cache)
                 .withRouter(router);
-        authClient = client.withAuthentication(1, "test");
+        authClient = client.withAuthentication(1,1, "test");
     }
 
     @Test
@@ -313,5 +313,33 @@ public final class GDClientTest {
                 .build();
         var actual = authClient.downloadPrivateMessage(58947681).block();
         assertEquals(expected, actual);
+    }
+
+    @Test
+    public void getBlockedUsersTest() {
+        var expectedFirstUser = ImmutableGDUser.builder()
+                .playerId(132275057)
+                .accountId(13652339)
+                .name("AzhirVerifier")
+                .color1Id(12)
+                .color2Id(13)
+                .hasGlowOutline(false)
+                .mainIconId(13)
+                .mainIconType(IconType.SPIDER)
+                .build();
+        var expectedIds = List.of(132275057L, 125097769L, 35167443L, 39574573L, 55186340L, 19919817L);
+        var actual = authClient.getBlockedUsers().collectList().block();
+        assertNotNull(actual);
+        assertEquals(6, actual.size());
+        assertEquals(expectedFirstUser, actual.get(0));
+        assertEquals(expectedIds, actual.stream().map(GDUser::playerId).collect(Collectors.toList()));
+    }
+
+    @Test
+    public void getLeaderboardTest() {
+        var actual = client.getLeaderboard(LeaderboardType.GLOBAL, 50).collectList().block();
+        assertNotNull(actual);
+        assertFalse(actual.get(0).leaderboardRank().isEmpty());
+        assertEquals(12537, actual.get(0).leaderboardRank().orElseThrow());
     }
 }

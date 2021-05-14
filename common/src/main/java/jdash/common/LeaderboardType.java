@@ -6,13 +6,13 @@ public enum LeaderboardType {
     GLOBAL("relative"),
     CREATORS("creators");
 
-    private final String val;
+    private final String value;
 
-    LeaderboardType(String val) {
-        this.val = val;
+    LeaderboardType(String value) {
+        this.value = value;
     }
 
-    public String getVal() {
-        return val;
+    public String getValue() {
+        return value;
     }
 }

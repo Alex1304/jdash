@@ -2,6 +2,8 @@ package jdash.common.entity;
 
 import org.immutables.value.Value;
 
+import java.util.Optional;
+
 @Value.Immutable
 public interface GDUserStats extends GDUser {
 
@@ -16,4 +18,6 @@ public interface GDUserStats extends GDUser {
     int demons();
 
     int creatorPoints();
+
+    Optional<Integer> leaderboardRank();
 }

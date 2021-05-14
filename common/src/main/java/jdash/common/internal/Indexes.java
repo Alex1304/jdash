@@ -46,6 +46,7 @@ public final class Indexes {
     public static final int USER_PLAYER_ID = 2;
     public static final int USER_STARS = 3;
     public static final int USER_DEMONS = 4;
+    public static final int USER_LEADERBOARD_RANK = 6;
     public static final int USER_CREATOR_POINTS = 8;
     public static final int USER_ICON = 9;
     public static final int USER_COLOR_1 = 10;

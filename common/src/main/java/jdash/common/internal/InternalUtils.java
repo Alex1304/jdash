@@ -7,10 +7,15 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
+import static java.util.function.Predicate.not;
 import static jdash.common.internal.Indexes.*;
 
 public final class InternalUtils {
+
+    private static final String CHAR_TABLE= "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
     private InternalUtils() {
     }
@@ -195,6 +200,9 @@ public final class InternalUtils {
                 .userCoins(Integer.parseInt(data.get(USER_USER_COINS)))
                 .demons(Integer.parseInt(data.get(USER_DEMONS)))
                 .creatorPoints(Integer.parseInt(data.get(USER_CREATOR_POINTS)))
+                .leaderboardRank(Optional.ofNullable(data.get(USER_LEADERBOARD_RANK))
+                        .filter(not(String::isEmpty))
+                        .map(Integer::parseInt))
                 .build();
     }
 
@@ -242,5 +250,12 @@ public final class InternalUtils {
                 throw new IllegalStateException("Missing required key: " + key);
             }
         }
+    }
+
+    public static String randomString(int size) {
+        var rand = new Random();
+        return IntStream.range(0, size)
+                .mapToObj(i -> "" + CHAR_TABLE.charAt(rand.nextInt(CHAR_TABLE.length())))
+                .collect(Collectors.joining());
     }
 }

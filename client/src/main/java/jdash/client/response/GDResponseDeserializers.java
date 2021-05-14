@@ -11,7 +11,9 @@ public final class GDResponseDeserializers {
     private static final LevelSearchResponseDeserializer LEVEL_SEARCH_RESPONSE = new LevelSearchResponseDeserializer();
     private static final LoginResponseDeserializer LOGIN_RESPONSE = new LoginResponseDeserializer();
     private static final UserProfileResponseDeserializer USER_PROFILE_RESPONSE = new UserProfileResponseDeserializer();
-    private static final UserSearchResponseDeserializer USER_SEARCH_RESPONSE = new UserSearchResponseDeserializer();
+    private static final UserStatsListResponseDeserializer USER_STATS_LIST_RESPONSE =
+            new UserStatsListResponseDeserializer();
+    private static final UserListResponseDeserializer USER_LIST_RESPONSE = new UserListResponseDeserializer();
     private static final SongInfoResponseDeserializer SONG_INFO_RESPONSE = new SongInfoResponseDeserializer();
     private static final LevelDownloadResponseDeserializer LEVEL_DOWNLOAD_RESPONSE =
             new LevelDownloadResponseDeserializer();
@@ -38,8 +40,12 @@ public final class GDResponseDeserializers {
         return USER_PROFILE_RESPONSE;
     }
 
-    public static Function<String, List<GDUserStats>> userSearchResponse() {
-        return USER_SEARCH_RESPONSE;
+    public static Function<String, List<GDUserStats>> userStatsListResponse() {
+        return USER_STATS_LIST_RESPONSE;
+    }
+
+    public static Function<String, List<GDUser>> userListResponse() {
+        return USER_LIST_RESPONSE;
     }
 
     public static Function<String, GDSong> songInfoResponse() {
