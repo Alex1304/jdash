@@ -14,7 +14,7 @@ import java.util.function.Function;
 import static jdash.common.internal.Indexes.*;
 import static jdash.common.internal.InternalUtils.*;
 
-public class CommentsResponseDeserializer implements Function<String, List<GDComment>> {
+class CommentsResponseDeserializer implements Function<String, List<GDComment>> {
 
     @Override
     public List<GDComment> apply(String response) {

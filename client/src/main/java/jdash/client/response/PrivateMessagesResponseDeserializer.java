@@ -10,7 +10,7 @@ import java.util.function.Function;
 import static jdash.common.internal.InternalUtils.buildMessage;
 import static jdash.common.internal.InternalUtils.splitToMap;
 
-public class PrivateMessagesResponseDeserializer implements Function<String, List<GDPrivateMessage>> {
+class PrivateMessagesResponseDeserializer implements Function<String, List<GDPrivateMessage>> {
 
     @Override
     public List<GDPrivateMessage> apply(String response) {

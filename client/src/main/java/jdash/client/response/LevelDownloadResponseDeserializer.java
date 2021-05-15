@@ -13,7 +13,7 @@ import java.util.function.Function;
 import static jdash.common.internal.Indexes.*;
 import static jdash.common.internal.InternalUtils.*;
 
-public class LevelDownloadResponseDeserializer implements Function<String, GDLevelDownload> {
+class LevelDownloadResponseDeserializer implements Function<String, GDLevelDownload> {
 
     @Override
     public GDLevelDownload apply(String response) {

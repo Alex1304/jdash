@@ -10,7 +10,7 @@ import static jdash.common.RobTopsWeakEncryption.decodePrivateMessageBody;
 import static jdash.common.internal.Indexes.MESSAGE_BODY;
 import static jdash.common.internal.InternalUtils.*;
 
-public class PrivateMessageDownloadResponseDeserializer implements Function<String, GDPrivateMessageDownload> {
+class PrivateMessageDownloadResponseDeserializer implements Function<String, GDPrivateMessageDownload> {
 
     @Override
     public GDPrivateMessageDownload apply(String response) {

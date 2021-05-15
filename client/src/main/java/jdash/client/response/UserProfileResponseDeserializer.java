@@ -8,7 +8,7 @@ import java.util.function.Function;
 import static jdash.common.internal.InternalUtils.buildUserProfile;
 import static jdash.common.internal.InternalUtils.splitToMap;
 
-public class UserProfileResponseDeserializer implements Function<String, GDUserProfile> {
+class UserProfileResponseDeserializer implements Function<String, GDUserProfile> {
 
     @Override
     public GDUserProfile apply(String response) {

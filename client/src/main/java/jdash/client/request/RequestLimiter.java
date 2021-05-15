@@ -3,6 +3,10 @@ package jdash.client.request;
 import java.time.Duration;
 import java.util.Objects;
 
+/**
+ * Allows to limit the number of requests that can be processed within a specific timeframe. This class keeps track of
+ * the invocations and their timestamp, and gives the remaining time before more permits can be delivered.
+ */
 public final class RequestLimiter {
 
     private static final RequestLimiter UNBOUNDED = new RequestLimiter(1, Duration.ZERO);

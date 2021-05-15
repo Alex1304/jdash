@@ -10,7 +10,7 @@ import java.util.function.Function;
 import static jdash.common.internal.InternalUtils.buildUser;
 import static jdash.common.internal.InternalUtils.splitToMap;
 
-public class UserListResponseDeserializer implements Function<String, List<GDUser>> {
+class UserListResponseDeserializer implements Function<String, List<GDUser>> {
 
     @Override
     public List<GDUser> apply(String response) {

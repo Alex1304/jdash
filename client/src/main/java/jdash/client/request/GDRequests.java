@@ -37,6 +37,11 @@ public final class GDRequests {
         throw new AssertionError();
     }
 
+    /**
+     * Gets the common parameters found in most requests.
+     *
+     * @return a map of parameters
+     */
     public static Map<String, String> commonParams() {
         return Map.ofEntries(
                 Map.entry("gameVersion", GAME_VERSION),

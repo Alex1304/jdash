@@ -7,7 +7,7 @@ import jdash.common.entity.ImmutableGDTimelyInfo;
 import java.time.Duration;
 import java.util.function.Function;
 
-public class TimelyInfoResponseDeserializer implements Function<String, GDTimelyInfo> {
+class TimelyInfoResponseDeserializer implements Function<String, GDTimelyInfo> {
 
     @Override
     public GDTimelyInfo apply(String response) {

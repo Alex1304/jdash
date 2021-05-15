@@ -6,7 +6,7 @@ import reactor.util.function.Tuples;
 
 import java.util.function.Function;
 
-public final class LoginResponseDeserializer implements Function<String, Tuple2<Long, Long>> {
+class LoginResponseDeserializer implements Function<String, Tuple2<Long, Long>> {
 
     @Override
     public Tuple2<Long, Long> apply(String response) {

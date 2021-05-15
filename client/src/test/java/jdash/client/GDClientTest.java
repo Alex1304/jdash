@@ -1,6 +1,6 @@
 package jdash.client;
 
-import jdash.client.exception.ActionFailedException;
+import jdash.client.exception.GDClientException;
 import jdash.client.request.GDRouter;
 import jdash.client.request.RequestLimiter;
 import jdash.common.*;
@@ -65,7 +65,7 @@ public final class GDClientTest {
         var newClient = client.login("Alex1304", "F3keP4ssw0rd").block();
         assertNotNull(newClient);
         assertTrue(newClient.isAuthenticated());
-        assertThrows(ActionFailedException.class, client.login("Alex1304", "WrongPassword")::block);
+        assertThrows(GDClientException.class, client.login("Alex1304", "WrongPassword")::block);
     }
 
     @Test
