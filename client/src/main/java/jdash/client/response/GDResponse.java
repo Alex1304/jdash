@@ -6,5 +6,5 @@ import java.util.function.Function;
 
 public interface GDResponse {
 
-    <E> Mono<E> deserialize(Function<? super String, ? extends E> deserializer);
+    <E> Mono<E> deserialize(Function<? super String, E> deserializer);
 }

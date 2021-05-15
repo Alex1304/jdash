@@ -1,5 +1,6 @@
 package jdash.client.response;
 
+import jdash.client.exception.ActionFailedException;
 import jdash.common.entity.GDComment;
 import jdash.common.entity.GDUser;
 import jdash.common.entity.ImmutableGDComment;
@@ -17,6 +18,7 @@ public class CommentsResponseDeserializer implements Function<String, List<GDCom
 
     @Override
     public List<GDComment> apply(String response) {
+        ActionFailedException.throwIfEquals(response, "-1", "No comments could be loaded");
         var list = new ArrayList<GDComment>();
         for (var comment : response.split("#")[0].split("\\|")) {
             var parts = comment.split(":");

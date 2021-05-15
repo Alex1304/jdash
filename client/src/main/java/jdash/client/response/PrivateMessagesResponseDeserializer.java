@@ -1,5 +1,6 @@
 package jdash.client.response;
 
+import jdash.client.exception.ActionFailedException;
 import jdash.common.entity.GDPrivateMessage;
 
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ public class PrivateMessagesResponseDeserializer implements Function<String, Lis
 
     @Override
     public List<GDPrivateMessage> apply(String response) {
+        ActionFailedException.throwIfEquals(response, "-1", "No messages could be loaded");
         var list = new ArrayList<GDPrivateMessage>();
         var messages = response.split("#")[0].split("\\|");
         for (var message : messages) {

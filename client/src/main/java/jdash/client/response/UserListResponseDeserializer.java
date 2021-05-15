@@ -1,5 +1,6 @@
 package jdash.client.response;
 
+import jdash.client.exception.ActionFailedException;
 import jdash.common.entity.GDUser;
 
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ public class UserListResponseDeserializer implements Function<String, List<GDUse
 
     @Override
     public List<GDUser> apply(String response) {
+        ActionFailedException.throwIfEquals(response, "-1", "No users could be loaded");
         var list = new ArrayList<GDUser>();
         var users = response.split("\\|");
         for (String user : users) {

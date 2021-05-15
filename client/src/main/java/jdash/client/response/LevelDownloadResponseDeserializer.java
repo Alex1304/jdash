@@ -1,5 +1,6 @@
 package jdash.client.response;
 
+import jdash.client.exception.ActionFailedException;
 import jdash.common.RobTopsWeakEncryption;
 import jdash.common.entity.GDLevelDownload;
 import jdash.common.entity.ImmutableGDLevelDownload;
@@ -16,6 +17,7 @@ public class LevelDownloadResponseDeserializer implements Function<String, GDLev
 
     @Override
     public GDLevelDownload apply(String response) {
+        ActionFailedException.throwIfEquals(response, "-1", "Level not found or not accessible");
         var parts = response.split("#");
         var levelData = parts[0];
         var creatorInfo = parts.length > 3 ? structureCreatorsInfo(parts[3]) : Map.<Long, String>of();

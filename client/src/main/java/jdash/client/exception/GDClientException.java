@@ -1,19 +1,19 @@
 package jdash.client.exception;
 
+import jdash.client.request.GDRequest;
+
+import java.util.Objects;
+
 public class GDClientException extends RuntimeException {
 
-    public GDClientException() {
+    private final GDRequest request;
+
+    public GDClientException(GDRequest request, Throwable cause) {
+        super("Error when processing request " + Objects.requireNonNull(request), cause);
+        this.request = request;
     }
 
-    public GDClientException(String message) {
-        super(message);
-    }
-
-    public GDClientException(Throwable cause) {
-        super(cause);
-    }
-
-    public GDClientException(String message, Throwable cause) {
-        super(message, cause);
+    public GDRequest getRequest() {
+        return request;
     }
 }

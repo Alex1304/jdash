@@ -8,6 +8,7 @@ import jdash.client.response.impl.GDSerializedSourceResponse;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public final class GDRequest {
 
@@ -48,7 +49,13 @@ public final class GDRequest {
         return cache.retrieve(this)
                 .<GDResponse>map(GDCachedObjectResponse::new)
                 .orElseGet(() -> router.send(this)
-                        .as(source -> new GDSerializedSourceResponse(source, o -> cache.put(this, o))));
+                        .as(source -> new GDSerializedSourceResponse(this, source, o -> cache.put(this, o))));
+    }
+
+    public String toRequestString() {
+        return params.entrySet().stream()
+                .map(entry -> entry.getKey() + '=' + entry.getValue())
+                .collect(Collectors.joining("&"));
     }
 
     @Override

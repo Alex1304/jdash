@@ -1,11 +1,14 @@
 package jdash.client;
 
-import jdash.client.exception.MissingAccessException;
+import jdash.client.exception.ActionFailedException;
+import jdash.client.request.GDRouter;
+import jdash.client.request.RequestLimiter;
 import jdash.common.*;
 import jdash.common.entity.*;
 import jdash.common.internal.InternalUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import reactor.core.publisher.Flux;
 
 import java.time.Duration;
 import java.util.List;
@@ -62,7 +65,7 @@ public final class GDClientTest {
         var newClient = client.login("Alex1304", "F3keP4ssw0rd").block();
         assertNotNull(newClient);
         assertTrue(newClient.isAuthenticated());
-        assertThrows(MissingAccessException.class, client.login("Alex1304", "WrongPassword")::block);
+        assertThrows(ActionFailedException.class, client.login("Alex1304", "WrongPassword")::block);
     }
 
     @Test
@@ -341,5 +344,17 @@ public final class GDClientTest {
         assertNotNull(actual);
         assertFalse(actual.get(0).leaderboardRank().isEmpty());
         assertEquals(12537, actual.get(0).leaderboardRank().orElseThrow());
+    }
+
+    public static void main(String[] args) {
+        var client = GDClient.create()
+                .withRouter(GDRouter.builder()
+                        .setRequestLimiter(RequestLimiter.of(1,  Duration.ofSeconds(1)))
+                        .setRequestTimeout(Duration.ofSeconds(3))
+                        .setBaseUrl("gdps.alex1304.com/database")
+                        .build());
+        Flux.range(0, 6)
+                .flatMap(__ -> client.findLevelById(32).doOnNext(System.out::println))
+                .blockLast();
     }
 }

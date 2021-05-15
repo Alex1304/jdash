@@ -1,7 +1,7 @@
 package jdash.client;
 
 import jdash.client.cache.GDCache;
-import jdash.client.exception.MissingAccessException;
+import jdash.client.exception.ActionFailedException;
 import jdash.client.request.GDRequest;
 import jdash.client.request.GDRouter;
 import jdash.common.*;
@@ -22,9 +22,6 @@ import static reactor.function.TupleUtils.function;
 
 public final class GDClient {
 
-    private static final GDRouter DEFAULT_ROUTER = null;
-    private static final GDCache DEFAULT_CACHE = GDCache.disabled();
-
     private final GDRouter router;
     private final GDCache cache;
     private final String uniqueDeviceId;
@@ -41,13 +38,15 @@ public final class GDClient {
     }
 
     public static GDClient create() {
-        return new GDClient(DEFAULT_ROUTER, DEFAULT_CACHE, UUID.randomUUID().toString(), null, Set.of());
+        return new GDClient(GDRouter.defaultRouter(), GDCache.disabled(), UUID.randomUUID().toString(), null, Set.of());
     }
 
     private static Mono<Void> validatePositiveInteger(Mono<Integer> source) {
-        return source.filter(result -> result > 0)
-                .switchIfEmpty(Mono.error(MissingAccessException::new))
-                .then();
+        return source.doOnNext(result -> {
+            if (result < 0) {
+                throw new ActionFailedException("" + result, "Action failed");
+            }
+        }).then();
     }
 
     private Map<String, String> authParams() {

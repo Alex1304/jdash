@@ -1,5 +1,6 @@
 package jdash.client.response;
 
+import jdash.client.exception.ActionFailedException;
 import jdash.common.entity.GDUserProfile;
 
 import java.util.function.Function;
@@ -11,6 +12,7 @@ public class UserProfileResponseDeserializer implements Function<String, GDUserP
 
     @Override
     public GDUserProfile apply(String response) {
+        ActionFailedException.throwIfEquals(response, "-1", "User profile not found or not accessible");
         return buildUserProfile(splitToMap(response, ":"));
     }
 }

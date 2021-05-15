@@ -1,5 +1,6 @@
 package jdash.client.response;
 
+import jdash.client.exception.ActionFailedException;
 import jdash.common.entity.GDLevel;
 import jdash.common.entity.GDSong;
 
@@ -14,6 +15,7 @@ class LevelSearchResponseDeserializer implements Function<String, List<GDLevel>>
 
     @Override
     public List<GDLevel> apply(String response) {
+        ActionFailedException.throwIfEquals(response, "-1", "No results found");
         ArrayList<GDLevel> list = new ArrayList<>();
         String[] split1 = response.split("#");
         String levels = split1[0];

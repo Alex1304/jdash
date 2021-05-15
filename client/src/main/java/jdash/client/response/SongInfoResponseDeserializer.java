@@ -1,6 +1,6 @@
 package jdash.client.response;
 
-import jdash.client.exception.SongNotAllowedForUseException;
+import jdash.client.exception.ActionFailedException;
 import jdash.common.entity.GDSong;
 
 import java.util.function.Function;
@@ -11,9 +11,8 @@ public class SongInfoResponseDeserializer implements Function<String, GDSong> {
 
     @Override
     public GDSong apply(String response) {
-        if (response.equals("-2")) {
-            throw new SongNotAllowedForUseException();
-        }
+        ActionFailedException.throwIfEquals(response, "-1", "Failed to fetch song info");
+        ActionFailedException.throwIfEquals(response, "-2", "Song is not allowed for use");
         return structureSongsInfo(response).values().stream().findFirst().orElseThrow();
     }
 }

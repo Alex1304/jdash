@@ -1,7 +1,6 @@
 package jdash.client;
 
 
-import jdash.client.exception.MissingAccessException;
 import jdash.client.request.GDRequest;
 import jdash.client.request.GDRouter;
 import jdash.common.*;
@@ -89,7 +88,7 @@ public final class GDRouterMockUp implements GDRouter {
         requestCount++;
         var sample = SAMPLES.get(request);
         if (sample == null) {
-            return Mono.error(new MissingAccessException());
+            return Mono.error(new RuntimeException("No mockup found for request " + request));
         }
         return Mono.fromCallable(() -> {
             try (var in = ClassLoader.getSystemClassLoader().getResourceAsStream(sample + ".txt")) {

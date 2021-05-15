@@ -15,7 +15,7 @@ public final class GDCachedObjectResponse implements GDResponse {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <E> Mono<E> deserialize(Function<? super String, ? extends E> deserializer) {
+    public <E> Mono<E> deserialize(Function<? super String, E> deserializer) {
         return Mono.just((E) cached);
     }
 }
