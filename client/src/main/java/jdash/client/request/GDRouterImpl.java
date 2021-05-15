@@ -24,12 +24,16 @@ class GDRouterImpl implements GDRouter {
     public GDRouterImpl(RequestLimiter limiter, Duration timeout, String baseUrl) {
         this.limiter = limiter;
         this.timeout = timeout;
-        this.httpClient = HttpClient.create()
+        var httpClient = HttpClient.create()
                 .baseUrl(baseUrl)
                 .headers(h -> {
 					h.add("Content-Type", "application/x-www-form-urlencoded");
 					h.add("User-Agent", "");
 				});
+        if (baseUrl.startsWith("https://")) {
+            httpClient = httpClient.secure();
+        }
+        this.httpClient = httpClient;
         requestQueue.asFlux().subscribe(new RequestQueueSubscriber());
     }
 

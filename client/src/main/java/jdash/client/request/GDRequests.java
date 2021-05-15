@@ -8,7 +8,7 @@ import java.util.Map;
 public final class GDRequests {
 
     /* Routes */
-    public static final String BASE_URL = "www.boomlings.com/database";
+    public static final String BASE_URL = "http://www.boomlings.com/database";
     public static final String GET_GJ_USER_INFO_20 = "/getGJUserInfo20.php";
     public static final String GET_GJ_USERS_20 = "/getGJUsers20.php";
     public static final String GET_GJ_USER_LIST_20 = "/getGJUserList20.php";

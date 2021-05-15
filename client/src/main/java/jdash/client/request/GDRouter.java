@@ -5,6 +5,7 @@ import reactor.util.annotation.Nullable;
 
 import java.time.Duration;
 import java.util.Objects;
+import java.util.concurrent.TimeoutException;
 
 /**
  * The router is responsible for routing GD requests to an appropriate source of responses, typically an HTTP server. In
@@ -49,21 +50,46 @@ public interface GDRouter {
         private Builder() {
         }
 
+        /**
+         * Sets a limiter that will limit the number of requests that can be processed within a certain timeframe.
+         * Requests exceeding the limit may be delayed.
+         *
+         * @param limiter the limiter to apply
+         * @return this builder
+         */
         public Builder setRequestLimiter(@Nullable RequestLimiter limiter) {
             this.limiter = limiter;
             return this;
         }
 
+        /**
+         * Sets a timeout for each request. Any request exceeding the duration will emit {@link TimeoutException}.
+         *
+         * @param timeout the duration of the timeout to set
+         * @return this builder
+         */
         public Builder setRequestTimeout(@Nullable Duration timeout) {
             this.timeout = timeout;
             return this;
         }
 
+        /**
+         * Sets a custom base URL to redirect requests to. Useful to configure the client for a Geometry Dash private
+         * server (GDPS).
+         *
+         * @param baseUrl the base URL
+         * @return this builder
+         */
         public Builder setBaseUrl(@Nullable String baseUrl) {
             this.baseUrl = baseUrl;
             return this;
         }
 
+        /**
+         * Builds a new {@link GDRouter} with the current state of this builder.
+         *
+         * @return a new {@link GDRouter}
+         */
         public GDRouter build() {
             var limiter = Objects.requireNonNullElse(this.limiter, RequestLimiter.none());
             var baseUrl = Objects.requireNonNullElse(this.baseUrl, GDRequests.BASE_URL);

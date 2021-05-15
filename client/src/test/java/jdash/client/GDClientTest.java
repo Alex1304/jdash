@@ -351,7 +351,7 @@ public final class GDClientTest {
                 .withRouter(GDRouter.builder()
                         .setRequestLimiter(RequestLimiter.of(1,  Duration.ofSeconds(1)))
                         .setRequestTimeout(Duration.ofSeconds(3))
-                        .setBaseUrl("gdps.alex1304.com/database")
+                        .setBaseUrl("https://gdps.alex1304.com/database")
                         .build());
         Flux.range(0, 6)
                 .flatMap(__ -> client.findLevelById(32).doOnNext(System.out::println))
