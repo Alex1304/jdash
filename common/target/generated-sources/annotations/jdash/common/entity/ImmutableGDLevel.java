@@ -20,7 +20,7 @@ import org.immutables.value.Generated;
 public final class ImmutableGDLevel implements GDLevel {
   private final long id;
   private final String name;
-  private final long creatorId;
+  private final long creatorPlayerId;
   private final String description;
   private final Difficulty difficulty;
   private final DemonDifficulty demonDifficulty;
@@ -37,16 +37,16 @@ public final class ImmutableGDLevel implements GDLevel {
   private final int objectCount;
   private final boolean isDemon;
   private final boolean isAuto;
-  private final long originalLevelId;
+  private final Long originalLevelId;
   private final int requestedStars;
-  private final long songId;
+  private final Long songId;
   private final GDSong song;
   private final String creatorName;
 
   private ImmutableGDLevel(
       long id,
       String name,
-      long creatorId,
+      long creatorPlayerId,
       String description,
       Difficulty difficulty,
       DemonDifficulty demonDifficulty,
@@ -63,14 +63,14 @@ public final class ImmutableGDLevel implements GDLevel {
       int objectCount,
       boolean isDemon,
       boolean isAuto,
-      long originalLevelId,
+      Long originalLevelId,
       int requestedStars,
-      long songId,
+      Long songId,
       GDSong song,
       String creatorName) {
     this.id = id;
     this.name = name;
-    this.creatorId = creatorId;
+    this.creatorPlayerId = creatorPlayerId;
     this.description = description;
     this.difficulty = difficulty;
     this.demonDifficulty = demonDifficulty;
@@ -95,7 +95,8 @@ public final class ImmutableGDLevel implements GDLevel {
   }
 
   /**
-   * @return The value of the {@code id} attribute
+   * The ID of the level.
+   * @return a long
    */
   @Override
   public long id() {
@@ -103,7 +104,8 @@ public final class ImmutableGDLevel implements GDLevel {
   }
 
   /**
-   * @return The value of the {@code name} attribute
+   * The name of the level.
+   * @return a string
    */
   @Override
   public String name() {
@@ -111,15 +113,17 @@ public final class ImmutableGDLevel implements GDLevel {
   }
 
   /**
-   * @return The value of the {@code creatorId} attribute
+   * The player ID of the creator of the level.
+   * @return a long
    */
   @Override
-  public long creatorId() {
-    return creatorId;
+  public long creatorPlayerId() {
+    return creatorPlayerId;
   }
 
   /**
-   * @return The value of the {@code description} attribute
+   * The description of the level.
+   * @return a string
    */
   @Override
   public String description() {
@@ -127,7 +131,9 @@ public final class ImmutableGDLevel implements GDLevel {
   }
 
   /**
-   * @return The value of the {@code difficulty} attribute
+   * The difficulty of the level. This only takes into account community votes and ignores the actual rating as shown
+   * in-game. Use {@link #actualDifficulty()} to get a more accurate result.
+   * @return a {@link Difficulty}
    */
   @Override
   public Difficulty difficulty() {
@@ -135,7 +141,9 @@ public final class ImmutableGDLevel implements GDLevel {
   }
 
   /**
-   * @return The value of the {@code demonDifficulty} attribute
+   * The demon difficulty of the level based on community votes. Generally defaults to {@link DemonDifficulty#HARD} if
+   * not specified or is not a demon level.
+   * @return a {@link DemonDifficulty}
    */
   @Override
   public DemonDifficulty demonDifficulty() {
@@ -143,7 +151,8 @@ public final class ImmutableGDLevel implements GDLevel {
   }
 
   /**
-   * @return The value of the {@code stars} attribute
+   * The stars of the level.
+   * @return an int
    */
   @Override
   public int stars() {
@@ -151,7 +160,8 @@ public final class ImmutableGDLevel implements GDLevel {
   }
 
   /**
-   * @return The value of the {@code featuredScore} attribute
+   * The featured score of the level. It is generally used to position levels in the featured section of the game.
+   * @return an int
    */
   @Override
   public int featuredScore() {
@@ -159,7 +169,8 @@ public final class ImmutableGDLevel implements GDLevel {
   }
 
   /**
-   * @return The value of the {@code isEpic} attribute
+   * Whether the level is epic.
+   * @return a boolean
    */
   @Override
   public boolean isEpic() {
@@ -167,7 +178,8 @@ public final class ImmutableGDLevel implements GDLevel {
   }
 
   /**
-   * @return The value of the {@code downloads} attribute
+   * The number of downloads of the level.
+   * @return an int
    */
   @Override
   public int downloads() {
@@ -175,7 +187,8 @@ public final class ImmutableGDLevel implements GDLevel {
   }
 
   /**
-   * @return The value of the {@code likes} attribute
+   * The number of likes of the level.
+   * @return an int
    */
   @Override
   public int likes() {
@@ -183,7 +196,8 @@ public final class ImmutableGDLevel implements GDLevel {
   }
 
   /**
-   * @return The value of the {@code length} attribute
+   * The length of the level.
+   * @return a {@link Length}
    */
   @Override
   public Length length() {
@@ -191,7 +205,8 @@ public final class ImmutableGDLevel implements GDLevel {
   }
 
   /**
-   * @return The value of the {@code coinCount} attribute
+   * The number of user coins the level has.
+   * @return an int
    */
   @Override
   public int coinCount() {
@@ -199,7 +214,8 @@ public final class ImmutableGDLevel implements GDLevel {
   }
 
   /**
-   * @return The value of the {@code hasCoinsVerified} attribute
+   * Whether the user coins are verified (silver) or unverified (bronze). <code>true</code> means verified.
+   * @return a boolean
    */
   @Override
   public boolean hasCoinsVerified() {
@@ -207,7 +223,8 @@ public final class ImmutableGDLevel implements GDLevel {
   }
 
   /**
-   * @return The value of the {@code levelVersion} attribute
+   * The version of the level.
+   * @return an int
    */
   @Override
   public int levelVersion() {
@@ -215,7 +232,8 @@ public final class ImmutableGDLevel implements GDLevel {
   }
 
   /**
-   * @return The value of the {@code gameVersion} attribute
+   * The minimum version of the game that is required to play the level.
+   * @return an int
    */
   @Override
   public int gameVersion() {
@@ -223,7 +241,8 @@ public final class ImmutableGDLevel implements GDLevel {
   }
 
   /**
-   * @return The value of the {@code objectCount} attribute
+   * The number of objects in the level.
+   * @return an int
    */
   @Override
   public int objectCount() {
@@ -231,7 +250,8 @@ public final class ImmutableGDLevel implements GDLevel {
   }
 
   /**
-   * @return The value of the {@code isDemon} attribute
+   * Whether the level is demon.
+   * @return a boolean
    */
   @Override
   public boolean isDemon() {
@@ -239,7 +259,8 @@ public final class ImmutableGDLevel implements GDLevel {
   }
 
   /**
-   * @return The value of the {@code isAuto} attribute
+   * Whether the level is auto.
+   * @return a boolean
    */
   @Override
   public boolean isAuto() {
@@ -247,15 +268,17 @@ public final class ImmutableGDLevel implements GDLevel {
   }
 
   /**
-   * @return The value of the {@code originalLevelId} attribute
+   * The ID of the original level if it was copied from an existing level.
+   * @return an {@link Optional} containing a long if present
    */
   @Override
-  public long originalLevelId() {
-    return originalLevelId;
+  public Optional<Long> originalLevelId() {
+    return Optional.ofNullable(originalLevelId);
   }
 
   /**
-   * @return The value of the {@code requestedStars} attribute
+   * The number of stars the creator requested for this level.
+   * @return an int
    */
   @Override
   public int requestedStars() {
@@ -263,11 +286,12 @@ public final class ImmutableGDLevel implements GDLevel {
   }
 
   /**
-   * @return The value of the {@code songId} attribute
+   * The ID of the song used in this level
+   * @return
    */
   @Override
-  public long songId() {
-    return songId;
+  public Optional<Long> songId() {
+    return Optional.ofNullable(songId);
   }
 
   /**
@@ -297,7 +321,7 @@ public final class ImmutableGDLevel implements GDLevel {
     return new ImmutableGDLevel(
         value,
         this.name,
-        this.creatorId,
+        this.creatorPlayerId,
         this.description,
         this.difficulty,
         this.demonDifficulty,
@@ -333,7 +357,7 @@ public final class ImmutableGDLevel implements GDLevel {
     return new ImmutableGDLevel(
         this.id,
         newValue,
-        this.creatorId,
+        this.creatorPlayerId,
         this.description,
         this.difficulty,
         this.demonDifficulty,
@@ -358,13 +382,13 @@ public final class ImmutableGDLevel implements GDLevel {
   }
 
   /**
-   * Copy the current immutable object by setting a value for the {@link GDLevel#creatorId() creatorId} attribute.
+   * Copy the current immutable object by setting a value for the {@link GDLevel#creatorPlayerId() creatorPlayerId} attribute.
    * A value equality check is used to prevent copying of the same value by returning {@code this}.
-   * @param value A new value for creatorId
+   * @param value A new value for creatorPlayerId
    * @return A modified copy of the {@code this} object
    */
-  public final ImmutableGDLevel withCreatorId(long value) {
-    if (this.creatorId == value) return this;
+  public final ImmutableGDLevel withCreatorPlayerId(long value) {
+    if (this.creatorPlayerId == value) return this;
     return new ImmutableGDLevel(
         this.id,
         this.name,
@@ -404,7 +428,7 @@ public final class ImmutableGDLevel implements GDLevel {
     return new ImmutableGDLevel(
         this.id,
         this.name,
-        this.creatorId,
+        this.creatorPlayerId,
         newValue,
         this.difficulty,
         this.demonDifficulty,
@@ -440,7 +464,7 @@ public final class ImmutableGDLevel implements GDLevel {
     return new ImmutableGDLevel(
         this.id,
         this.name,
-        this.creatorId,
+        this.creatorPlayerId,
         this.description,
         newValue,
         this.demonDifficulty,
@@ -476,7 +500,7 @@ public final class ImmutableGDLevel implements GDLevel {
     return new ImmutableGDLevel(
         this.id,
         this.name,
-        this.creatorId,
+        this.creatorPlayerId,
         this.description,
         this.difficulty,
         newValue,
@@ -511,7 +535,7 @@ public final class ImmutableGDLevel implements GDLevel {
     return new ImmutableGDLevel(
         this.id,
         this.name,
-        this.creatorId,
+        this.creatorPlayerId,
         this.description,
         this.difficulty,
         this.demonDifficulty,
@@ -546,7 +570,7 @@ public final class ImmutableGDLevel implements GDLevel {
     return new ImmutableGDLevel(
         this.id,
         this.name,
-        this.creatorId,
+        this.creatorPlayerId,
         this.description,
         this.difficulty,
         this.demonDifficulty,
@@ -581,7 +605,7 @@ public final class ImmutableGDLevel implements GDLevel {
     return new ImmutableGDLevel(
         this.id,
         this.name,
-        this.creatorId,
+        this.creatorPlayerId,
         this.description,
         this.difficulty,
         this.demonDifficulty,
@@ -616,7 +640,7 @@ public final class ImmutableGDLevel implements GDLevel {
     return new ImmutableGDLevel(
         this.id,
         this.name,
-        this.creatorId,
+        this.creatorPlayerId,
         this.description,
         this.difficulty,
         this.demonDifficulty,
@@ -651,7 +675,7 @@ public final class ImmutableGDLevel implements GDLevel {
     return new ImmutableGDLevel(
         this.id,
         this.name,
-        this.creatorId,
+        this.creatorPlayerId,
         this.description,
         this.difficulty,
         this.demonDifficulty,
@@ -687,7 +711,7 @@ public final class ImmutableGDLevel implements GDLevel {
     return new ImmutableGDLevel(
         this.id,
         this.name,
-        this.creatorId,
+        this.creatorPlayerId,
         this.description,
         this.difficulty,
         this.demonDifficulty,
@@ -722,7 +746,7 @@ public final class ImmutableGDLevel implements GDLevel {
     return new ImmutableGDLevel(
         this.id,
         this.name,
-        this.creatorId,
+        this.creatorPlayerId,
         this.description,
         this.difficulty,
         this.demonDifficulty,
@@ -757,7 +781,7 @@ public final class ImmutableGDLevel implements GDLevel {
     return new ImmutableGDLevel(
         this.id,
         this.name,
-        this.creatorId,
+        this.creatorPlayerId,
         this.description,
         this.difficulty,
         this.demonDifficulty,
@@ -792,7 +816,7 @@ public final class ImmutableGDLevel implements GDLevel {
     return new ImmutableGDLevel(
         this.id,
         this.name,
-        this.creatorId,
+        this.creatorPlayerId,
         this.description,
         this.difficulty,
         this.demonDifficulty,
@@ -827,7 +851,7 @@ public final class ImmutableGDLevel implements GDLevel {
     return new ImmutableGDLevel(
         this.id,
         this.name,
-        this.creatorId,
+        this.creatorPlayerId,
         this.description,
         this.difficulty,
         this.demonDifficulty,
@@ -862,7 +886,7 @@ public final class ImmutableGDLevel implements GDLevel {
     return new ImmutableGDLevel(
         this.id,
         this.name,
-        this.creatorId,
+        this.creatorPlayerId,
         this.description,
         this.difficulty,
         this.demonDifficulty,
@@ -897,7 +921,7 @@ public final class ImmutableGDLevel implements GDLevel {
     return new ImmutableGDLevel(
         this.id,
         this.name,
-        this.creatorId,
+        this.creatorPlayerId,
         this.description,
         this.difficulty,
         this.demonDifficulty,
@@ -932,7 +956,7 @@ public final class ImmutableGDLevel implements GDLevel {
     return new ImmutableGDLevel(
         this.id,
         this.name,
-        this.creatorId,
+        this.creatorPlayerId,
         this.description,
         this.difficulty,
         this.demonDifficulty,
@@ -957,17 +981,53 @@ public final class ImmutableGDLevel implements GDLevel {
   }
 
   /**
-   * Copy the current immutable object by setting a value for the {@link GDLevel#originalLevelId() originalLevelId} attribute.
-   * A value equality check is used to prevent copying of the same value by returning {@code this}.
-   * @param value A new value for originalLevelId
-   * @return A modified copy of the {@code this} object
+   * Copy the current immutable object by setting a <i>present</i> value for the optional {@link GDLevel#originalLevelId() originalLevelId} attribute.
+   * @param value The value for originalLevelId
+   * @return A modified copy of {@code this} object
    */
   public final ImmutableGDLevel withOriginalLevelId(long value) {
-    if (this.originalLevelId == value) return this;
+    Long newValue = value;
+    if (Objects.equals(this.originalLevelId, newValue)) return this;
     return new ImmutableGDLevel(
         this.id,
         this.name,
-        this.creatorId,
+        this.creatorPlayerId,
+        this.description,
+        this.difficulty,
+        this.demonDifficulty,
+        this.stars,
+        this.featuredScore,
+        this.isEpic,
+        this.downloads,
+        this.likes,
+        this.length,
+        this.coinCount,
+        this.hasCoinsVerified,
+        this.levelVersion,
+        this.gameVersion,
+        this.objectCount,
+        this.isDemon,
+        this.isAuto,
+        newValue,
+        this.requestedStars,
+        this.songId,
+        this.song,
+        this.creatorName);
+  }
+
+  /**
+   * Copy the current immutable object by setting an optional value for the {@link GDLevel#originalLevelId() originalLevelId} attribute.
+   * An equality check is used on inner nullable value to prevent copying of the same value by returning {@code this}.
+   * @param optional A value for originalLevelId
+   * @return A modified copy of {@code this} object
+   */
+  public final ImmutableGDLevel withOriginalLevelId(Optional<Long> optional) {
+    Long value = optional.orElse(null);
+    if (Objects.equals(this.originalLevelId, value)) return this;
+    return new ImmutableGDLevel(
+        this.id,
+        this.name,
+        this.creatorPlayerId,
         this.description,
         this.difficulty,
         this.demonDifficulty,
@@ -1002,7 +1062,7 @@ public final class ImmutableGDLevel implements GDLevel {
     return new ImmutableGDLevel(
         this.id,
         this.name,
-        this.creatorId,
+        this.creatorPlayerId,
         this.description,
         this.difficulty,
         this.demonDifficulty,
@@ -1027,17 +1087,53 @@ public final class ImmutableGDLevel implements GDLevel {
   }
 
   /**
-   * Copy the current immutable object by setting a value for the {@link GDLevel#songId() songId} attribute.
-   * A value equality check is used to prevent copying of the same value by returning {@code this}.
-   * @param value A new value for songId
-   * @return A modified copy of the {@code this} object
+   * Copy the current immutable object by setting a <i>present</i> value for the optional {@link GDLevel#songId() songId} attribute.
+   * @param value The value for songId
+   * @return A modified copy of {@code this} object
    */
   public final ImmutableGDLevel withSongId(long value) {
-    if (this.songId == value) return this;
+    Long newValue = value;
+    if (Objects.equals(this.songId, newValue)) return this;
     return new ImmutableGDLevel(
         this.id,
         this.name,
-        this.creatorId,
+        this.creatorPlayerId,
+        this.description,
+        this.difficulty,
+        this.demonDifficulty,
+        this.stars,
+        this.featuredScore,
+        this.isEpic,
+        this.downloads,
+        this.likes,
+        this.length,
+        this.coinCount,
+        this.hasCoinsVerified,
+        this.levelVersion,
+        this.gameVersion,
+        this.objectCount,
+        this.isDemon,
+        this.isAuto,
+        this.originalLevelId,
+        this.requestedStars,
+        newValue,
+        this.song,
+        this.creatorName);
+  }
+
+  /**
+   * Copy the current immutable object by setting an optional value for the {@link GDLevel#songId() songId} attribute.
+   * An equality check is used on inner nullable value to prevent copying of the same value by returning {@code this}.
+   * @param optional A value for songId
+   * @return A modified copy of {@code this} object
+   */
+  public final ImmutableGDLevel withSongId(Optional<Long> optional) {
+    Long value = optional.orElse(null);
+    if (Objects.equals(this.songId, value)) return this;
+    return new ImmutableGDLevel(
+        this.id,
+        this.name,
+        this.creatorPlayerId,
         this.description,
         this.difficulty,
         this.demonDifficulty,
@@ -1072,7 +1168,7 @@ public final class ImmutableGDLevel implements GDLevel {
     return new ImmutableGDLevel(
         this.id,
         this.name,
-        this.creatorId,
+        this.creatorPlayerId,
         this.description,
         this.difficulty,
         this.demonDifficulty,
@@ -1109,7 +1205,7 @@ public final class ImmutableGDLevel implements GDLevel {
     return new ImmutableGDLevel(
         this.id,
         this.name,
-        this.creatorId,
+        this.creatorPlayerId,
         this.description,
         this.difficulty,
         this.demonDifficulty,
@@ -1144,7 +1240,7 @@ public final class ImmutableGDLevel implements GDLevel {
     return new ImmutableGDLevel(
         this.id,
         this.name,
-        this.creatorId,
+        this.creatorPlayerId,
         this.description,
         this.difficulty,
         this.demonDifficulty,
@@ -1180,7 +1276,7 @@ public final class ImmutableGDLevel implements GDLevel {
     return new ImmutableGDLevel(
         this.id,
         this.name,
-        this.creatorId,
+        this.creatorPlayerId,
         this.description,
         this.difficulty,
         this.demonDifficulty,
@@ -1218,7 +1314,7 @@ public final class ImmutableGDLevel implements GDLevel {
   private boolean equalTo(int synthetic, ImmutableGDLevel another) {
     return id == another.id
         && name.equals(another.name)
-        && creatorId == another.creatorId
+        && creatorPlayerId == another.creatorPlayerId
         && description.equals(another.description)
         && difficulty.equals(another.difficulty)
         && demonDifficulty.equals(another.demonDifficulty)
@@ -1235,15 +1331,15 @@ public final class ImmutableGDLevel implements GDLevel {
         && objectCount == another.objectCount
         && isDemon == another.isDemon
         && isAuto == another.isAuto
-        && originalLevelId == another.originalLevelId
+        && Objects.equals(originalLevelId, another.originalLevelId)
         && requestedStars == another.requestedStars
-        && songId == another.songId
+        && Objects.equals(songId, another.songId)
         && Objects.equals(song, another.song)
         && Objects.equals(creatorName, another.creatorName);
   }
 
   /**
-   * Computes a hash code from attributes: {@code id}, {@code name}, {@code creatorId}, {@code description}, {@code difficulty}, {@code demonDifficulty}, {@code stars}, {@code featuredScore}, {@code isEpic}, {@code downloads}, {@code likes}, {@code length}, {@code coinCount}, {@code hasCoinsVerified}, {@code levelVersion}, {@code gameVersion}, {@code objectCount}, {@code isDemon}, {@code isAuto}, {@code originalLevelId}, {@code requestedStars}, {@code songId}, {@code song}, {@code creatorName}.
+   * Computes a hash code from attributes: {@code id}, {@code name}, {@code creatorPlayerId}, {@code description}, {@code difficulty}, {@code demonDifficulty}, {@code stars}, {@code featuredScore}, {@code isEpic}, {@code downloads}, {@code likes}, {@code length}, {@code coinCount}, {@code hasCoinsVerified}, {@code levelVersion}, {@code gameVersion}, {@code objectCount}, {@code isDemon}, {@code isAuto}, {@code originalLevelId}, {@code requestedStars}, {@code songId}, {@code song}, {@code creatorName}.
    * @return hashCode value
    */
   @Override
@@ -1251,7 +1347,7 @@ public final class ImmutableGDLevel implements GDLevel {
     int h = 5381;
     h += (h << 5) + Long.hashCode(id);
     h += (h << 5) + name.hashCode();
-    h += (h << 5) + Long.hashCode(creatorId);
+    h += (h << 5) + Long.hashCode(creatorPlayerId);
     h += (h << 5) + description.hashCode();
     h += (h << 5) + difficulty.hashCode();
     h += (h << 5) + demonDifficulty.hashCode();
@@ -1268,9 +1364,9 @@ public final class ImmutableGDLevel implements GDLevel {
     h += (h << 5) + objectCount;
     h += (h << 5) + Boolean.hashCode(isDemon);
     h += (h << 5) + Boolean.hashCode(isAuto);
-    h += (h << 5) + Long.hashCode(originalLevelId);
+    h += (h << 5) + Objects.hashCode(originalLevelId);
     h += (h << 5) + requestedStars;
-    h += (h << 5) + Long.hashCode(songId);
+    h += (h << 5) + Objects.hashCode(songId);
     h += (h << 5) + Objects.hashCode(song);
     h += (h << 5) + Objects.hashCode(creatorName);
     return h;
@@ -1287,7 +1383,7 @@ public final class ImmutableGDLevel implements GDLevel {
     builder.append(", ");
     builder.append("name=").append(name);
     builder.append(", ");
-    builder.append("creatorId=").append(creatorId);
+    builder.append("creatorPlayerId=").append(creatorPlayerId);
     builder.append(", ");
     builder.append("description=").append(description);
     builder.append(", ");
@@ -1320,12 +1416,16 @@ public final class ImmutableGDLevel implements GDLevel {
     builder.append("isDemon=").append(isDemon);
     builder.append(", ");
     builder.append("isAuto=").append(isAuto);
-    builder.append(", ");
-    builder.append("originalLevelId=").append(originalLevelId);
+    if (originalLevelId != null) {
+      builder.append(", ");
+      builder.append("originalLevelId=").append(originalLevelId);
+    }
     builder.append(", ");
     builder.append("requestedStars=").append(requestedStars);
-    builder.append(", ");
-    builder.append("songId=").append(songId);
+    if (songId != null) {
+      builder.append(", ");
+      builder.append("songId=").append(songId);
+    }
     if (song != null) {
       builder.append(", ");
       builder.append("song=").append(song);
@@ -1359,7 +1459,7 @@ public final class ImmutableGDLevel implements GDLevel {
    * ImmutableGDLevel.builder()
    *    .id(long) // required {@link GDLevel#id() id}
    *    .name(String) // required {@link GDLevel#name() name}
-   *    .creatorId(long) // required {@link GDLevel#creatorId() creatorId}
+   *    .creatorPlayerId(long) // required {@link GDLevel#creatorPlayerId() creatorPlayerId}
    *    .description(String) // required {@link GDLevel#description() description}
    *    .difficulty(jdash.common.Difficulty) // required {@link GDLevel#difficulty() difficulty}
    *    .demonDifficulty(jdash.common.DemonDifficulty) // required {@link GDLevel#demonDifficulty() demonDifficulty}
@@ -1376,9 +1476,9 @@ public final class ImmutableGDLevel implements GDLevel {
    *    .objectCount(int) // required {@link GDLevel#objectCount() objectCount}
    *    .isDemon(boolean) // required {@link GDLevel#isDemon() isDemon}
    *    .isAuto(boolean) // required {@link GDLevel#isAuto() isAuto}
-   *    .originalLevelId(long) // required {@link GDLevel#originalLevelId() originalLevelId}
+   *    .originalLevelId(Long) // optional {@link GDLevel#originalLevelId() originalLevelId}
    *    .requestedStars(int) // required {@link GDLevel#requestedStars() requestedStars}
-   *    .songId(long) // required {@link GDLevel#songId() songId}
+   *    .songId(Long) // optional {@link GDLevel#songId() songId}
    *    .song(jdash.common.entity.GDSong) // optional {@link GDLevel#song() song}
    *    .creatorName(String) // optional {@link GDLevel#creatorName() creatorName}
    *    .build();
@@ -1400,7 +1500,7 @@ public final class ImmutableGDLevel implements GDLevel {
   public static final class Builder {
     private static final long INIT_BIT_ID = 0x1L;
     private static final long INIT_BIT_NAME = 0x2L;
-    private static final long INIT_BIT_CREATOR_ID = 0x4L;
+    private static final long INIT_BIT_CREATOR_PLAYER_ID = 0x4L;
     private static final long INIT_BIT_DESCRIPTION = 0x8L;
     private static final long INIT_BIT_DIFFICULTY = 0x10L;
     private static final long INIT_BIT_DEMON_DIFFICULTY = 0x20L;
@@ -1417,14 +1517,12 @@ public final class ImmutableGDLevel implements GDLevel {
     private static final long INIT_BIT_OBJECT_COUNT = 0x10000L;
     private static final long INIT_BIT_IS_DEMON = 0x20000L;
     private static final long INIT_BIT_IS_AUTO = 0x40000L;
-    private static final long INIT_BIT_ORIGINAL_LEVEL_ID = 0x80000L;
-    private static final long INIT_BIT_REQUESTED_STARS = 0x100000L;
-    private static final long INIT_BIT_SONG_ID = 0x200000L;
-    private long initBits = 0x3fffffL;
+    private static final long INIT_BIT_REQUESTED_STARS = 0x80000L;
+    private long initBits = 0xfffffL;
 
     private long id;
     private String name;
-    private long creatorId;
+    private long creatorPlayerId;
     private String description;
     private Difficulty difficulty;
     private DemonDifficulty demonDifficulty;
@@ -1441,9 +1539,9 @@ public final class ImmutableGDLevel implements GDLevel {
     private int objectCount;
     private boolean isDemon;
     private boolean isAuto;
-    private long originalLevelId;
+    private Long originalLevelId;
     private int requestedStars;
-    private long songId;
+    private Long songId;
     private GDSong song;
     private String creatorName;
 
@@ -1461,7 +1559,7 @@ public final class ImmutableGDLevel implements GDLevel {
       Objects.requireNonNull(instance, "instance");
       id(instance.id());
       name(instance.name());
-      creatorId(instance.creatorId());
+      creatorPlayerId(instance.creatorPlayerId());
       description(instance.description());
       difficulty(instance.difficulty());
       demonDifficulty(instance.demonDifficulty());
@@ -1478,9 +1576,15 @@ public final class ImmutableGDLevel implements GDLevel {
       objectCount(instance.objectCount());
       isDemon(instance.isDemon());
       isAuto(instance.isAuto());
-      originalLevelId(instance.originalLevelId());
+      Optional<Long> originalLevelIdOptional = instance.originalLevelId();
+      if (originalLevelIdOptional.isPresent()) {
+        originalLevelId(originalLevelIdOptional);
+      }
       requestedStars(instance.requestedStars());
-      songId(instance.songId());
+      Optional<Long> songIdOptional = instance.songId();
+      if (songIdOptional.isPresent()) {
+        songId(songIdOptional);
+      }
       Optional<GDSong> songOptional = instance.song();
       if (songOptional.isPresent()) {
         song(songOptional);
@@ -1515,13 +1619,13 @@ public final class ImmutableGDLevel implements GDLevel {
     }
 
     /**
-     * Initializes the value for the {@link GDLevel#creatorId() creatorId} attribute.
-     * @param creatorId The value for creatorId 
+     * Initializes the value for the {@link GDLevel#creatorPlayerId() creatorPlayerId} attribute.
+     * @param creatorPlayerId The value for creatorPlayerId 
      * @return {@code this} builder for use in a chained invocation
      */
-    public final Builder creatorId(long creatorId) {
-      this.creatorId = creatorId;
-      initBits &= ~INIT_BIT_CREATOR_ID;
+    public final Builder creatorPlayerId(long creatorPlayerId) {
+      this.creatorPlayerId = creatorPlayerId;
+      initBits &= ~INIT_BIT_CREATOR_PLAYER_ID;
       return this;
     }
 
@@ -1702,13 +1806,22 @@ public final class ImmutableGDLevel implements GDLevel {
     }
 
     /**
-     * Initializes the value for the {@link GDLevel#originalLevelId() originalLevelId} attribute.
-     * @param originalLevelId The value for originalLevelId 
-     * @return {@code this} builder for use in a chained invocation
+     * Initializes the optional value {@link GDLevel#originalLevelId() originalLevelId} to originalLevelId.
+     * @param originalLevelId The value for originalLevelId
+     * @return {@code this} builder for chained invocation
      */
     public final Builder originalLevelId(long originalLevelId) {
       this.originalLevelId = originalLevelId;
-      initBits &= ~INIT_BIT_ORIGINAL_LEVEL_ID;
+      return this;
+    }
+
+    /**
+     * Initializes the optional value {@link GDLevel#originalLevelId() originalLevelId} to originalLevelId.
+     * @param originalLevelId The value for originalLevelId
+     * @return {@code this} builder for use in a chained invocation
+     */
+    public final Builder originalLevelId(Optional<Long> originalLevelId) {
+      this.originalLevelId = originalLevelId.orElse(null);
       return this;
     }
 
@@ -1724,13 +1837,22 @@ public final class ImmutableGDLevel implements GDLevel {
     }
 
     /**
-     * Initializes the value for the {@link GDLevel#songId() songId} attribute.
-     * @param songId The value for songId 
-     * @return {@code this} builder for use in a chained invocation
+     * Initializes the optional value {@link GDLevel#songId() songId} to songId.
+     * @param songId The value for songId
+     * @return {@code this} builder for chained invocation
      */
     public final Builder songId(long songId) {
       this.songId = songId;
-      initBits &= ~INIT_BIT_SONG_ID;
+      return this;
+    }
+
+    /**
+     * Initializes the optional value {@link GDLevel#songId() songId} to songId.
+     * @param songId The value for songId
+     * @return {@code this} builder for use in a chained invocation
+     */
+    public final Builder songId(Optional<Long> songId) {
+      this.songId = songId.orElse(null);
       return this;
     }
 
@@ -1786,7 +1908,7 @@ public final class ImmutableGDLevel implements GDLevel {
       return new ImmutableGDLevel(
           id,
           name,
-          creatorId,
+          creatorPlayerId,
           description,
           difficulty,
           demonDifficulty,
@@ -1814,7 +1936,7 @@ public final class ImmutableGDLevel implements GDLevel {
       List<String> attributes = new ArrayList<>();
       if ((initBits & INIT_BIT_ID) != 0) attributes.add("id");
       if ((initBits & INIT_BIT_NAME) != 0) attributes.add("name");
-      if ((initBits & INIT_BIT_CREATOR_ID) != 0) attributes.add("creatorId");
+      if ((initBits & INIT_BIT_CREATOR_PLAYER_ID) != 0) attributes.add("creatorPlayerId");
       if ((initBits & INIT_BIT_DESCRIPTION) != 0) attributes.add("description");
       if ((initBits & INIT_BIT_DIFFICULTY) != 0) attributes.add("difficulty");
       if ((initBits & INIT_BIT_DEMON_DIFFICULTY) != 0) attributes.add("demonDifficulty");
@@ -1831,9 +1953,7 @@ public final class ImmutableGDLevel implements GDLevel {
       if ((initBits & INIT_BIT_OBJECT_COUNT) != 0) attributes.add("objectCount");
       if ((initBits & INIT_BIT_IS_DEMON) != 0) attributes.add("isDemon");
       if ((initBits & INIT_BIT_IS_AUTO) != 0) attributes.add("isAuto");
-      if ((initBits & INIT_BIT_ORIGINAL_LEVEL_ID) != 0) attributes.add("originalLevelId");
       if ((initBits & INIT_BIT_REQUESTED_STARS) != 0) attributes.add("requestedStars");
-      if ((initBits & INIT_BIT_SONG_ID) != 0) attributes.add("songId");
       return "Cannot build GDLevel, some of required attributes are not set " + attributes;
     }
   }

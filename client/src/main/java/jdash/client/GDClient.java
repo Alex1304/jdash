@@ -24,6 +24,15 @@ import static reactor.function.TupleUtils.function;
 /**
  * Allows to request Geometry Dash data, such as levels, users, comments, private messages, etc. A {@link GDClient} is
  * immutable: when calling one of the <code>with*</code> methods, a new instance is created with the new properties.
+ * This makes the client safe to use in a multi-thread context.
+ * <p>
+ * Each of the methods may emit {@link GDClientException} if something goes wrong when retrieving data. It can happen if
+ * the request parameters are invalid, if the data is unavailable, or permission to perform some action is denied. In
+ * all cases, the cause of the failure can be accessed using {@link GDClientException#getCause()}.
+ * <p>
+ * Some methods require the client to be authenticated. It can be done by calling {@link #withAuthentication(long, long,
+ * String)} or {@link #login(String, String)}. Any attempt to use a method that requires authentication without being
+ * authenticated will immediately throw {@link IllegalStateException} at assembly time.
  */
 public final class GDClient {
 
@@ -64,7 +73,7 @@ public final class GDClient {
 
     private void requireAuthentication() {
         if (auth == null) {
-            throw new IllegalStateException("Client must be authenticated to call this method");
+            throw new IllegalStateException("Client must be authenticated to perform this request");
         }
     }
 
@@ -234,12 +243,15 @@ public final class GDClient {
     }
 
     /**
-     * Browses levels by a specific user.
+     * Browses levels by a specific user. It is a shorthand for:
+     * <pre>
+     *     browseLevels(LevelBrowseMode.BY_USER, "" + playerId, null, page)
+     * </pre>
      *
      * @param playerId the player ID of the user
      * @param page     the page to load, the first one being 0
-     * @return a Flux emitting all {@link GDLevel}s found. A {@link GDClientException} will be emitted if an error
-     * occurs.
+     * @return a Flux emitting all {@link GDLevel}s found on the selected page. A {@link GDClientException} will be
+     * emitted if an error occurs.
      */
     public Flux<GDLevel> browseLevelsByUser(long playerId, int page) {
         return browseLevels(LevelBrowseMode.BY_USER, "" + playerId, null, page);
@@ -252,10 +264,10 @@ public final class GDClient {
      * @param query  if mode is {@link LevelBrowseMode#REGULAR}, represents the search query. If mode is {@link
      *               LevelBrowseMode#BY_USER}, represents the player ID of the user. If mode is any other mode, it will
      *               be ignored and can be set to <code>null</code>.
-     * @param filter the search filter to apply
+     * @param filter the search filter to apply. Can be <code>null</code> to disable filtering
      * @param page   the page to load, the first one being 0
-     * @return a Flux emitting all {@link GDLevel}s found. A {@link GDClientException} will be emitted if an error
-     * occurs.
+     * @return a Flux emitting all {@link GDLevel}s found on the selected page. A {@link GDClientException} will be
+     * emitted if an error occurs.
      */
     public Flux<GDLevel> browseLevels(LevelBrowseMode mode, @Nullable String query, @Nullable LevelSearchFilter filter,
                                       int page) {
@@ -278,6 +290,14 @@ public final class GDClient {
         });
     }
 
+    /**
+     * Downloads full data of a Geometry Dash level.
+     *
+     * @param levelId the ID of the level to download. Can be <code>-1</code> to download the current Daily level, or
+     *                <code>-2</code> to download the current Weekly demon
+     * @return a Mono emitting the {@link GDLevelDownload} corresponding to the level. A {@link GDClientException} will
+     * be emitted if an error occurs.
+     */
     public Mono<GDLevelDownload> downloadLevel(long levelId) {
         return Mono.defer(() -> GDRequest.of(DOWNLOAD_GJ_LEVEL_22)
                 .addParameters(commonParams())
@@ -286,10 +306,28 @@ public final class GDClient {
                 .deserialize(levelDownloadResponse()));
     }
 
+    /**
+     * Downloads full data of the current Daily level. It is a shorthand for:
+     * <pre>
+     *     downloadLevel(-1)
+     * </pre>
+     *
+     * @return a Mono emitting the {@link GDLevelDownload} corresponding to the level. A {@link GDClientException} will
+     * be emitted if an error occurs.
+     */
     public Mono<GDLevelDownload> downloadDailyLevel() {
         return downloadLevel(-1);
     }
 
+    /**
+     * Downloads full data of the current Weekly demon. It is a shorthand for:
+     * <pre>
+     *     downloadLevel(-2)
+     * </pre>
+     *
+     * @return a Mono emitting the {@link GDLevelDownload} corresponding to the level. A {@link GDClientException} will
+     * be emitted if an error occurs.
+     */
     public Mono<GDLevelDownload> downloadWeeklyDemon() {
         return downloadLevel(-2);
     }
@@ -302,14 +340,33 @@ public final class GDClient {
                 .deserialize(timelyInfoResponse()));
     }
 
+    /**
+     * Requests information on the current Daily level, such as its number or the time left before the next one.
+     *
+     * @return a Mono emitting the {@link GDTimelyInfo} of the Daily level. A {@link GDClientException} will be emitted
+     * if an error occurs.
+     */
     public Mono<GDTimelyInfo> getDailyLevelInfo() {
         return getTimelyInfo(0);
     }
 
+    /**
+     * Requests information on the current Weekly demon, such as its number or the time left before the next one.
+     *
+     * @return a Mono emitting the {@link GDTimelyInfo} of the Weekly demon. A {@link GDClientException} will be emitted
+     * if an error occurs.
+     */
     public Mono<GDTimelyInfo> getWeeklyDemonInfo() {
         return getTimelyInfo(1);
     }
 
+    /**
+     * Requests the profile of a user with the specified account ID.
+     *
+     * @param accountId the account ID of the user
+     * @return a Mono emitting the requested {@link GDUserProfile}. A {@link GDClientException} will be emitted if an
+     * error occurs.
+     */
     public Mono<GDUserProfile> getUserProfile(long accountId) {
         return Mono.defer(() -> GDRequest.of(GET_GJ_USER_INFO_20)
                 .addParameters(commonParams())
@@ -318,6 +375,14 @@ public final class GDClient {
                 .deserialize(userProfileResponse()));
     }
 
+    /**
+     * Searches for users in Geometry Dash.
+     *
+     * @param query the query string. Can be a username or a player ID
+     * @param page  the page to load, the first one being 0
+     * @return a Flux emitting all {@link GDUserStats} found on the selected page. A {@link GDClientException} will be
+     * emitted if an error occurs.
+     */
     public Flux<GDUserStats> searchUsers(String query, int page) {
         Objects.requireNonNull(query);
         return Flux.defer(() -> GDRequest.of(GET_GJ_USERS_20)
@@ -329,6 +394,13 @@ public final class GDClient {
                 .flatMapMany(Flux::fromIterable));
     }
 
+    /**
+     * Requests information on a song from Newgrounds.
+     *
+     * @param songId the ID of the song
+     * @return a Mono emitting the requested {@link GDSong}. A {@link GDClientException} will be emitted if an error
+     * occurs.
+     */
     public Mono<GDSong> getSongInfo(long songId) {
         return Mono.defer(() -> GDRequest.of(GET_GJ_SONG_INFO)
                 .addParameter("songID", songId)
@@ -337,6 +409,16 @@ public final class GDClient {
                 .deserialize(songInfoResponse()));
     }
 
+    /**
+     * Retrieves comments for a specific level.
+     *
+     * @param levelId the ID of the level to get comments for
+     * @param sorting whether to sort by new or most liked
+     * @param page    the page to load, the first one being 0
+     * @param count   the number of comments per page to get
+     * @return a Flux emitting all {@link GDComment}s found on the selected page. A {@link GDClientException} will be
+     * emitted if an error occurs.
+     */
     public Flux<GDComment> getCommentsForLevel(long levelId, CommentSortMode sorting, int page, int count) {
         Objects.requireNonNull(sorting);
         return Flux.defer(() -> GDRequest.of(GET_GJ_COMMENTS_21)
@@ -351,6 +433,17 @@ public final class GDClient {
                 .flatMapMany(Flux::fromIterable));
     }
 
+    /**
+     * Requests the leaderboard of the specified type. Note that choosing {@link LeaderboardType#FRIENDS} as type
+     * requires this client to be authenticated.
+     *
+     * @param type  the type of leaderboard to get (top 100, creators...)
+     * @param count the number of users to get
+     * @return a Flux emitting the {@link GDUserStats} corresponding to leaderboard entries, sorted by rank. A {@link
+     * GDClientException} will be emitted if an error occurs.
+     * @throws IllegalStateException if {@link LeaderboardType#FRIENDS} is selected and the client is not
+     *                               authenticated.
+     */
     public Flux<GDUserStats> getLeaderboard(LeaderboardType type, int count) {
         Objects.requireNonNull(type);
         if (type == LeaderboardType.FRIENDS) {
@@ -372,6 +465,15 @@ public final class GDClient {
         });
     }
 
+    /**
+     * Retrieves all private messages of the account this client is logged on. This method requires this client to be
+     * authenticated.
+     *
+     * @param page the page to load, the first one being 0
+     * @return a Flux emitting all {@link GDPrivateMessage}s found on the selected page. A {@link GDClientException}
+     * will be emitted if an error occurs.
+     * @throws IllegalStateException if this client is not authenticated
+     */
     public Flux<GDPrivateMessage> getPrivateMessages(int page) {
         requireAuthentication();
         return Flux.defer(() -> GDRequest.of(GET_GJ_MESSAGES_20)
@@ -384,6 +486,14 @@ public final class GDClient {
                 .flatMapMany(Flux::fromIterable));
     }
 
+    /**
+     * Downloads the content of a specific private message. This method requires this client to be authenticated.
+     *
+     * @param messageId the ID of the message to download
+     * @return a Mono emitting the {@link GDPrivateMessageDownload}. A {@link GDClientException} will be emitted if an
+     * error occurs.
+     * @throws IllegalStateException if this client is not authenticated
+     */
     public Mono<GDPrivateMessageDownload> downloadPrivateMessage(int messageId) {
         requireAuthentication();
         return Mono.defer(() -> GDRequest.of(DOWNLOAD_GJ_MESSAGE_20)
@@ -394,6 +504,17 @@ public final class GDClient {
                 .deserialize(privateMessageDownloadResponse()));
     }
 
+    /**
+     * Sends a private message in-game to the specified recipient. This method requires this client to be
+     * authenticated.
+     *
+     * @param recipientAccountId the account ID of the recipient
+     * @param subject            the message subject
+     * @param body               the message body
+     * @return a Mono completing when the operation is successful. A {@link GDClientException} will be emitted if an
+     * error occurs.
+     * @throws IllegalStateException if this client is not authenticated
+     */
     public Mono<Void> sendPrivateMessage(long recipientAccountId, String subject, String body) {
         Objects.requireNonNull(subject);
         Objects.requireNonNull(body);
@@ -409,7 +530,16 @@ public final class GDClient {
                 .transform(GDClient::validatePositiveInteger));
     }
 
-    public Mono<Void> rateLevelStars(long levelId, int stars) {
+    /**
+     * Sends a star rating vote to the target level. This method requires this client to be authenticated.
+     *
+     * @param levelId the ID of the target level
+     * @param stars   the number of stars to vote for
+     * @return a Mono completing when the operation is successful. A {@link GDClientException} will be emitted if an
+     * error occurs.
+     * @throws IllegalStateException if this client is not authenticated
+     */
+    public Mono<Void> voteLevelStars(long levelId, int stars) {
         requireAuthentication();
         return Mono.defer(() -> {
             var rs = randomString(10);
@@ -429,7 +559,16 @@ public final class GDClient {
         });
     }
 
-    public Mono<Void> rateLevelDemonDifficulty(long levelId, DemonDifficulty demonDifficulty) {
+    /**
+     * Sends a demon difficulty vote to the target level. This method requires this client to be authenticated.
+     *
+     * @param levelId         the ID of the target level
+     * @param demonDifficulty the demon difficulty to vote for
+     * @return a Mono completing when the operation is successful. A {@link GDClientException} will be emitted if an
+     * error occurs.
+     * @throws IllegalStateException if this client is not authenticated
+     */
+    public Mono<Void> voteLevelDemonDifficulty(long levelId, DemonDifficulty demonDifficulty) {
         Objects.requireNonNull(demonDifficulty);
         requireAuthentication();
         return Mono.defer(() -> GDRequest.of(RATE_GJ_DEMON_21)
@@ -443,10 +582,26 @@ public final class GDClient {
                 .transform(GDClient::validatePositiveInteger));
     }
 
+    /**
+     * Gets the friends list of the account this client is logged on. This method requires this client to be
+     * authenticated.
+     *
+     * @return a Flux emitting all friends as {@link GDUser} instances. A {@link GDClientException} will be emitted if
+     * an error occurs.
+     * @throws IllegalStateException if this client is not authenticated
+     */
     public Flux<GDUser> getFriends() {
         return getUserList(0);
     }
 
+    /**
+     * Gets the list of blocked users of the account this client is logged on. This method requires this client to be
+     * authenticated.
+     *
+     * @return a Flux emitting all blocked users as {@link GDUser} instances. A {@link GDClientException} will be
+     * emitted if an error occurs.
+     * @throws IllegalStateException if this client is not authenticated
+     */
     public Flux<GDUser> getBlockedUsers() {
         return getUserList(1);
     }
@@ -462,10 +617,26 @@ public final class GDClient {
                 .flatMapMany(Flux::fromIterable));
     }
 
+    /**
+     * Requests to block a user in Geometry Dash. This method requires this client to be authenticated.
+     *
+     * @param targetAccountId the account ID of the user to block
+     * @return a Mono completing when the operation is successful. A {@link GDClientException} will be emitted if an
+     * error occurs.
+     * @throws IllegalStateException if this client is not authenticated
+     */
     public Mono<Void> blockUser(long targetAccountId) {
         return blockUnblockRequest(targetAccountId, BLOCK_GJ_USER_20);
     }
 
+    /**
+     * Requests to unblock a user in Geometry Dash. This method requires this client to be authenticated.
+     *
+     * @param targetAccountId the account ID of the user to unblock
+     * @return a Mono completing when the operation is successful. A {@link GDClientException} will be emitted if an
+     * error occurs.
+     * @throws IllegalStateException if this client is not authenticated
+     */
     public Mono<Void> unblockUser(long targetAccountId) {
         return blockUnblockRequest(targetAccountId, UNBLOCK_GJ_USER_20);
     }

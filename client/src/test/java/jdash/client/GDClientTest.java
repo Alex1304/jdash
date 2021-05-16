@@ -72,7 +72,7 @@ public final class GDClientTest {
     public void findLevelByIdTest() {
         var expected = ImmutableGDLevel.builder()
                 .coinCount(0)
-                .creatorId(503085)
+                .creatorPlayerId(503085)
                 .creatorName("Riot")
                 .demonDifficulty(DemonDifficulty.EXTREME)
                 .description("Whose blood will be spilt in the Bloodbath? Who will the victors be? How many will " +
@@ -196,7 +196,7 @@ public final class GDClientTest {
         assertNotNull(actual);
         var expected = ImmutableGDLevelDownload.builder()
                 .coinCount(0)
-                .creatorId(503085)
+                .creatorPlayerId(503085)
                 .demonDifficulty(DemonDifficulty.EXTREME)
                 .description("Whose blood will be spilt in the Bloodbath? Who will the victors be? How many will " +
                         "survive? Good luck...")

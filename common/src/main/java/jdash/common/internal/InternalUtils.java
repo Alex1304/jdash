@@ -139,14 +139,14 @@ public final class InternalUtils {
                 LEVEL_LIKES, LEVEL_LENGTH, LEVEL_COIN_COUNT, LEVEL_COIN_VERIFIED, LEVEL_VERSION, LEVEL_GAME_VERSION,
                 LEVEL_OBJECT_COUNT, LEVEL_IS_DEMON, LEVEL_IS_AUTO, LEVEL_ORIGINAL, LEVEL_REQUESTED_STARS,
                 LEVEL_SONG_ID, LEVEL_AUDIO_TRACK);
-        long songId = Long.parseLong(data.get(LEVEL_SONG_ID));
-        var song = songId > 0 ? Optional.ofNullable(structuredSongsInfo.get(songId))
-                : GDSong.getAudioTrack(Integer.parseInt(data.get(LEVEL_AUDIO_TRACK)));
+        var songId = Optional.ofNullable(data.get(LEVEL_SONG_ID)).map(Long::parseLong).filter(l -> l > 0);
+        var song = songId.map(structuredSongsInfo::get)
+                .or(() -> GDSong.getOfficialSong(Integer.parseInt(data.get(LEVEL_AUDIO_TRACK))));
         var creatorName = structuredCreatorsInfo.get(Long.parseLong(data.get(LEVEL_CREATOR_ID)));
         return ImmutableGDLevel.builder()
                 .id(Long.parseLong(data.get(LEVEL_ID)))
                 .name(data.get(LEVEL_NAME))
-                .creatorId(Long.parseLong(data.get(LEVEL_CREATOR_ID)))
+                .creatorPlayerId(Long.parseLong(data.get(LEVEL_CREATOR_ID)))
                 .description(b64Decode(data.get(LEVEL_DESCRIPTION)))
                 .difficulty(Difficulty.parse(data.get(LEVEL_DIFFICULTY)))
                 .demonDifficulty(DemonDifficulty.parse(data.get(LEVEL_DEMON_DIFFICULTY)))
@@ -163,7 +163,7 @@ public final class InternalUtils {
                 .objectCount(Integer.parseInt(data.get(LEVEL_OBJECT_COUNT)))
                 .isDemon(data.get(LEVEL_IS_DEMON).equals("1"))
                 .isAuto(data.get(LEVEL_IS_AUTO).equals("1"))
-                .originalLevelId(Long.parseLong(data.get(LEVEL_ORIGINAL)))
+                .originalLevelId(Optional.ofNullable(data.get(LEVEL_ORIGINAL)).map(Long::parseLong).filter(l -> l > 0))
                 .requestedStars(Integer.parseInt(data.get(LEVEL_REQUESTED_STARS)))
                 .creatorName(Optional.ofNullable(creatorName))
                 .song(song)
