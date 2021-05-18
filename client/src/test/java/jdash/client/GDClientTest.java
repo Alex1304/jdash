@@ -112,7 +112,7 @@ public final class GDClientTest {
     public void browseLevelsTest() {
         var expected = List.of(10565740L, 10792915L, 21761387L, 13615973L, 10578973L, 35717743L, 11797073L,
                 38601659L, 19274064L, 10978435L);
-        var actual = client.browseLevels(LevelBrowseMode.REGULAR, "Bloodbath", null, 0)
+        var actual = client.browseLevels(LevelBrowseMode.SEARCH, "Bloodbath", null, 0)
                 .map(GDLevel::id)
                 .collectList()
                 .block();
@@ -122,8 +122,8 @@ public final class GDClientTest {
     @Test
     public void getUserProfileTest() {
         var expected = ImmutableGDUserProfile.builder()
-                .commentHistoryPolicy(PrivacySetting.OPENED_TO_ALL)
-                .privateMessagePolicy(PrivacySetting.OPENED_TO_ALL)
+                .commentHistoryPolicy(AccessPolicy.ALL)
+                .privateMessagePolicy(AccessPolicy.ALL)
                 .hasFriendRequestsEnabled(true)
                 .role(Role.MODERATOR)
                 .twitch("gd_alex1304")
@@ -340,7 +340,7 @@ public final class GDClientTest {
 
     @Test
     public void getLeaderboardTest() {
-        var actual = client.getLeaderboard(LeaderboardType.GLOBAL, 50).collectList().block();
+        var actual = client.getLeaderboard(LeaderboardType.RELATIVE, 50).collectList().block();
         assertNotNull(actual);
         assertFalse(actual.get(0).leaderboardRank().isEmpty());
         assertEquals(12537, actual.get(0).leaderboardRank().orElseThrow());

@@ -30,7 +30,7 @@ class LevelDownloadResponseDeserializer implements Function<String, GDLevelDownl
         } else if (strPass.length() < 5) {
             pass = -1; // not copyable
         } else {
-            pass = Integer.parseInt(RobTopsWeakEncryption.decodeLevelPass(strPass).substring(1));
+            pass = Integer.parseInt(RobTopsWeakEncryption.decodeLevelPasscode(strPass).substring(1));
         }
         return ImmutableGDLevelDownload.builder()
                 .from(buildLevel(data, creatorInfo, Map.of()))

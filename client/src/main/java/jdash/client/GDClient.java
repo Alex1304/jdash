@@ -231,7 +231,7 @@ public final class GDClient {
     /**
      * Finds a level by its ID. It is a shorthand for:
      * <pre>
-     *     browseLevels(LevelBrowseMode.REGULAR, "" + levelId, null, 0).next()
+     *     browseLevels(LevelBrowseMode.SEARCH, "" + levelId, null, 0).next()
      * </pre>
      *
      * @param levelId the level ID
@@ -239,7 +239,7 @@ public final class GDClient {
      * emitted if an error occurs.
      */
     public Mono<GDLevel> findLevelById(long levelId) {
-        return browseLevels(LevelBrowseMode.REGULAR, "" + levelId, null, 0).next();
+        return browseLevels(LevelBrowseMode.SEARCH, "" + levelId, null, 0).next();
     }
 
     /**
@@ -261,7 +261,7 @@ public final class GDClient {
      * Browses levels in Geometry Dash.
      *
      * @param mode   the browsing mode, which can impact how levels are sorted, or how the query is interpreted
-     * @param query  if mode is {@link LevelBrowseMode#REGULAR}, represents the search query. If mode is {@link
+     * @param query  if mode is {@link LevelBrowseMode#SEARCH}, represents the search query. If mode is {@link
      *               LevelBrowseMode#BY_USER}, represents the player ID of the user. If mode is any other mode, it will
      *               be ignored and can be set to <code>null</code>.
      * @param filter the search filter to apply. Can be <code>null</code> to disable filtering
@@ -437,7 +437,7 @@ public final class GDClient {
      * Requests the leaderboard of the specified type. Note that choosing {@link LeaderboardType#FRIENDS} as type
      * requires this client to be authenticated.
      *
-     * @param type  the type of leaderboard to get (top 100, creators...)
+     * @param type  the type of leaderboard to get (top players, top creators...)
      * @param count the number of users to get
      * @return a Flux emitting the {@link GDUserStats} corresponding to leaderboard entries, sorted by rank. A {@link
      * GDClientException} will be emitted if an error occurs.
@@ -455,7 +455,7 @@ public final class GDClient {
                 request.addParameters(authParams());
             }
             return request.addParameters(commonParams())
-                    .addParameter("type", type.getValue())
+                    .addParameter("type", type.name().toLowerCase())
                     .addParameter("count", count)
                     .execute(cache, router)
                     .deserialize(userStatsListResponse())

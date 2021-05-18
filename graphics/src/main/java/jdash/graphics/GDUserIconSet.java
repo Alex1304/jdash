@@ -19,6 +19,13 @@ public final class GDUserIconSet {
         this.factory = Objects.requireNonNull(factory);
     }
 
+    /**
+     * Creates a new {@link GDUserIconSet} for the given user.
+     *
+     * @param user    the user to generate the icon set for
+     * @param factory the factory that will handle the creation of icons
+     * @return a new {@link GDUserIconSet}
+     */
     public static GDUserIconSet create(GDUserProfile user, SpriteFactory factory) {
         return new GDUserIconSet(user, factory);
     }
@@ -37,10 +44,8 @@ public final class GDUserIconSet {
     /**
      * Two icon sets are equal if:
      * <ul>
-     * <li>For each icon type, both users have the same icon ID and the same
-     * color.</li>
-     * <li>Both users either have the glow outline on their icons or do not have
-     * it.</li>
+     * <li>For each icon type, both users have the same icon ID and the same color.</li>
+     * <li>Both users either have the glow outline on their icons or do not have it.</li>
      * </ul>
      */
     @Override

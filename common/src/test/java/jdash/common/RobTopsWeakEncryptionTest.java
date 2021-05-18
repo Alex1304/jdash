@@ -19,12 +19,12 @@ public final class RobTopsWeakEncryptionTest {
 
     @Test
     public void decodeLevelPassTest() {
-        assertEquals("1098933", decodeLevelPass("AwYKDg0BBQ=="));
+        assertEquals("1098933", decodeLevelPasscode("AwYKDg0BBQ=="));
     }
 
     @Test
     public void encodeLevelPassTest() {
-        assertEquals("AwYKDg0BBQ==", encodeLevelPass("1098933"));
+        assertEquals("AwYKDg0BBQ==", encodeLevelPasscode("1098933"));
     }
 
     @Test

@@ -11,53 +11,94 @@ import static jdash.common.internal.InternalUtils.b64Decode;
 import static jdash.common.internal.InternalUtils.b64Encode;
 
 /**
- * Provides methods to encrypt some data such as private
- * messages, level passwords and account passwords.
+ * Provides methods to encode and decode some data such as private message body, level passcodes and account passwords.
  */
 public final class RobTopsWeakEncryption {
 
-	private static final XORCipher GD_MESSAGE_BODY_XOR_CIPHER = new XORCipher("14251");
-	private static final XORCipher LEVEL_PASS_XOR_CIPHER = new XORCipher("26364");
-	private static final XORCipher ACCOUNT_GJP_XOR_CIPHER = new XORCipher("37526");
-	private static final XORCipher CHK_XOR_CIPHER = new XORCipher("58281");
-	
-	private RobTopsWeakEncryption() {
-	}
-	
-	private static String decode0(String str, XORCipher algorithm) {
-		return algorithm.cipher(b64Decode(str));
-	}	
-	
-	private static String encode0(String str, XORCipher algorithm) {
-		return b64Encode(algorithm.cipher(str));
-	}
-	
-	public static String decodeAccountPassword(String password) {
-		return decode0(password, ACCOUNT_GJP_XOR_CIPHER);
-	}
-	
-	public static String encodeAccountPassword(String password) {
-		return encode0(password, ACCOUNT_GJP_XOR_CIPHER);
-	}
-	
-	public static String decodeLevelPass(String lvlPass) {
-		return decode0(lvlPass, LEVEL_PASS_XOR_CIPHER);
-	}
-	
-	public static String encodeLevelPass(String lvlPass) {
-		return encode0(lvlPass, LEVEL_PASS_XOR_CIPHER);
-	}
-	
-	public static String decodePrivateMessageBody(String msgBody) {
-		return decode0(msgBody, GD_MESSAGE_BODY_XOR_CIPHER);
-	}
-	
-	public static String encodePrivateMessageBody(String msgBody) {
-		return encode0(msgBody, GD_MESSAGE_BODY_XOR_CIPHER);
-	}
+    private static final XORCipher GD_MESSAGE_BODY_XOR_CIPHER = new XORCipher("14251");
+    private static final XORCipher LEVEL_PASSCODE_XOR_CIPHER = new XORCipher("26364");
+    private static final XORCipher ACCOUNT_PASSWORD_XOR_CIPHER = new XORCipher("37526");
+    private static final XORCipher CHK_XOR_CIPHER = new XORCipher("58281");
 
-	public static String encodeChk(Object... params) {
-	    return encode0(sha1(Arrays.stream(params)
+    private RobTopsWeakEncryption() {
+    }
+
+    private static String decode(String str, XORCipher algorithm) {
+        return algorithm.cipher(b64Decode(str));
+    }
+
+    private static String encode(String str, XORCipher algorithm) {
+        return b64Encode(algorithm.cipher(str));
+    }
+
+    /**
+     * Decodes the given string using the algorithm used in-game to decode account passwords.
+     *
+     * @param encoded the encoded string
+     * @return the decoded string
+     */
+    public static String decodeAccountPassword(String encoded) {
+        return decode(encoded, ACCOUNT_PASSWORD_XOR_CIPHER);
+    }
+
+    /**
+     * Encodes the given string using the algorithm used in-game to encode account passwords.
+     *
+     * @param plainText the decoded string
+     * @return the encoded string
+     */
+    public static String encodeAccountPassword(String plainText) {
+        return encode(plainText, ACCOUNT_PASSWORD_XOR_CIPHER);
+    }
+
+    /**
+     * Decodes the given string using the algorithm used in-game to decode level passcodes.
+     *
+     * @param encoded the encoded string
+     * @return the decoded string
+     */
+    public static String decodeLevelPasscode(String encoded) {
+        return decode(encoded, LEVEL_PASSCODE_XOR_CIPHER);
+    }
+
+    /**
+     * Encodes the given string using the algorithm used in-game to encode level passcodes.
+     *
+     * @param plainText the decoded string
+     * @return the encoded string
+     */
+    public static String encodeLevelPasscode(String plainText) {
+        return encode(plainText, LEVEL_PASSCODE_XOR_CIPHER);
+    }
+
+    /**
+     * Decodes the given string using the algorithm used in-game to decode the body of private messages.
+     *
+     * @param encoded the encoded string
+     * @return the decoded string
+     */
+    public static String decodePrivateMessageBody(String encoded) {
+        return decode(encoded, GD_MESSAGE_BODY_XOR_CIPHER);
+    }
+
+    /**
+     * Encodes the given string using the algorithm used in-game to encode the body of private messages.
+     *
+     * @param plainText the decoded string
+     * @return the encoded string
+     */
+    public static String encodePrivateMessageBody(String plainText) {
+        return encode(plainText, GD_MESSAGE_BODY_XOR_CIPHER);
+    }
+
+    /**
+     * Encodes the given parameters using the algorithm used in-game to calculate the CHK of a sequence of parameters.
+     *
+     * @param params the parameters
+     * @return the encoded string
+     */
+    public static String encodeChk(Object... params) {
+        return encode(sha1(Arrays.stream(params)
                 .map(String::valueOf)
                 .collect(Collectors.joining())), CHK_XOR_CIPHER);
     }

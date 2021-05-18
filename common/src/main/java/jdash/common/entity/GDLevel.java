@@ -188,9 +188,9 @@ public interface GDLevel {
     Optional<Long> songId();
 
     /**
-     * The song used in this level. This information is always present if it is an official song, but might not be
-     * present if it is a song from Newgrounds. In the latter case, the song ID will always be present via {@link
-     * #songId()} so you can fetch song info separately later on if needed.
+     * The song used in this level. This information is always present if it is a valid official song, but might not
+     * always be present if it is an invalid official song or a song from Newgrounds. In the latter case, the song ID
+     * will always be present via {@link #songId()} so you can fetch song info separately later on if needed.
      *
      * @return an {@link Optional} containing a {@link GDSong} if present
      */

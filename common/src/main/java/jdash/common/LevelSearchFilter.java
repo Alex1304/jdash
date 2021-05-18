@@ -170,7 +170,7 @@ public final class LevelSearchFilter {
         var params = new HashMap<String, String>();
         if (!difficulties.isEmpty()) {
             params.put("diff", difficulties.stream()
-                    .map(d -> "" + d.getVal())
+                    .map(d -> "" + d.getValue())
                     .collect(Collectors.joining(",")));
         }
         if (!lengths.isEmpty()) {

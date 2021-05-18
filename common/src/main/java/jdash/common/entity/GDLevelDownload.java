@@ -40,8 +40,8 @@ public interface GDLevelDownload extends GDLevel {
     String updatedAgo();
 
     /**
-     * The data of the level. It is provided as a sequence of bytes as returned by the server. No transformations such
-     * as unzip is applied.
+     * The data of the level. It is provided as a sequence of bytes as returned by the server. In some cases, the
+     * data might be GZIP-compressed.
      *
      * @return a ByteBuffer
      */

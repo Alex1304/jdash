@@ -1,18 +1,27 @@
 package jdash.common;
 
+/**
+ * Represents a leaderboard type.
+ */
 public enum LeaderboardType {
-    TOP100("top"),
-    FRIENDS("friends"),
-    GLOBAL("relative"),
-    CREATORS("creators");
 
-    private final String value;
+    /**
+     * Top players with the most stars.
+     */
+    TOP,
 
-    LeaderboardType(String value) {
-        this.value = value;
-    }
+    /**
+     * Friends leaderboard.
+     */
+    FRIENDS,
 
-    public String getValue() {
-        return value;
-    }
+    /**
+     * Leaderboard relative to the current player.
+     */
+    RELATIVE,
+
+    /**
+     * Top players with the most creator points.
+     */
+    CREATORS
 }

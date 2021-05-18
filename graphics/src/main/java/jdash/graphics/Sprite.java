@@ -49,14 +49,6 @@ class Sprite {
         return sizeY;
     }
 
-    int getSourceSizeX() {
-        return sourceSizeX;
-    }
-
-    int getSourceSizeY() {
-        return sourceSizeY;
-    }
-
     Rectangle getRectangle() {
         return rectangle;
     }

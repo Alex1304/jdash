@@ -23,13 +23,13 @@ public final class GDRouterMockUp implements GDRouter {
                     .addParameters(commonParams())
                     .addParameters(LevelSearchFilter.create().toMap())
                     .addParameter("page", 0)
-                    .addParameter("type", LevelBrowseMode.REGULAR.getType())
+                    .addParameter("type", LevelBrowseMode.SEARCH.getType())
                     .addParameter("str", 10565740), "findLevelById"),
             Map.entry(GDRequest.of(GET_GJ_LEVELS_21)
                     .addParameters(commonParams())
                     .addParameters(LevelSearchFilter.create().toMap())
                     .addParameter("page", 0)
-                    .addParameter("type", LevelBrowseMode.REGULAR.getType())
+                    .addParameter("type", LevelBrowseMode.SEARCH.getType())
                     .addParameter("str", "Bloodbath"), "browseLevels"),
             Map.entry(GDRequest.of(LOGIN_GJ_ACCOUNT)
                     .addParameter("userName", "Alex1304")
@@ -77,7 +77,7 @@ public final class GDRouterMockUp implements GDRouter {
                     .addParameter("type", 1), "getBlockedUsers"),
             Map.entry(GDRequest.of(GET_GJ_SCORES_20)
                     .addParameters(commonParams())
-                    .addParameter("type", LeaderboardType.GLOBAL.getValue())
+                    .addParameter("type", LeaderboardType.RELATIVE.name().toLowerCase())
                     .addParameter("count", 50), "getLeaderboard")
     );
 

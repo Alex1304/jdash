@@ -140,8 +140,9 @@ public final class InternalUtils {
                 LEVEL_OBJECT_COUNT, LEVEL_IS_DEMON, LEVEL_IS_AUTO, LEVEL_ORIGINAL, LEVEL_REQUESTED_STARS,
                 LEVEL_SONG_ID, LEVEL_AUDIO_TRACK);
         var songId = Optional.ofNullable(data.get(LEVEL_SONG_ID)).map(Long::parseLong).filter(l -> l > 0);
-        var song = songId.map(structuredSongsInfo::get)
-                .or(() -> GDSong.getOfficialSong(Integer.parseInt(data.get(LEVEL_AUDIO_TRACK))));
+        @SuppressWarnings("SimplifyOptionalCallChains") // IntelliJ bug
+        var song = songId.map(id -> Optional.ofNullable(structuredSongsInfo.get(id)))
+                .orElseGet(() -> GDSong.getOfficialSong(Integer.parseInt(data.get(LEVEL_AUDIO_TRACK))));
         var creatorName = structuredCreatorsInfo.get(Long.parseLong(data.get(LEVEL_CREATOR_ID)));
         return ImmutableGDLevel.builder()
                 .id(Long.parseLong(data.get(LEVEL_ID)))
@@ -224,8 +225,8 @@ public final class InternalUtils {
                 .twitter(data.get(USER_TWITTER))
                 .twitch(data.get(USER_TWITCH))
                 .hasFriendRequestsEnabled(data.get(USER_FRIEND_REQUEST_POLICY).equals("0"))
-                .privateMessagePolicy(PrivacySetting.parse(data.get(USER_PRIVATE_MESSAGE_POLICY)))
-                .commentHistoryPolicy(PrivacySetting.parse(data.get(USER_COMMENT_HISTORY_POLICY)))
+                .privateMessagePolicy(AccessPolicy.parse(data.get(USER_PRIVATE_MESSAGE_POLICY)))
+                .commentHistoryPolicy(AccessPolicy.parse(data.get(USER_COMMENT_HISTORY_POLICY)))
                 .build();
     }
 

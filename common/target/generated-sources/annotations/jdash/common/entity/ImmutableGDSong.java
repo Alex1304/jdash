@@ -35,7 +35,8 @@ public final class ImmutableGDSong implements GDSong {
   }
 
   /**
-   * @return The value of the {@code id} attribute
+   * The ID of the song. For a custom song, this is the Newgrounds ID. For an official song, this is its in-game ID.
+   * @return a long
    */
   @Override
   public long id() {
@@ -43,7 +44,8 @@ public final class ImmutableGDSong implements GDSong {
   }
 
   /**
-   * @return The value of the {@code title} attribute
+   * The title of the song.
+   * @return a string
    */
   @Override
   public String title() {
@@ -51,7 +53,8 @@ public final class ImmutableGDSong implements GDSong {
   }
 
   /**
-   * @return The value of the {@code artist} attribute
+   * The display name of the artist of the song.
+   * @return a string
    */
   @Override
   public String artist() {
@@ -59,7 +62,9 @@ public final class ImmutableGDSong implements GDSong {
   }
 
   /**
-   * @return The value of the {@code size} attribute
+   * A string that indicates the size of the song. The structure of the string is not guaranteed. Only applicable for
+   * custom songs.
+   * @return an {@link Optional} containing a string if present
    */
   @Override
   public Optional<String> size() {
@@ -67,7 +72,8 @@ public final class ImmutableGDSong implements GDSong {
   }
 
   /**
-   * @return The value of the {@code downloadUrl} attribute
+   * The download URL of the song. Only applicable for custom songs.
+   * @return an {@link Optional} containing a string if present
    */
   @Override
   public Optional<String> downloadUrl() {

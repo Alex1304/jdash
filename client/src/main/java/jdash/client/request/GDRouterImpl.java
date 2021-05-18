@@ -27,9 +27,9 @@ class GDRouterImpl implements GDRouter {
         var httpClient = HttpClient.create()
                 .baseUrl(baseUrl)
                 .headers(h -> {
-					h.add("Content-Type", "application/x-www-form-urlencoded");
-					h.add("User-Agent", "");
-				});
+                    h.add("Content-Type", "application/x-www-form-urlencoded");
+                    h.add("User-Agent", "");
+                });
         if (baseUrl.startsWith("https://")) {
             httpClient = httpClient.secure();
         }
@@ -41,7 +41,7 @@ class GDRouterImpl implements GDRouter {
     public Mono<String> send(GDRequest request) {
         var callback = Sinks.<String>one();
         var requestWithCallback = new RequestWithCallback(request, callback);
-        for (;;) {
+        for (; ; ) {
             var result = requestQueue.tryEmitNext(requestWithCallback);
             switch (result) {
                 case FAIL_NON_SERIALIZED:

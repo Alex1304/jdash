@@ -286,8 +286,10 @@ public final class ImmutableGDLevel implements GDLevel {
   }
 
   /**
-   * The ID of the song used in this level
-   * @return
+   * The ID of the song used in this level. Always present if it is a song from Newgrounds, always absent if it is an
+   * official song. As such, <code>songId().isPresent()</code> can be used to test whether this level uses a custom
+   * song or an official song.
+   * @return an {@link Optional} containing a long
    */
   @Override
   public Optional<Long> songId() {
@@ -295,7 +297,10 @@ public final class ImmutableGDLevel implements GDLevel {
   }
 
   /**
-   * @return The value of the {@code song} attribute
+   * The song used in this level. This information is always present if it is a valid official song, but might not
+   * always be present if it is an invalid official song or a song from Newgrounds. In the latter case, the song ID
+   * will always be present via {@link #songId()} so you can fetch song info separately later on if needed.
+   * @return an {@link Optional} containing a {@link GDSong} if present
    */
   @Override
   public Optional<GDSong> song() {
@@ -303,7 +308,9 @@ public final class ImmutableGDLevel implements GDLevel {
   }
 
   /**
-   * @return The value of the {@code creatorName} attribute
+   * The name of the creator of this level. This information is not always provided. The creator's player ID will
+   * always be present via {@link #creatorPlayerId()} so you can fetch creator info separately later on if needed.
+   * @return an {@link Optional} containing a string if present
    */
   @Override
   public Optional<String> creatorName() {
