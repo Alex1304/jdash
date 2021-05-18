@@ -7,7 +7,7 @@ import jdash.events.object.ImmutableWeeklyDemonChange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-public class TimelyEventProducer implements GDEventProducer {
+class TimelyEventProducer implements GDEventProducer {
 
     private GDTimelyInfo previousDaily;
     private GDTimelyInfo previousWeekly;

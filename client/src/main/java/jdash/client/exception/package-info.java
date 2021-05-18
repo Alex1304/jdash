@@ -1,5 +1,5 @@
 /**
- * Contains exceptions that may occur when using the client.
+ * Exceptions that may occur when using the client.
  */
 @NonNullApi
 package jdash.client.exception;

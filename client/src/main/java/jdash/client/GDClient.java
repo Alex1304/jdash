@@ -42,7 +42,7 @@ public final class GDClient {
     private final AuthenticationInfo auth;
     private final Collection<Long> followedAccountIds;
 
-    private GDClient(GDRouter router, GDCache cache, String uniqueDeviceId, AuthenticationInfo auth,
+    private GDClient(GDRouter router, GDCache cache, String uniqueDeviceId, @Nullable AuthenticationInfo auth,
                      Collection<Long> followedAccountIds) {
         this.router = router;
         this.cache = cache;
@@ -78,6 +78,7 @@ public final class GDClient {
     }
 
     private Map<String, String> authParams() {
+        Objects.requireNonNull(auth);
         return Map.of("accountID", "" + auth.accountId, "gjp", auth.gjp);
     }
 

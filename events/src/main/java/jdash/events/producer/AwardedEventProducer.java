@@ -20,7 +20,7 @@ import java.util.stream.Stream;
 import static reactor.function.TupleUtils.function;
 import static reactor.function.TupleUtils.predicate;
 
-public class AwardedEventProducer implements GDEventProducer {
+class AwardedEventProducer implements GDEventProducer {
 
     private Set<GDLevel> previous0;
     private Set<GDLevel> previous1;

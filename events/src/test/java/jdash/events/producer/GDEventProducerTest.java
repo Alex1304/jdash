@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class GDEventProducerTest {
 
-    private AwardedCache cache;
+    private EventProducerTestCache cache;
     private GDClient client;
     private AwardedEventProducer awardedProducer;
     private TimelyEventProducer timelyProducer;
@@ -64,7 +64,7 @@ public class GDEventProducerTest {
 
     @BeforeEach
     public void setUp() {
-        cache = new AwardedCache();
+        cache = new EventProducerTestCache();
         client = GDClient.create().withCache(cache);
         awardedProducer = new AwardedEventProducer();
         timelyProducer = new TimelyEventProducer();
@@ -227,7 +227,7 @@ public class GDEventProducerTest {
         ));
     }
 
-    private static class AwardedCache implements GDCache {
+    private static class EventProducerTestCache implements GDCache {
 
         List<GDLevel> page0 = List.of(
                 createLevel(1, 10),
