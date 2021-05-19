@@ -1,8 +1,8 @@
 package jdash.client.response.impl;
 
 import jdash.client.exception.GDClientException;
-import jdash.client.exception.ResponseDeserializationException;
 import jdash.client.exception.GDResponseException;
+import jdash.client.exception.ResponseDeserializationException;
 import jdash.client.request.GDRequest;
 import jdash.client.response.GDResponse;
 import reactor.core.publisher.Mono;

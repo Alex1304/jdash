@@ -6,6 +6,7 @@ import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.Sinks;
+import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 import reactor.util.Logger;
 import reactor.util.Loggers;
@@ -40,10 +41,12 @@ public class GDEventLoop {
     private static final Logger LOGGER = Loggers.getLogger(GDEventLoop.class);
 
     private final Sinks.Many<Object> eventEmitter;
+    private final Scheduler scheduler;
     private final Disposable disposable;
 
-    private GDEventLoop(Sinks.Many<Object> eventEmitter, Disposable disposable) {
+    private GDEventLoop(Sinks.Many<Object> eventEmitter, Scheduler scheduler, Disposable disposable) {
         this.eventEmitter = eventEmitter;
+        this.scheduler = scheduler;
         this.disposable = disposable;
     }
 
@@ -85,7 +88,7 @@ public class GDEventLoop {
      * @return a {@link Flux}
      */
     public <T> Flux<T> on(Class<T> eventType) {
-        return eventEmitter.asFlux().ofType(eventType).publishOn(Schedulers.boundedElastic());
+        return eventEmitter.asFlux().ofType(eventType).publishOn(scheduler);
     }
 
     public static class Builder {
@@ -93,6 +96,7 @@ public class GDEventLoop {
         private final GDClient client;
         private Set<GDEventProducer> eventProducers;
         private Duration interval;
+        private Scheduler scheduler;
 
         private Builder(GDClient client) {
             this.client = Objects.requireNonNull(client);
@@ -122,6 +126,18 @@ public class GDEventLoop {
         }
 
         /**
+         * Sets a scheduler that will determine which thread the events will be emitted on. By default, runs on {@link
+         * Schedulers#boundedElastic()} ()} in order to allow for blocking calls.
+         *
+         * @param scheduler a scheduler, or <code>null</code> to use default
+         * @return this builder
+         */
+        public Builder setScheduler(@Nullable Scheduler scheduler) {
+            this.scheduler = scheduler;
+            return this;
+        }
+
+        /**
          * Builds the {@link GDEventLoop} instance using the current state of this builder. The loop is started when the
          * instance is returned.
          *
@@ -131,7 +147,8 @@ public class GDEventLoop {
             var eventProducers = Objects.requireNonNullElse(this.eventProducers, DEFAULT_PRODUCERS);
             var interval = Objects.requireNonNullElse(this.interval, DEFAULT_INTERVAL);
             var eventEmitter = Sinks.many().multicast().onBackpressureBuffer();
-            var disposable = Flux.interval(interval, Schedulers.boundedElastic())
+            var scheduler = Objects.requireNonNullElse(this.scheduler, Schedulers.boundedElastic());
+            var disposable = Flux.interval(interval)
                     .flatMapIterable(__ -> eventProducers)
                     .flatMap(producer -> producer.produce(client.withCacheDisabled())
                             .onErrorResume(e -> Mono.fromRunnable(
@@ -152,7 +169,7 @@ public class GDEventLoop {
                             return;
                         }
                     });
-            return new GDEventLoop(eventEmitter, disposable);
+            return new GDEventLoop(eventEmitter, scheduler, disposable);
         }
     }
 }

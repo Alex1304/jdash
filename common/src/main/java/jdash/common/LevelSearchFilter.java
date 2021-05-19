@@ -94,9 +94,8 @@ public final class LevelSearchFilter {
     /**
      * Returns a copy of this {@link LevelSearchFilter} with the given song filter.
      *
-     * @param songId   the ID of the song to filter on. If {@link Toggle#CUSTOM_SONG} is absent, then
-     *                 it refers to the index of the level that has the song in game (Stereo Madness is 0, Back On Track
-     *                 is 1, and so on)
+     * @param songId the ID of the song to filter on. If {@link Toggle#CUSTOM_SONG} is absent, then it refers to the
+     *               index of the level that has the song in game (Stereo Madness is 0, Back On Track is 1, and so on)
      * @return a new LevelSearchFilter with the updated filters
      */
     public LevelSearchFilter withSongFilter(long songId) {

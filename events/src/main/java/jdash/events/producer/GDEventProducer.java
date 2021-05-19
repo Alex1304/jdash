@@ -2,8 +2,6 @@ package jdash.events.producer;
 
 import jdash.client.GDClient;
 import jdash.events.object.*;
-import jdash.events.object.AwardedRemove;
-import jdash.events.object.AwardedUpdate;
 import reactor.core.publisher.Flux;
 
 /**

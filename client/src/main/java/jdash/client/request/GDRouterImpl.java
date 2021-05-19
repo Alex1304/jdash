@@ -3,6 +3,7 @@ package jdash.client.request;
 import jdash.client.exception.HttpResponseException;
 import org.reactivestreams.Subscription;
 import reactor.core.publisher.*;
+import reactor.core.scheduler.Scheduler;
 import reactor.netty.ByteBufFlux;
 import reactor.netty.http.client.HttpClient;
 import reactor.util.Logger;
@@ -10,7 +11,7 @@ import reactor.util.Loggers;
 
 import java.time.Duration;
 
-class GDRouterImpl implements GDRouter {
+class GDRouterImpl extends BaseSubscriber<RequestWithCallback> implements GDRouter {
 
     private static final Logger LOGGER = Loggers.getLogger(GDRouterImpl.class);
     private static final Sinks.EmitFailureHandler RETRY_NON_SERIALIZED =
@@ -18,12 +19,15 @@ class GDRouterImpl implements GDRouter {
 
     private final RequestLimiter limiter;
     private final Duration timeout;
+    private final Scheduler scheduler;
     private final HttpClient httpClient;
     private final Sinks.Many<RequestWithCallback> requestQueue = Sinks.many().multicast().onBackpressureBuffer();
+    private Subscription subscription;
 
-    public GDRouterImpl(RequestLimiter limiter, Duration timeout, String baseUrl) {
+    public GDRouterImpl(RequestLimiter limiter, Duration timeout, String baseUrl, Scheduler scheduler) {
         this.limiter = limiter;
         this.timeout = timeout;
+        this.scheduler = scheduler;
         var httpClient = HttpClient.create()
                 .baseUrl(baseUrl)
                 .headers(h -> {
@@ -34,7 +38,7 @@ class GDRouterImpl implements GDRouter {
             httpClient = httpClient.secure();
         }
         this.httpClient = httpClient;
-        requestQueue.asFlux().subscribe(new RequestQueueSubscriber());
+        requestQueue.asFlux().subscribe(this);
     }
 
     @Override
@@ -53,68 +57,65 @@ class GDRouterImpl implements GDRouter {
                 case FAIL_ZERO_SUBSCRIBER:
                     return Mono.error(new Sinks.EmissionException(result, "Unable to push request to queue"));
             }
+            var mono = callback.asMono().publishOn(scheduler);
             if (timeout != null) {
-                return callback.asMono().timeout(timeout);
+                return mono.timeout(timeout);
             }
-            return callback.asMono();
+            return mono;
         }
     }
 
-    private static class RequestWithCallback {
-
-        private final GDRequest request;
-        private final Sinks.One<String> callback;
-
-        private RequestWithCallback(GDRequest request, Sinks.One<String> callback) {
-            this.request = request;
-            this.callback = callback;
-        }
+    @Override
+    protected void hookOnSubscribe(Subscription subscription) {
+        this.subscription = subscription;
+        subscription.request(1);
     }
 
-    private class RequestQueueSubscriber extends BaseSubscriber<RequestWithCallback> {
-
-        private Subscription subscription;
-
-        @Override
-        protected void hookOnSubscribe(Subscription subscription) {
-            this.subscription = subscription;
-            subscription.request(1);
-        }
-
-        @Override
-        protected void hookOnNext(RequestWithCallback value) {
-            limiter.fire();
-            var request = value.request;
-            var callback = value.callback;
-            httpClient.doAfterRequest((httpClientRequest, connection) -> LOGGER.debug("Request sent: {}", request))
-                    .post()
-                    .uri(request.getUri())
-                    .send(ByteBufFlux.fromString(Flux.just(request.toRequestString())))
-                    .responseSingle(((httpClientResponse, byteBufMono) -> {
-                        if (httpClientResponse.status().code() / 100 != 2) {
-                            return Mono.error(new HttpResponseException(httpClientResponse.status()));
+    @Override
+    protected void hookOnNext(RequestWithCallback value) {
+        limiter.fire();
+        var request = value.request;
+        var callback = value.callback;
+        httpClient.doAfterRequest((httpClientRequest, connection) -> LOGGER.debug("Request sent: {}", request))
+                .post()
+                .uri(request.getUri())
+                .send(ByteBufFlux.fromString(Flux.just(request.toRequestString())))
+                .responseSingle(((httpClientResponse, byteBufMono) -> {
+                    if (httpClientResponse.status().code() / 100 != 2) {
+                        return Mono.error(new HttpResponseException(httpClientResponse.status()));
+                    }
+                    return byteBufMono.asString().defaultIfEmpty("");
+                }))
+                .doFinally(signalType -> {
+                    if (subscription != null) {
+                        var remaining = limiter.remaining();
+                        if (remaining.getRemainingPermits() > 0) {
+                            subscription.request(1);
+                        } else {
+                            Mono.delay(remaining.getTimeLeftBeforeNextPermit())
+                                    .subscribe(__ -> subscription.request(1));
                         }
-                        return byteBufMono.asString().defaultIfEmpty("");
-                    }))
-                    .doFinally(signalType -> {
-                        if (subscription != null) {
-                            var remaining = limiter.remaining();
-                            if (remaining.getRemainingPermits() > 0) {
-                                subscription.request(1);
-                            } else {
-                                Mono.delay(remaining.getTimeLeftBeforeNextPermit())
-                                        .subscribe(__ -> subscription.request(1));
-                            }
-                        }
-                    })
-                    .subscribe(response -> callback.emitValue(response, RETRY_NON_SERIALIZED),
-                            error -> callback.emitError(error, RETRY_NON_SERIALIZED),
-                            () -> callback.emitEmpty(RETRY_NON_SERIALIZED));
-        }
+                    }
+                })
+                .subscribe(response -> callback.emitValue(response, RETRY_NON_SERIALIZED),
+                        error -> callback.emitError(error, RETRY_NON_SERIALIZED),
+                        () -> callback.emitEmpty(RETRY_NON_SERIALIZED));
+    }
 
-        @Override
-        protected void hookFinally(SignalType type) {
-            LOGGER.error("Request queue subscription has been terminated with signal {}", type);
-        }
+    @Override
+    protected void hookFinally(SignalType type) {
+        LOGGER.error("Request queue subscription has been terminated with signal {}", type);
+    }
+
+}
+
+class RequestWithCallback {
+
+    final GDRequest request;
+    final Sinks.One<String> callback;
+
+    RequestWithCallback(GDRequest request, Sinks.One<String> callback) {
+        this.request = request;
+        this.callback = callback;
     }
 }

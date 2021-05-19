@@ -15,7 +15,7 @@ import static jdash.common.internal.Indexes.*;
 
 public final class InternalUtils {
 
-    private static final String CHAR_TABLE= "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    private static final String CHAR_TABLE = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
     private InternalUtils() {
     }
@@ -126,12 +126,12 @@ public final class InternalUtils {
     public static String b64Encode(String str) {
         return Base64.getUrlEncoder().encodeToString(str.getBytes());
     }
-    
+
     public static <T> T parseIndex(String str, T[] array) {
         var value = Integer.parseInt(str);
         return array[value >= array.length ? 0 : value];
     }
-    
+
     public static GDLevel buildLevel(Map<Integer, String> data, Map<Long, String> structuredCreatorsInfo,
                                      Map<Long, GDSong> structuredSongsInfo) {
         requireKeys(data, LEVEL_ID, LEVEL_NAME, LEVEL_CREATOR_ID, LEVEL_DESCRIPTION, LEVEL_DIFFICULTY,

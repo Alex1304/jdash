@@ -94,6 +94,7 @@ public final class Indexes {
     public static final int COMMENT_PERCENTAGE = 10;
     public static final int COMMENT_AUTHOR_ROLE = 11;
     public static final int COMMENT_COLOR = 12;
+
     private Indexes() {
     }
 }

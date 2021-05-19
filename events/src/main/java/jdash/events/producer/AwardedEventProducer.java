@@ -44,6 +44,12 @@ class AwardedEventProducer implements GDEventProducer {
                 .collect(Collectors.toUnmodifiableSet());
     }
 
+    @SafeVarargs
+    private static BiPredicate<GDLevel, GDLevel> haveDifferentFields(Function<GDLevel, ?>... fieldGetters) {
+        return (l1, l2) -> Arrays.stream(fieldGetters)
+                .anyMatch(fieldGetter -> !fieldGetter.apply(l1).equals(fieldGetter.apply(l2)));
+    }
+
     @Override
     public Flux<Object> produce(GDClient client) {
         return Mono.zip(
@@ -85,12 +91,6 @@ class AwardedEventProducer implements GDEventProducer {
                             .map(function(ImmutableAwardedUpdate::of));
                     return Flux.concat(added, removed, updated);
                 }));
-    }
-
-    @SafeVarargs
-    private static BiPredicate<GDLevel, GDLevel> haveDifferentFields(Function<GDLevel, ?>... fieldGetters) {
-        return (l1, l2) -> Arrays.stream(fieldGetters)
-                .anyMatch(fieldGetter -> !fieldGetter.apply(l1).equals(fieldGetter.apply(l2)));
     }
 
     /**

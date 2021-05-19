@@ -23,6 +23,21 @@ public final class GDClientTest {
     private GDClient client;
     private GDClient authClient;
 
+    /* Not part of unit tests, this is only to test the real router implementation */
+    public static void main(String[] args) {
+        var client = GDClient.create()
+                .withRouter(GDRouter.builder()
+                        .setRequestLimiter(RequestLimiter.of(1, Duration.ofSeconds(1)))
+                        .setRequestTimeout(Duration.ofSeconds(3))
+                        .setBaseUrl("https://gdps.alex1304.com/database")
+                        .build());
+        Flux.range(0, 6)
+                .flatMap(__ -> client.findLevelById(32)
+                        .doOnNext(next -> System.out.println(Thread.currentThread().getName()))
+                        .doOnNext(System.out::println))
+                .blockLast();
+    }
+
     @BeforeEach
     public void setUp() {
         cache = new GDCacheMockUp();
@@ -30,7 +45,7 @@ public final class GDClientTest {
         client = GDClient.create()
                 .withCache(cache)
                 .withRouter(router);
-        authClient = client.withAuthentication(1,1, "test");
+        authClient = client.withAuthentication(1, 1, "test");
     }
 
     @Test
@@ -48,7 +63,7 @@ public final class GDClientTest {
 
         var response2 = client.findLevelById(10565740).block(); // Make the same request again
         assertEquals(1, router.getRequestCount()); // Check that it didn't hit the router (requestCount didn't
-                                                            // increment). It means it properly hit the cache.
+        // increment). It means it properly hit the cache.
         assertEquals(response2, response); // Check the new response is consistent with the first one
 
         cache.clear();
@@ -344,17 +359,5 @@ public final class GDClientTest {
         assertNotNull(actual);
         assertFalse(actual.get(0).leaderboardRank().isEmpty());
         assertEquals(12537, actual.get(0).leaderboardRank().orElseThrow());
-    }
-
-    public static void main(String[] args) {
-        var client = GDClient.create()
-                .withRouter(GDRouter.builder()
-                        .setRequestLimiter(RequestLimiter.of(1,  Duration.ofSeconds(1)))
-                        .setRequestTimeout(Duration.ofSeconds(3))
-                        .setBaseUrl("https://gdps.alex1304.com/database")
-                        .build());
-        Flux.range(0, 6)
-                .flatMap(__ -> client.findLevelById(32).doOnNext(System.out::println))
-                .blockLast();
     }
 }

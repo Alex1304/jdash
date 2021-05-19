@@ -1,6 +1,8 @@
 package jdash.client.request;
 
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Scheduler;
+import reactor.core.scheduler.Schedulers;
 import reactor.util.annotation.Nullable;
 
 import java.time.Duration;
@@ -46,6 +48,7 @@ public interface GDRouter {
         private RequestLimiter limiter;
         private Duration timeout;
         private String baseUrl;
+        private Scheduler scheduler;
 
         private Builder() {
         }
@@ -63,9 +66,10 @@ public interface GDRouter {
         }
 
         /**
-         * Sets a timeout for each request. Any request exceeding the duration will emit {@link TimeoutException}.
+         * Sets a timeout for each request. Any request exceeding the duration will emit {@link TimeoutException}. By
+         * default, does not apply a timeout and lets requests run indefinitely.
          *
-         * @param timeout the duration of the timeout to set
+         * @param timeout the duration of the timeout to set, or <code>null</code> to apply none
          * @return this builder
          */
         public Builder setRequestTimeout(@Nullable Duration timeout) {
@@ -75,13 +79,25 @@ public interface GDRouter {
 
         /**
          * Sets a custom base URL to redirect requests to. Useful to configure the client for a Geometry Dash private
-         * server (GDPS).
+         * server (GDPS). By default, uses {@link GDRequests#BASE_URL}.
          *
-         * @param baseUrl the base URL
+         * @param baseUrl the base URL, or <code>null</code> to use default
          * @return this builder
          */
         public Builder setBaseUrl(@Nullable String baseUrl) {
             this.baseUrl = baseUrl;
+            return this;
+        }
+
+        /**
+         * Sets a scheduler that will determine which thread the requests will be executed on. By default, runs on
+         * {@link Schedulers#boundedElastic()} in order to allow for blocking calls.
+         *
+         * @param scheduler a scheduler, or <code>null</code> to use default
+         * @return this builder
+         */
+        public Builder setScheduler(@Nullable Scheduler scheduler) {
+            this.scheduler = scheduler;
             return this;
         }
 
@@ -93,7 +109,8 @@ public interface GDRouter {
         public GDRouter build() {
             var limiter = Objects.requireNonNullElse(this.limiter, RequestLimiter.none());
             var baseUrl = Objects.requireNonNullElse(this.baseUrl, GDRequests.BASE_URL);
-            return new GDRouterImpl(limiter, timeout, baseUrl);
+            var scheduler = Objects.requireNonNullElse(this.scheduler, Schedulers.boundedElastic());
+            return new GDRouterImpl(limiter, timeout, baseUrl, scheduler);
         }
     }
 }

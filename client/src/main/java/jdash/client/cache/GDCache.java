@@ -56,7 +56,7 @@ public interface GDCache {
      * Puts a new object in the cache, associated with the given request.
      *
      * @param request the request
-     * @param cached the object to cache
+     * @param cached  the object to cache
      */
     void put(GDRequest request, Object cached);
 
