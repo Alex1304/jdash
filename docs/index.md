@@ -2,13 +2,12 @@
 
 ## Presentation
 
-JDash is a public Java library for the Geometry Dash API. 
-Geometry Dash is a platform game for PC and mobile made by RobTopGames.
-This game has online features such as levels, player stats, friends and private messaging system, etc.
-The point of this library is to access online data from the game and process them in your own Java program.
-This library hasn't been made in any form of partnership with RobTopGames. This means that it has absolutely
-no control over the Geometry Dash API itself. This library shall be actively updated to prevent any incompatibility
-or dysfunction due to a major change of the API on the game's side.
+JDash is a public Java library for the Geometry Dash API. Geometry Dash is a platform game for PC and mobile made by
+RobTopGames. This game has online features such as levels, player stats, friends and private messaging system, etc. The
+point of this library is to access online data from the game and process them in your own Java program. This library
+hasn't been made in any form of partnership with RobTopGames. This means that it has absolutely no control over the
+Geometry Dash API itself. This library shall be actively updated to prevent any incompatibility or dysfunction due to a
+major change of the API on the game's side.
 
 ## Credits
 
