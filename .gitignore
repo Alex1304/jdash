@@ -27,6 +27,7 @@
 # hidden files
 .*
 !.gitignore
+!.github
 
 # Maven
 target/
