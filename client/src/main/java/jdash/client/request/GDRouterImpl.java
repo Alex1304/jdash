@@ -2,13 +2,16 @@ package jdash.client.request;
 
 import jdash.client.exception.HttpResponseException;
 import org.reactivestreams.Subscription;
+import reactor.core.Exceptions;
 import reactor.core.publisher.*;
 import reactor.core.scheduler.Scheduler;
 import reactor.netty.ByteBufFlux;
 import reactor.netty.http.client.HttpClient;
 import reactor.util.Logger;
 import reactor.util.Loggers;
+import reactor.util.retry.Retry;
 
+import java.io.IOException;
 import java.time.Duration;
 
 class GDRouterImpl extends BaseSubscriber<RequestWithCallback> implements GDRouter {
@@ -86,6 +89,11 @@ class GDRouterImpl extends BaseSubscriber<RequestWithCallback> implements GDRout
                     }
                     return byteBufMono.asString().defaultIfEmpty("");
                 }))
+                .retryWhen(Retry.backoff(10, Duration.ofMillis(100))
+                        .filter(IOException.class::isInstance)
+                        .doAfterRetry(retrySignal -> LOGGER.warn("Retried attempt {}/{} for failed request {} [{}]",
+                                retrySignal.totalRetries(), 10, request, retrySignal.failure())))
+                .onErrorMap(IOException.class, e -> Exceptions.retryExhausted("Giving up after 10 I/O failures", e))
                 .doFinally(signalType -> {
                     if (subscription != null) {
                         var remaining = limiter.remaining();

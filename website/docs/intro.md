@@ -1,11 +1,11 @@
-# JDash
+---
+title: Introduction
+slug: /
+---
 
-![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/Alex1304/jdash?sort=semver)
-[![Maven Central](https://img.shields.io/maven-central/v/com.alex1304.jdash/jdash.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.alex1304.jdash%22%20AND%20a:%22jdash%22)
-![License](https://img.shields.io/github/license/Alex1304/jdash)
-[![javadoc](https://javadoc.io/badge2/com.alex1304.jdash/jdash-client/javadoc.svg)](https://javadoc.io/doc/com.alex1304.jdash/jdash-client)
+## What is JDash?
 
-A reactive Geometry Dash API wrapper for Java.
+JDash is a Java library that allows to collect and process data related to the popular platform game Geometry Dash. This library aims at providing Java developers tools to deal with game data without too much effort, with incentives to enforce good practices of Java development, such as immutability, proper use of null values, and design patterns.
 
 ## Overview
 
@@ -14,16 +14,6 @@ JDash is a multi-module library **requiring [JDK 11](https://adoptopenjdk.net/?v
 ### JDash Common module
 
 Contains utility classes and data types to encode the different entities of Geometry Dash (levels, users...) required by all other modules.
-
-Maven dependency (**if you are already using one of the other modules, you don't need to add this dependency as other modules transitively depend on it**):
-
-```xml
-<dependency>
-    <groupId>com.alex1304.jdash</groupId>
-    <artifactId>jdash-common</artifactId>
-    <version>${version}</version> <!-- replace with latest version -->
-</dependency>
-```
 
 ### JDash Client module
 
@@ -38,16 +28,6 @@ System.out.println(level);
 
 // But we can also choose to make it asychronous and non-blocking
 client.getUserProfile(98006).subscribe(System.out::println); // will not block
-```
-
-Maven dependency:
-
-```xml
-<dependency>
-    <groupId>com.alex1304.jdash</groupId>
-    <artifactId>jdash-client</artifactId>
-    <version>${version}</version> <!-- replace with latest version -->
-</dependency>
 ```
 
 ### JDash Events module
@@ -65,16 +45,6 @@ eventLoop.on(AwardedAdd.class)
 eventLoop.on(DailyLevelChange.class)
         .subscribe(event -> System.out.println("New Daily level: "
                 + event.after().name()));
-```
-
-Maven dependency:
-
-```xml
-<dependency>
-    <groupId>com.alex1304.jdash</groupId>
-    <artifactId>jdash-events</artifactId>
-    <version>${version}</version> <!-- replace with latest version -->
-</dependency>
 ```
 
 ### JDash Graphics module
@@ -99,38 +69,4 @@ Result:
 
 ![icon](https://i.imgur.com/jZZdkRu.png)
 
-Maven dependency:
-
-```xml
-<dependency>
-    <groupId>com.alex1304.jdash</groupId>
-    <artifactId>jdash-graphics</artifactId>
-    <version>${version}</version> <!-- replace with latest version -->
-</dependency>
-```
-
-## Documentation
-
-The full documentation is available at: https://jdash.alex1304.com
-
-Javadoc:
-* For the common module: https://javadoc.io/doc/com.alex1304.jdash/jdash-common
-* For the client module: https://javadoc.io/doc/com.alex1304.jdash/jdash-client
-* For the events module: https://javadoc.io/doc/com.alex1304.jdash/jdash-events
-* For the graphics module: https://javadoc.io/doc/com.alex1304.jdash/jdash-graphics
-
-## License
-
-This project is licensed under the MIT licence.
-
-## Contribute
-
-Have a feature to suggest or a bug to report ? Issues and pull requests are more than welcome! Make sure to follow the template and share your ideas.
-
-## Contact
-
-E-mail: mirandaa1304@gmail.com
-
-Discord: Alex1304#9704
-
-Twitter: @gd_alex1304
+Read the next guides to have more in-depth understanding on each of the modules described above.

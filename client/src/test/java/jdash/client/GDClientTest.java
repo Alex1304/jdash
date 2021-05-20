@@ -1,5 +1,6 @@
 package jdash.client;
 
+import jdash.client.cache.GDCache;
 import jdash.client.exception.GDClientException;
 import jdash.client.request.GDRouter;
 import jdash.client.request.RequestLimiter;
@@ -30,7 +31,8 @@ public final class GDClientTest {
                         .setRequestLimiter(RequestLimiter.of(1, Duration.ofSeconds(1)))
                         .setRequestTimeout(Duration.ofSeconds(3))
                         .setBaseUrl("https://gdps.alex1304.com/database")
-                        .build());
+                        .build())
+                .withCache(GDCache.caffeine(caffeine -> caffeine.expireAfterAccess(Duration.ofMinutes(10))));
         Flux.range(0, 6)
                 .flatMap(__ -> client.findLevelById(32)
                         .doOnNext(next -> System.out.println(Thread.currentThread().getName()))

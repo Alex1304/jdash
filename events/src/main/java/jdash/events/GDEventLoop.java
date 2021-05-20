@@ -20,7 +20,7 @@ import java.util.Set;
  * The event loop is in charge of executing {@link GDEventProducer}s at regular intervals, and provides a centralized
  * way to subscribe to all the events emitted by them. The loop starts as soon as {@link Builder#buildAndStart()} is
  * called, and keeps running until {@link #stop()} is invoked. In order to avoid any inconsistencies when invoking the
- * producers repeatedly, the cache of the client is disabled/not used.
+ * producers repeatedly, the cache of the client is internally bypassed via {@link GDClient#withCacheDisabled()}.
  */
 public class GDEventLoop {
 
@@ -99,7 +99,7 @@ public class GDEventLoop {
         private Scheduler scheduler;
 
         private Builder(GDClient client) {
-            this.client = Objects.requireNonNull(client);
+            this.client = Objects.requireNonNull(client).withCacheDisabled();
         }
 
         /**
@@ -150,9 +150,9 @@ public class GDEventLoop {
             var scheduler = Objects.requireNonNullElse(this.scheduler, Schedulers.boundedElastic());
             var disposable = Flux.interval(interval)
                     .flatMapIterable(__ -> eventProducers)
-                    .flatMap(producer -> producer.produce(client.withCacheDisabled())
+                    .flatMap(producer -> producer.produce(client)
                             .onErrorResume(e -> Mono.fromRunnable(
-                                    () -> LOGGER.error("Error while producing events", e))))
+                                    () -> LOGGER.error("Error while producing event(s)", e))))
                     .subscribe(object -> {
                         for (; ; ) {
                             Sinks.EmitResult result;
