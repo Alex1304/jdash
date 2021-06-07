@@ -74,6 +74,10 @@ public final class GDClientTest {
         client.withCacheDisabled().findLevelById(10565740).block(); // Make the same request but with cache off
         assertEquals(2, router.getRequestCount()); // It should be hitting the router
         assertTrue(cache.getMap().isEmpty()); // The cache should still be empty
+
+        client.withWriteOnlyCache().findLevelById(10565740).block(); // Make the same request but with write-only
+        assertEquals(3, router.getRequestCount()); // It should be hitting the router
+        assertEquals(1, cache.getMap().size()); // But the cache should not be empty
     }
 
     @Test

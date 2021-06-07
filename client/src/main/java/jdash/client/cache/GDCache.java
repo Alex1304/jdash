@@ -64,4 +64,14 @@ public interface GDCache {
      * Clears the cache completely, which will effectively remove all objects currently stored.
      */
     void clear();
+
+    /**
+     * Returns a write-only version of this cache. This means retrievals will always result in a cache miss, but write
+     * operations will be properly applied.
+     *
+     * @return a write-only {@link GDCache}
+     */
+    default GDCache writeOnly() {
+        return new WriteOnlyCache(this);
+    }
 }

@@ -117,6 +117,18 @@ public final class GDClient {
     }
 
     /**
+     * Creates a new {@link GDClient} derived from this one, but with the cache in write-only mode. When a cache is
+     * write-only, requests will always fail to find data in cache (like with {@link #withCacheDisabled()}) with the
+     * difference that it will properly save the result of the new request in cache. It can be useful when you want to
+     * forcefully refresh some data in cache.
+     *
+     * @return a new {@link GDClient}
+     */
+    public GDClient withWriteOnlyCache() {
+        return new GDClient(router, cache.writeOnly(), uniqueDeviceId, auth, followedAccountIds);
+    }
+
+    /**
      * Creates a new {@link GDClient} derived from this one, but with the specified unique device ID. This ID is used by
      * some requests to uniquely identify the device used to play Geometry Dash.
      *
