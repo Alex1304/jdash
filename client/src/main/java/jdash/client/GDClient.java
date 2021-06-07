@@ -141,7 +141,8 @@ public final class GDClient {
      */
     public GDClient withAuthentication(long playerId, long accountId, String password) {
         Objects.requireNonNull(password);
-        return new GDClient(router, cache, uniqueDeviceId, new AuthenticationInfo(playerId, accountId, password),
+        return new GDClient(router, cache, uniqueDeviceId, new AuthenticationInfo(playerId, accountId, null,
+                password),
                 followedAccountIds);
     }
 
@@ -196,6 +197,16 @@ public final class GDClient {
      */
     public boolean isAuthenticated() {
         return auth != null;
+    }
+
+    /**
+     * Gets the authentication info of this client. This includes the player ID, the account ID, the account password,
+     * as well as the account username if the authentication happened via {@link #login(String, String)}.
+     *
+     * @return an {@link Optional} containing an {@link AuthenticationInfo} if present
+     */
+    public Optional<AuthenticationInfo> getAuthenticationInfo() {
+        return Optional.ofNullable(auth);
     }
 
     /**
@@ -495,7 +506,7 @@ public final class GDClient {
      * error occurs.
      * @throws IllegalStateException if this client is not authenticated
      */
-    public Mono<GDPrivateMessageDownload> downloadPrivateMessage(int messageId) {
+    public Mono<GDPrivateMessageDownload> downloadPrivateMessage(long messageId) {
         requireAuthentication();
         return Mono.defer(() -> GDRequest.of(DOWNLOAD_GJ_MESSAGE_20)
                 .addParameters(authParams())
@@ -653,16 +664,59 @@ public final class GDClient {
                 .transform(GDClient::validatePositiveInteger));
     }
 
-    private static class AuthenticationInfo {
+    public static class AuthenticationInfo {
 
         private final long playerId;
         private final long accountId;
+        private final String username;
+        private final String password;
         private final String gjp;
 
-        private AuthenticationInfo(long playerId, long accountId, String password) {
+        private AuthenticationInfo(long playerId, long accountId, @Nullable String username, String password) {
             this.playerId = playerId;
             this.accountId = accountId;
+            this.username = username;
+            this.password = password;
             this.gjp = encodeAccountPassword(password);
+        }
+
+        /**
+         * Gets the player ID of this authenticated client.
+         *
+         * @return the player ID
+         */
+        public long getPlayerId() {
+            return playerId;
+        }
+
+        /**
+         * Gets the account ID of this authenticated client.
+         *
+         * @return the account ID
+         */
+        public long getAccountId() {
+            return accountId;
+        }
+
+        /**
+         * Gets the username of this authenticated client. This information is only available if the authentication
+         * happened via {@link #login(String, String)}, it won't be available if done via {@link
+         * #withAuthentication(long, long, String)}.
+         *
+         * @return the username, if present
+         */
+        public Optional<String> getUsername() {
+            return Optional.ofNullable(username);
+        }
+
+        /**
+         * Gets the password of this authenticated client. Be careful when calling this method as the value returned is
+         * sensitive data.
+         *
+         * @return the account password
+         */
+        public String getPassword() {
+            return password;
         }
     }
 }
