@@ -11,7 +11,7 @@ class TimelyInfoResponseDeserializer implements Function<String, GDTimelyInfo> {
 
     @Override
     public GDTimelyInfo apply(String response) {
-        if (response.length() < 3) {
+        if (!response.matches("\\d+\\|\\d+")) {
             throw new ActionFailedException(response, "No daily/weekly is currently set");
         }
         var tokens = response.split("\\|");

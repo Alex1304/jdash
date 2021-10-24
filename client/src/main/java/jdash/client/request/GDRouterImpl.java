@@ -13,19 +13,19 @@ import reactor.util.retry.Retry;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.util.UUID;
+
+import static reactor.core.publisher.Sinks.EmitFailureHandler.FAIL_FAST;
 
 class GDRouterImpl extends BaseSubscriber<RequestWithCallback> implements GDRouter {
 
     private static final Logger LOGGER = Loggers.getLogger(GDRouterImpl.class);
-    private static final Sinks.EmitFailureHandler RETRY_NON_SERIALIZED =
-            (signalType, emitResult) -> emitResult == Sinks.EmitResult.FAIL_NON_SERIALIZED;
 
     private final RequestLimiter limiter;
     private final Duration timeout;
     private final Scheduler scheduler;
     private final HttpClient httpClient;
     private final Sinks.Many<RequestWithCallback> requestQueue = Sinks.many().multicast().onBackpressureBuffer();
-    private Subscription subscription;
 
     public GDRouterImpl(RequestLimiter limiter, Duration timeout, String baseUrl, Scheduler scheduler) {
         this.limiter = limiter;
@@ -48,29 +48,19 @@ class GDRouterImpl extends BaseSubscriber<RequestWithCallback> implements GDRout
     public Mono<String> send(GDRequest request) {
         var callback = Sinks.<String>one();
         var requestWithCallback = new RequestWithCallback(request, callback);
-        for (; ; ) {
-            var result = requestQueue.tryEmitNext(requestWithCallback);
-            switch (result) {
-                case FAIL_NON_SERIALIZED:
-                    Thread.onSpinWait();
-                    continue;
-                case FAIL_TERMINATED:
-                case FAIL_OVERFLOW:
-                case FAIL_CANCELLED:
-                case FAIL_ZERO_SUBSCRIBER:
-                    return Mono.error(new Sinks.EmissionException(result, "Unable to push request to queue"));
-            }
+        final var result = requestQueue.tryEmitNext(requestWithCallback);
+        if (result.isSuccess()) {
             var mono = callback.asMono().publishOn(scheduler);
             if (timeout != null) {
                 return mono.timeout(timeout);
             }
             return mono;
         }
+        return Mono.error(new Sinks.EmissionException(result));
     }
 
     @Override
     protected void hookOnSubscribe(Subscription subscription) {
-        this.subscription = subscription;
         subscription.request(1);
     }
 
@@ -79,7 +69,9 @@ class GDRouterImpl extends BaseSubscriber<RequestWithCallback> implements GDRout
         limiter.fire();
         var request = value.request;
         var callback = value.callback;
-        httpClient.doAfterRequest((httpClientRequest, connection) -> LOGGER.debug("Request sent: {}", request))
+        final var requestId = UUID.randomUUID().toString();
+        httpClient.doAfterRequest((httpClientRequest, connection) -> LOGGER
+                        .debug("[requestId: {}] Request sent: {}", requestId, request))
                 .post()
                 .uri(request.getUri())
                 .send(ByteBufFlux.fromString(Flux.just(request.toRequestString())))
@@ -95,19 +87,20 @@ class GDRouterImpl extends BaseSubscriber<RequestWithCallback> implements GDRout
                                 retrySignal.totalRetries(), 10, request, retrySignal.failure())))
                 .onErrorMap(IOException.class, e -> Exceptions.retryExhausted("Giving up after 10 I/O failures", e))
                 .doFinally(signalType -> {
-                    if (subscription != null) {
-                        var remaining = limiter.remaining();
-                        if (remaining.getRemainingPermits() > 0) {
-                            subscription.request(1);
-                        } else {
-                            Mono.delay(remaining.getTimeLeftBeforeNextPermit())
-                                    .subscribe(__ -> subscription.request(1));
-                        }
+                    var remaining = limiter.remaining();
+                    if (remaining.getRemainingPermits() > 0) {
+                        request(1);
+                    } else {
+                        Mono.delay(remaining.getTimeLeftBeforeNextPermit())
+                                .subscribe(__ -> request(1));
                     }
                 })
-                .subscribe(response -> callback.emitValue(response, RETRY_NON_SERIALIZED),
-                        error -> callback.emitError(error, RETRY_NON_SERIALIZED),
-                        () -> callback.emitEmpty(RETRY_NON_SERIALIZED));
+                .subscribe(response -> {
+                            LOGGER.trace("[requestId: {}] Received response: {}", requestId, response);
+                            callback.emitValue(response, FAIL_FAST);
+                        },
+                        error -> callback.emitError(error, FAIL_FAST),
+                        () -> callback.emitEmpty(FAIL_FAST));
     }
 
     @Override

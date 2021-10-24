@@ -7,11 +7,12 @@ module jdash.client {
     exports jdash.client.request;
 
     requires io.netty.codec.http;
+    requires java.logging;
     requires reactor.extra;
+    requires reactor.netty.core;
     requires transitive com.github.benmanes.caffeine;
     requires transitive jdash.common;
     requires transitive org.reactivestreams;
     requires transitive reactor.core;
     requires transitive reactor.netty.http;
-    requires reactor.netty.core;
 }

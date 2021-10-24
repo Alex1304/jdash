@@ -56,8 +56,9 @@ public final class InternalUtils {
      * @return a Map of Long, String
      */
     public static Map<Long, String> structureCreatorsInfo(String creatorsInfoRD) {
-        if (creatorsInfoRD.isEmpty())
+        if (!creatorsInfoRD.matches("\\d+:\\w+:\\d+(\\|\\d+:\\w+:\\d+)*")) {
             return Collections.emptyMap();
+        }
 
         String[] arrayCreatorsRD = creatorsInfoRD.split("\\|");
         Map<Long, String> structuredCreatorsInfo = new HashMap<>();
