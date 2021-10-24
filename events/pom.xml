@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.alex1304.jdash</groupId>
         <artifactId>jdash</artifactId>
-        <version>4.0.4-SNAPSHOT</version>
+        <version>4.0.4</version>
     </parent>
     <artifactId>jdash-events</artifactId>
 
