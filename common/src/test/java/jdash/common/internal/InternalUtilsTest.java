@@ -7,10 +7,10 @@ import java.util.Map;
 import static jdash.common.internal.InternalUtils.structureCreatorsInfo;
 import static org.junit.jupiter.api.Assertions.*;
 
-class InternalUtilsTest {
+public final class InternalUtilsTest {
 
     @Test
-    void structureCreatorsInfoTest() {
+    public void structureCreatorsInfoTest() {
         // Invalid cases, should always return empty maps
         assertEquals(Map.of(), structureCreatorsInfo(""), "empty string");
         assertEquals(Map.of(), structureCreatorsInfo("quizgf5410qz!!???"), "invalid string");
