@@ -56,7 +56,7 @@ public final class InternalUtils {
      * @return a Map of Long, String
      */
     public static Map<Long, String> structureCreatorsInfo(String creatorsInfoRD) {
-        if (!creatorsInfoRD.matches("\\d+:\\w+:\\d+(\\|\\d+:\\w+:\\d+)*")) {
+        if (!creatorsInfoRD.matches("\\d+:[^:|]+:\\d+(\\|\\d+:[^:|]+:\\d+)*")) {
             return Collections.emptyMap();
         }
 
