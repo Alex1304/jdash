@@ -41,7 +41,7 @@ public final class GDUserIconSetTest {
                 .name("Alex1304")
                 .playerId(4063664)
                 .build();
-        var iconSet = GDUserIconSet.create(user, SpriteFactory.create());
+        var iconSet = GDUserIconSet.create(user, LegacySpriteFactory.create());
         ImageIO.write(iconSet.generateIcon(IconType.BALL), "png",
                 new File(System.getProperty("java.io.tmpdir") + File.separator + "icon.png"));
     }
