@@ -1,5 +1,6 @@
 package jdash.graphics.internal;
 
+import jdash.common.IconType;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -16,5 +17,17 @@ class GraphicsUtilsTest {
         assertEquals(color.r(), 125);
         assertEquals(color.g(), 255);
         assertEquals(color.b(), 0);
+    }
+
+    @Test
+    void testIJ() throws Exception {
+        GraphicsUtils.testIJ();
+        Thread.sleep(10000);
+    }
+
+    @Test
+    void testMakeSprite() throws Exception {
+        final var sf = (SpriteFactoryImpl22) SpriteFactoryImpl22.create();
+        sf.test();
     }
 }
