@@ -3,19 +3,14 @@ package jdash.graphics.internal;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ij.IJ;
 import jdash.graphics.LegacySpriteFactory;
-import jdash.graphics.exception.SpriteLoadException;
-import org.apache.commons.configuration2.builder.fluent.Configurations;
-import org.apache.commons.configuration2.ex.ConfigurationException;
-import org.apache.commons.configuration2.plist.XMLPropertyListConfiguration;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.ArrayDeque;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
+import java.util.*;
+import java.util.function.Predicate;
 
 public final class GraphicsUtils {
 
@@ -125,5 +120,69 @@ public final class GraphicsUtils {
         String[] split = tupleStr.substring(2, tupleStr.length() - 2).split("}?,\\{?");
         return new double[]{Double.parseDouble(split[0]), Double.parseDouble(split[1]), Double.parseDouble(split[2]),
                 Double.parseDouble(split[3])};
+    }
+
+    public static List<SpriteElement> orderIconLayers(List<SpriteElement> elements) {
+        final var result = new ArrayList<>(elements);
+        Collections.reverse(result);
+        pushSpriteToBackIf(result, el -> el.getPart().startsWith("2_"));
+        pullSpriteToFrontIf(result, el -> el.getType().matches("(robot|spider)") &&
+                el.getPart().matches("(02|03|04)_"));
+        dupeSpriteIf(result, el -> el.getType().equals("robot") &&
+                el.getPart().matches("(02|03|04)_"), 1);
+        dupeSpriteIf(result, el -> el.getType().equals("robot") &&
+                        el.getPart().contains("02_") && !el.getPart().contains("extra")
+                , 2);
+        pullSpriteToFrontIf(result, el -> el.getType().equals("robot") &&
+                el.getPart().contains("02_") && !el.isDuplicate());
+        pullSpriteToFrontIf(result, el -> el.getType().equals("robot") &&
+                el.getPart().contains("04_") && !el.isDuplicate());
+        pushSpriteToBackIf(result, el -> !el.getPart().startsWith("2_") && el.isDuplicate());
+        pushSpriteToBackIf(result, el -> el.getPart().startsWith("2_") && el.isDuplicate());
+        pushSpriteToBackIf(result, el -> el.getType().equals("spider") &&
+                el.getPart().contains("04_"));
+        pullSpriteToFrontIf(result, el -> el.getPart().contains("extra"));
+        pushSpriteToBackIf(result, el -> el.getPart().contains("glow"));
+        return result;
+    }
+
+
+    private static void pullSpriteToFrontIf(List<SpriteElement> spList, Predicate<SpriteElement> cond) {
+        int offset = 0;
+        for (int i = 0; i < spList.size(); i++) {
+            final var sp = spList.get(i - offset);
+            if (cond.test(sp)) {
+                spList.remove(i - offset);
+                spList.add(sp);
+                offset++;
+            }
+        }
+    }
+
+    private static void pushSpriteToBackIf(List<SpriteElement> spList, Predicate<SpriteElement> cond) {
+        for (int i = 0; i < spList.size(); i++) {
+            final var sp = spList.get(i);
+            if (cond.test(sp)) {
+                //noinspection SuspiciousListRemoveInLoop
+                spList.remove(i);
+                spList.add(0, sp);
+            }
+        }
+    }
+
+    private static void dupeSpriteIf(List<SpriteElement> spList, Predicate<SpriteElement> cond, int nbDup) {
+        final int initialSize = spList.size();
+        int offset = 0;
+        for (int i = 0; i < initialSize; i++) {
+            final var sp = spList.get(i + offset);
+            if (cond.test(sp)) {
+                var dupe = sp.duplicate();
+                for (int d = 0; d < nbDup; d++) {
+                    spList.add(0, dupe);
+                    offset++;
+                    dupe = dupe.duplicate();
+                }
+            }
+        }
     }
 }
