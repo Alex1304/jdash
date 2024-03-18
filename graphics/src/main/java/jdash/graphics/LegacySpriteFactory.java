@@ -146,44 +146,6 @@ public final class LegacySpriteFactory implements SpriteFactory {
         return sprites;
     }
 
-    private static void pullSpriteToFrontIf(List<Sprite> spList, Predicate<Sprite> cond) {
-        int offset = 0;
-        for (int i = 0; i < spList.size(); i++) {
-            Sprite sp = spList.get(i - offset);
-            if (cond.test(sp)) {
-                spList.remove(i - offset);
-                spList.add(sp);
-                offset++;
-            }
-        }
-    }
-
-    private static void pushSpriteToBackIf(List<Sprite> spList, Predicate<Sprite> cond) {
-        for (int i = 0; i < spList.size(); i++) {
-            Sprite sp = spList.get(i);
-            if (cond.test(sp)) {
-                spList.remove(i);
-                spList.add(0, sp);
-            }
-        }
-    }
-
-    private static void dupeSpriteIf(List<Sprite> spList, Predicate<Sprite> cond, int nbDup) {
-        final int initialSize = spList.size();
-        int offset = 0;
-        for (int i = 0; i < initialSize; i++) {
-            Sprite sp = spList.get(i + offset);
-            if (cond.test(sp)) {
-                Sprite dupe = sp.duplicate();
-                for (int d = 0; d < nbDup; d++) {
-                    spList.add(0, dupe);
-                    offset++;
-                    dupe = dupe.duplicate();
-                }
-            }
-        }
-    }
-
     private static Image applyColor(Image img, Color color) {
         return Toolkit.getDefaultToolkit().createImage(new FilteredImageSource(img.getSource(), new RGBImageFilter() {
             @Override
@@ -265,23 +227,7 @@ public final class LegacySpriteFactory implements SpriteFactory {
         return Integer.parseInt(str);
     }
 
-    private void orderSprites(List<Sprite> spList) {
-        Collections.reverse(spList);
-        pushSpriteToBackIf(spList, sp -> sp.getName().contains("_2_"));
-        pullSpriteToFrontIf(spList, sp -> sp.getName().matches("(robot|spider)_[0-9]{2,3}_(02|03|04)_.*"));
-        dupeSpriteIf(spList, sp -> sp.getName().matches("robot_[0-9]{2,3}_(02|03|04)_.*"), 1);
-        dupeSpriteIf(spList, sp -> sp.getName().matches("spider_[0-9]{2,3}_02_.*") && !sp.getName().contains("extra")
-                , 2);
-        pullSpriteToFrontIf(spList, sp -> sp.getName().matches("robot_[0-9]{2,3}_02_.*") && !sp.getName().endsWith("D"
-        ));
-        pullSpriteToFrontIf(spList, sp -> sp.getName().matches("robot_[0-9]{2,3}_04_.*") && !sp.getName().endsWith("D"
-        ));
-        pushSpriteToBackIf(spList, sp -> !sp.getName().contains("_2_") && sp.getName().endsWith("D"));
-        pushSpriteToBackIf(spList, sp -> sp.getName().contains("_2_") && sp.getName().endsWith("D"));
-        pushSpriteToBackIf(spList, sp -> sp.getName().matches("spider_[0-9]{2,3}_04_.*"));
-        pullSpriteToFrontIf(spList, sp -> sp.getName().contains("extra"));
-        pushSpriteToBackIf(spList, sp -> sp.getName().contains("_glow_"));
-    }
+
 
     private Image rotate(Image img, double deg) {
         deg = deg % 360 + (Math.abs(deg) > 180 ? -Math.signum(deg) * 360 : 0);
@@ -344,7 +290,7 @@ public final class LegacySpriteFactory implements SpriteFactory {
         if (!withGlowOutline) {
             spList.removeIf(sp -> sp.getName().contains("_glow_"));
         }
-        orderSprites(spList);
+        //orderSprites(spList);
         for (Sprite sp : spList) {
             // Variables
             String name = sp.getName();

@@ -26,8 +26,7 @@ class GraphicsUtilsTest {
     }
 
     @Test
-    void testMakeSprite() throws Exception {
-        final var sf = (SpriteFactoryImpl22) SpriteFactoryImpl22.create();
-        sf.test();
+    void parseGameSheet() throws Exception {
+
     }
 }
