@@ -2,6 +2,7 @@ package jdash.graphics;
 
 import jdash.common.IconType;
 import jdash.graphics.exception.SpriteLoadException;
+import jdash.graphics.internal.GraphicsUtils;
 import org.apache.commons.configuration2.builder.fluent.Configurations;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.configuration2.plist.XMLPropertyListConfiguration;
@@ -80,7 +81,7 @@ public final class LegacySpriteFactory implements SpriteFactory {
                             if (v == null) {
                                 v = new LinkedHashMap<>();
                             }
-                            v.put(f_key, parseSimpleTuple(spritePlist.getString(f_key)));
+                            v.put(f_key, GraphicsUtils.parseSimpleTuple(spritePlist.getString(f_key)));
                             return v;
                         });
                     } else if (key.endsWith("spriteSize")) {
@@ -88,7 +89,7 @@ public final class LegacySpriteFactory implements SpriteFactory {
                             if (v == null) {
                                 v = new LinkedHashMap<>();
                             }
-                            v.put(f_key, parseSimpleTuple(spritePlist.getString(f_key)));
+                            v.put(f_key, GraphicsUtils.parseSimpleTuple(spritePlist.getString(f_key)));
                             return v;
                         });
                     } else if (key.endsWith("spriteSourceSize")) {
@@ -96,7 +97,7 @@ public final class LegacySpriteFactory implements SpriteFactory {
                             if (v == null) {
                                 v = new LinkedHashMap<>();
                             }
-                            v.put(f_key, parseSimpleTuple(spritePlist.getString(f_key)));
+                            v.put(f_key, GraphicsUtils.parseSimpleTuple(spritePlist.getString(f_key)));
                             return v;
                         });
                     } else if (key.endsWith("textureRect")) {
@@ -104,7 +105,7 @@ public final class LegacySpriteFactory implements SpriteFactory {
                             if (v == null) {
                                 v = new LinkedHashMap<>();
                             }
-                            v.put(f_key, parseDoubleTuple(spritePlist.getString(f_key)));
+                            v.put(f_key, GraphicsUtils.parseDoubleTuple(spritePlist.getString(f_key)));
                             return v;
                         });
                     } else if (key.endsWith("textureRotated")) {
@@ -201,75 +202,11 @@ public final class LegacySpriteFactory implements SpriteFactory {
         }));
     }
 
-    private static Color getGlowColor(int color1Id, int color2Id) {
+    public static Color getGlowColor(int color1Id, int color2Id) {
         if (color2Id == 15) {
             color2Id = color1Id == 15 ? 12 : color1Id;
         }
         return COLORS.get(color2Id);
-    }
-
-    private static void addGlow(BufferedImage img, int color1Id, int color2Id) {
-        // White glow if both colors are black. If color2 is black, use color1 instead.
-        final Color color = getGlowColor(color1Id, color2Id);
-        final int w = img.getWidth(), h = img.getHeight();
-        final int treshold = 120;
-        final int glowWidth = 4;
-        // create an array of distances (1 per pixel) and fill it with -1's
-        int[][] distances = new int[h][w];
-        for (int i = 0; i < h; i++) {
-            Arrays.fill(distances[i], -1);
-        }
-        // for each pixel, mark the black ones as distance 0, and add them to a deque
-        ArrayDeque<Point> deque = new ArrayDeque<>();
-        for (int y = 0; y < h; y++) {
-            for (int x = 0; x < w; x++) {
-                int data = img.getRGB(x, y);
-                int alpha = (data & 0xff000000) >> 24;
-                int red = (data & 0x00ff0000) >> 16;
-                int green = (data & 0x0000ff00) >> 8;
-                int blue = data & 0x000000ff;
-                if (red < treshold && green < treshold && blue < treshold && alpha == -1) {
-                    distances[y][x] = 0;
-                    deque.add(new Point(x, y));
-                }
-            }
-        }
-        // for each pixel in deque, look at pixels immediately around that are -1,
-        // change them to the value of distance + 1 and add them to deque
-        while (!deque.isEmpty()) {
-            Point pix = deque.remove();
-            int pixDistance = distances[pix.y][pix.x];
-            for (int y = Math.max(0, pix.y - 1); y <= Math.min(pix.y + 1, h - 1); y++) {
-                for (int x = Math.max(0, pix.x - 1); x <= Math.min(pix.x + 1, w - 1); x++) {
-                    int lookAtDistance = distances[y][x];
-                    if (lookAtDistance == -1) {
-                        distances[y][x] = pixDistance + 1;
-                        deque.add(new Point(x, y));
-                    }
-                }
-            }
-        }
-        // Colorize all pixels that have a distance value less than or equal to glowWidth
-        for (int y = 0; y < h; y++) {
-            for (int x = 0; x < w; x++) {
-                int alpha = (img.getRGB(x, y) & 0xff000000) >> 24;
-                // Apply color only if transparent pixel
-                if (alpha != -1 && alpha < treshold && distances[y][x] <= glowWidth) {
-                    img.setRGB(x, y, color.getRGB());
-                }
-            }
-        }
-    }
-
-    private static double[] parseSimpleTuple(String tupleStr) {
-        String[] split = tupleStr.substring(1, tupleStr.length() - 1).split(",");
-        return new double[]{Double.parseDouble(split[0]), Double.parseDouble(split[1])};
-    }
-
-    private static double[] parseDoubleTuple(String tupleStr) {
-        String[] split = tupleStr.substring(2, tupleStr.length() - 2).split("}?,\\{?");
-        return new double[]{Double.parseDouble(split[0]), Double.parseDouble(split[1]), Double.parseDouble(split[2]),
-                Double.parseDouble(split[3])};
     }
 
     private static Map<Integer, Color> colors() {
@@ -573,7 +510,7 @@ public final class LegacySpriteFactory implements SpriteFactory {
         }
         g.dispose();
         if (withGlowOutline && type != IconType.ROBOT && type != IconType.SPIDER) {
-            addGlow(img, color1Id, color2Id);
+            GraphicsUtils.addGlow(img, color1Id, color2Id);
         }
         return img;
     }
