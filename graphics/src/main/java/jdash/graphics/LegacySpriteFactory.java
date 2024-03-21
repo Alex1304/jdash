@@ -2,7 +2,6 @@ package jdash.graphics;
 
 import jdash.common.IconType;
 import jdash.graphics.exception.SpriteLoadException;
-import jdash.graphics.internal.GraphicsUtils;
 import org.apache.commons.configuration2.builder.fluent.Configurations;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.configuration2.plist.XMLPropertyListConfiguration;
@@ -20,6 +19,7 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.Predicate;
 
+@Deprecated
 public final class LegacySpriteFactory implements SpriteFactory {
 
     public static final Map<Integer, Color> COLORS = colors();
@@ -81,7 +81,7 @@ public final class LegacySpriteFactory implements SpriteFactory {
                             if (v == null) {
                                 v = new LinkedHashMap<>();
                             }
-                            v.put(f_key, GraphicsUtils.parseSimpleTuple(spritePlist.getString(f_key)));
+                            v.put(f_key, parseSimpleTuple(spritePlist.getString(f_key)));
                             return v;
                         });
                     } else if (key.endsWith("spriteSize")) {
@@ -89,7 +89,7 @@ public final class LegacySpriteFactory implements SpriteFactory {
                             if (v == null) {
                                 v = new LinkedHashMap<>();
                             }
-                            v.put(f_key, GraphicsUtils.parseSimpleTuple(spritePlist.getString(f_key)));
+                            v.put(f_key, parseSimpleTuple(spritePlist.getString(f_key)));
                             return v;
                         });
                     } else if (key.endsWith("spriteSourceSize")) {
@@ -97,7 +97,7 @@ public final class LegacySpriteFactory implements SpriteFactory {
                             if (v == null) {
                                 v = new LinkedHashMap<>();
                             }
-                            v.put(f_key, GraphicsUtils.parseSimpleTuple(spritePlist.getString(f_key)));
+                            v.put(f_key, parseSimpleTuple(spritePlist.getString(f_key)));
                             return v;
                         });
                     } else if (key.endsWith("textureRect")) {
@@ -105,7 +105,7 @@ public final class LegacySpriteFactory implements SpriteFactory {
                             if (v == null) {
                                 v = new LinkedHashMap<>();
                             }
-                            v.put(f_key, GraphicsUtils.parseDoubleTuple(spritePlist.getString(f_key)));
+                            v.put(f_key, parseDoubleTuple(spritePlist.getString(f_key)));
                             return v;
                         });
                     } else if (key.endsWith("textureRotated")) {
@@ -146,6 +146,44 @@ public final class LegacySpriteFactory implements SpriteFactory {
         return sprites;
     }
 
+    private static void pullSpriteToFrontIf(List<Sprite> spList, Predicate<Sprite> cond) {
+        int offset = 0;
+        for (int i = 0; i < spList.size(); i++) {
+            Sprite sp = spList.get(i - offset);
+            if (cond.test(sp)) {
+                spList.remove(i - offset);
+                spList.add(sp);
+                offset++;
+            }
+        }
+    }
+
+    private static void pushSpriteToBackIf(List<Sprite> spList, Predicate<Sprite> cond) {
+        for (int i = 0; i < spList.size(); i++) {
+            Sprite sp = spList.get(i);
+            if (cond.test(sp)) {
+                spList.remove(i);
+                spList.add(0, sp);
+            }
+        }
+    }
+
+    private static void dupeSpriteIf(List<Sprite> spList, Predicate<Sprite> cond, int nbDup) {
+        final int initialSize = spList.size();
+        int offset = 0;
+        for (int i = 0; i < initialSize; i++) {
+            Sprite sp = spList.get(i + offset);
+            if (cond.test(sp)) {
+                Sprite dupe = sp.duplicate();
+                for (int d = 0; d < nbDup; d++) {
+                    spList.add(0, dupe);
+                    offset++;
+                    dupe = dupe.duplicate();
+                }
+            }
+        }
+    }
+
     private static Image applyColor(Image img, Color color) {
         return Toolkit.getDefaultToolkit().createImage(new FilteredImageSource(img.getSource(), new RGBImageFilter() {
             @Override
@@ -164,11 +202,75 @@ public final class LegacySpriteFactory implements SpriteFactory {
         }));
     }
 
-    public static Color getGlowColor(int color1Id, int color2Id) {
+    private static Color getGlowColor(int color1Id, int color2Id) {
         if (color2Id == 15) {
             color2Id = color1Id == 15 ? 12 : color1Id;
         }
         return COLORS.get(color2Id);
+    }
+
+    private static void addGlow(BufferedImage img, int color1Id, int color2Id) {
+        // White glow if both colors are black. If color2 is black, use color1 instead.
+        final Color color = getGlowColor(color1Id, color2Id);
+        final int w = img.getWidth(), h = img.getHeight();
+        final int treshold = 120;
+        final int glowWidth = 4;
+        // create an array of distances (1 per pixel) and fill it with -1's
+        int[][] distances = new int[h][w];
+        for (int i = 0; i < h; i++) {
+            Arrays.fill(distances[i], -1);
+        }
+        // for each pixel, mark the black ones as distance 0, and add them to a deque
+        ArrayDeque<Point> deque = new ArrayDeque<>();
+        for (int y = 0; y < h; y++) {
+            for (int x = 0; x < w; x++) {
+                int data = img.getRGB(x, y);
+                int alpha = (data & 0xff000000) >> 24;
+                int red = (data & 0x00ff0000) >> 16;
+                int green = (data & 0x0000ff00) >> 8;
+                int blue = data & 0x000000ff;
+                if (red < treshold && green < treshold && blue < treshold && alpha == -1) {
+                    distances[y][x] = 0;
+                    deque.add(new Point(x, y));
+                }
+            }
+        }
+        // for each pixel in deque, look at pixels immediately around that are -1,
+        // change them to the value of distance + 1 and add them to deque
+        while (!deque.isEmpty()) {
+            Point pix = deque.remove();
+            int pixDistance = distances[pix.y][pix.x];
+            for (int y = Math.max(0, pix.y - 1); y <= Math.min(pix.y + 1, h - 1); y++) {
+                for (int x = Math.max(0, pix.x - 1); x <= Math.min(pix.x + 1, w - 1); x++) {
+                    int lookAtDistance = distances[y][x];
+                    if (lookAtDistance == -1) {
+                        distances[y][x] = pixDistance + 1;
+                        deque.add(new Point(x, y));
+                    }
+                }
+            }
+        }
+        // Colorize all pixels that have a distance value less than or equal to glowWidth
+        for (int y = 0; y < h; y++) {
+            for (int x = 0; x < w; x++) {
+                int alpha = (img.getRGB(x, y) & 0xff000000) >> 24;
+                // Apply color only if transparent pixel
+                if (alpha != -1 && alpha < treshold && distances[y][x] <= glowWidth) {
+                    img.setRGB(x, y, color.getRGB());
+                }
+            }
+        }
+    }
+
+    private static double[] parseSimpleTuple(String tupleStr) {
+        String[] split = tupleStr.substring(1, tupleStr.length() - 1).split(",");
+        return new double[]{Double.parseDouble(split[0]), Double.parseDouble(split[1])};
+    }
+
+    private static double[] parseDoubleTuple(String tupleStr) {
+        String[] split = tupleStr.substring(2, tupleStr.length() - 2).split("}?,\\{?");
+        return new double[]{Double.parseDouble(split[0]), Double.parseDouble(split[1]), Double.parseDouble(split[2]),
+                Double.parseDouble(split[3])};
     }
 
     private static Map<Integer, Color> colors() {
@@ -227,7 +329,23 @@ public final class LegacySpriteFactory implements SpriteFactory {
         return Integer.parseInt(str);
     }
 
-
+    private void orderSprites(List<Sprite> spList) {
+        Collections.reverse(spList);
+        pushSpriteToBackIf(spList, sp -> sp.getName().contains("_2_"));
+        pullSpriteToFrontIf(spList, sp -> sp.getName().matches("(robot|spider)_[0-9]{2,3}_(02|03|04)_.*"));
+        dupeSpriteIf(spList, sp -> sp.getName().matches("robot_[0-9]{2,3}_(02|03|04)_.*"), 1);
+        dupeSpriteIf(spList, sp -> sp.getName().matches("spider_[0-9]{2,3}_02_.*") && !sp.getName().contains("extra")
+                , 2);
+        pullSpriteToFrontIf(spList, sp -> sp.getName().matches("robot_[0-9]{2,3}_02_.*") && !sp.getName().endsWith("D"
+        ));
+        pullSpriteToFrontIf(spList, sp -> sp.getName().matches("robot_[0-9]{2,3}_04_.*") && !sp.getName().endsWith("D"
+        ));
+        pushSpriteToBackIf(spList, sp -> !sp.getName().contains("_2_") && sp.getName().endsWith("D"));
+        pushSpriteToBackIf(spList, sp -> sp.getName().contains("_2_") && sp.getName().endsWith("D"));
+        pushSpriteToBackIf(spList, sp -> sp.getName().matches("spider_[0-9]{2,3}_04_.*"));
+        pullSpriteToFrontIf(spList, sp -> sp.getName().contains("extra"));
+        pushSpriteToBackIf(spList, sp -> sp.getName().contains("_glow_"));
+    }
 
     private Image rotate(Image img, double deg) {
         deg = deg % 360 + (Math.abs(deg) > 180 ? -Math.signum(deg) * 360 : 0);
@@ -290,7 +408,7 @@ public final class LegacySpriteFactory implements SpriteFactory {
         if (!withGlowOutline) {
             spList.removeIf(sp -> sp.getName().contains("_glow_"));
         }
-        //orderSprites(spList);
+        orderSprites(spList);
         for (Sprite sp : spList) {
             // Variables
             String name = sp.getName();
@@ -456,7 +574,7 @@ public final class LegacySpriteFactory implements SpriteFactory {
         }
         g.dispose();
         if (withGlowOutline && type != IconType.ROBOT && type != IconType.SPIDER) {
-            GraphicsUtils.addGlow(img, color1Id, color2Id);
+            addGlow(img, color1Id, color2Id);
         }
         return img;
     }
