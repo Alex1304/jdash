@@ -45,7 +45,17 @@ public enum IconType {
     /**
      * A spider icon.
      */
-    SPIDER(GDUserProfile::spiderIconId);
+    SPIDER(GDUserProfile::spiderIconId),
+
+    /**
+     * A swing icon.
+     */
+    SWING(GDUserProfile::swingIconId),
+
+    /**
+     * Unknown type.
+     */
+    UNKNOWN(__ -> -1);
 
     private final ToIntFunction<GDUserProfile> idGetter;
 

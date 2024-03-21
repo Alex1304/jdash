@@ -67,6 +67,13 @@ public interface GDUserProfile extends GDUserStats {
     int spiderIconId();
 
     /**
+     * The ID of the swing icon of the user.
+     *
+     * @return an int
+     */
+    int swingIconId();
+
+    /**
      * The YouTube channel ID of the user.
      *
      * @return a string
