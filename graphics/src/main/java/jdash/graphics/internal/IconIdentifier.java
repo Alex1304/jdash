@@ -16,7 +16,11 @@ public final class IconIdentifier {
         this.part = part;
     }
 
-    public static IconIdentifier from(String baseName) {
+    public static IconIdentifier of(IconType type, int id) {
+        return new IconIdentifier(type, id, "");
+    }
+
+    public static IconIdentifier fromName(String baseName) {
         final var split = baseName.replace("player_ball", "ball").split("_", 3);
         IconType type;
         switch (split[0]) {
