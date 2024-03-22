@@ -53,12 +53,16 @@ public final class SpriteElement {
         return spriteSourceSize;
     }
 
-    public Point2D.Double getTextureRect1() {
+    public Point2D.Double getPosition() {
         return textureRect1;
     }
 
-    public Point2D.Double getTextureRect2() {
-        return textureRect2;
+    public double getWidth() {
+        return textureRotated ? textureRect2.y - textureRect1.y : textureRect2.x - textureRect1.x;
+    }
+
+    public double getHeight() {
+        return textureRotated ? textureRect2.x - textureRect1.x : textureRect2.y - textureRect1.y;
     }
 
     public boolean isTextureRotated() {
