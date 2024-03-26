@@ -1,28 +1,21 @@
 package jdash.graphics.internal;
 
-import jdash.common.IconType;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class GraphicsUtilsTest {
 
     @Test
     void loadColors() throws IOException {
         final var colorMap = GraphicsUtils.loadColors();
-        assertEquals(colorMap.size(), 107);
+        assertEquals(107, colorMap.size());
         final var color = colorMap.get(0);
-        assertEquals(color.r(), 125);
-        assertEquals(color.g(), 255);
-        assertEquals(color.b(), 0);
-    }
-
-    @Test
-    void testIJ() throws Exception {
-        GraphicsUtils.testIJ();
-        Thread.sleep(10000);
+        assertEquals(125, color.r());
+        assertEquals(255, color.g());
+        assertEquals(0, color.b());
     }
 
     @Test

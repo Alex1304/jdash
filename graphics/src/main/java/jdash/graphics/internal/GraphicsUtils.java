@@ -1,12 +1,8 @@
 package jdash.graphics.internal;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import ij.IJ;
-import jdash.graphics.LegacySpriteFactory;
 
 import java.awt.*;
-import java.awt.geom.Point2D;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.List;
@@ -38,29 +34,17 @@ public final class GraphicsUtils {
         }
     }
 
-    public static void testIJ() {
-        var url = GraphicsUtils.class.getResource("/GJ_GameSheetIcons-hd.png");
-        if (url == null) {
-            throw new AssertionError("Game sheet URL is null");
-        }
-        final var imp = IJ.openImage(url.toString());
-        final var processor = imp.getProcessor();
-        processor.flipHorizontal();
-        imp.show();
-    }
-
-    public static Point2D.Double parsePoint(String tupleStr) {
+    public static Point parsePoint(String tupleStr) {
         String[] split = tupleStr.substring(1, tupleStr.length() - 1).split(",");
-        return new Point2D.Double(Double.parseDouble(split[0]), Double.parseDouble(split[1]));
+        return new Point((int) Double.parseDouble(split[0]), (int) Double.parseDouble(split[1]));
     }
 
-    public static Point2D.Double[] parsePointPair(String tupleStr) {
+    public static Rectangle parseRectangle(String tupleStr) {
         String[] split = tupleStr.substring(2, tupleStr.length() - 2).split("}?,\\{?");
-        return new Point2D.Double[]{
-                new Point2D.Double(Double.parseDouble(split[0]), Double.parseDouble(split[1])),
-                new Point2D.Double(Double.parseDouble(split[2]), Double.parseDouble(split[3]))
-        };
+        return new Rectangle((int) Double.parseDouble(split[0]), (int) Double.parseDouble(split[1]),
+                (int) Double.parseDouble(split[2]), (int) Double.parseDouble(split[3]));
     }
+
     public static List<SpriteElement> orderIconLayers(List<SpriteElement> elements) {
         final var result = new ArrayList<>(elements);
         Collections.reverse(result);
