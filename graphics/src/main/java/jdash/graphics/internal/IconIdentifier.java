@@ -20,30 +20,11 @@ public final class IconIdentifier {
         return new IconIdentifier(type, id, "");
     }
 
-    public static IconIdentifier fromName(String baseName) {
-        final var split = baseName.replace("player_ball", "ball").split("_", 3);
-        IconType type;
-        switch (split[0]) {
-            case "player":
-                type = IconType.CUBE; break;
-            case "ship":
-                type = IconType.SHIP; break;
-            case "bird":
-                type = IconType.UFO; break;
-            case "ball":
-                type = IconType.BALL; break;
-            case "dart":
-                type = IconType.WAVE; break;
-            case "robot":
-                type = IconType.ROBOT; break;
-            case "spider":
-                type = IconType.SPIDER; break;
-            case "swing":
-                type = IconType.SWING; break;
-            default:
-                type = IconType.UNKNOWN;
-        }
-        return new IconIdentifier(type, Integer.parseInt(split[1]), split.length > 2 ? split[2] : "");
+    public String toSpriteResourceName() {
+        return "/icons/" + type.getInternalName() + "_" + String.format("%02d", id) + "-uhd.png";
+    }
+    public String toPlistResourceName() {
+        return "/icons/" + type.getInternalName() + "_" + String.format("%02d", id) + "-uhd.plist";
     }
 
     public IconType getType() {

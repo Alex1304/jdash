@@ -8,11 +8,12 @@ class GameSheetParserTest {
 
     @Test
     void parse() {
-        final var parser = assertDoesNotThrow(() -> GameSheetParser.parse("/GJ_GameSheetIcons-hd.png",
-                "/GJ_GameSheetIcons-hd.plist"));
-        assertEquals(parser.getImage().getWidth(), 2048);
-        assertEquals(parser.getImage().getHeight(), 2048);
-        assertEquals(parser.getPlist().getString("frames.bird_01_001..png.spriteOffset"), "{0,0}");
-        assertEquals(parser.getSpriteElements().size(), 1698);
+        final var parser = assertDoesNotThrow(() -> GameSheetParser.parse("/icons/bird_01-uhd.png",
+                "/icons/bird_01-uhd.plist"));
+        assertEquals(231, parser.getImage().getWidth());
+        assertEquals(199, parser.getImage().getHeight());
+        parser.getPlist().getKeys().forEachRemaining(System.out::println);
+        assertEquals("{0,0}", parser.getPlist().getString("frames.bird_01_001..png.spriteOffset"));
+        assertEquals(4, parser.getSpriteElements().size());
     }
 }

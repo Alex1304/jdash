@@ -15,52 +15,54 @@ public enum IconType {
     /**
      * A cube icon.
      */
-    CUBE(GDUserProfile::cubeIconId),
+    CUBE(GDUserProfile::cubeIconId, "player"),
 
     /**
      * A ship icon.
      */
-    SHIP(GDUserProfile::shipIconId),
+    SHIP(GDUserProfile::shipIconId, "ship"),
 
     /**
      * A ball icon.
      */
-    BALL(GDUserProfile::ballIconId),
+    BALL(GDUserProfile::ballIconId, "player_ball"),
 
     /**
      * A UFO icon.
      */
-    UFO(GDUserProfile::ufoIconId),
+    UFO(GDUserProfile::ufoIconId, "bird"),
 
     /**
      * A wave icon.
      */
-    WAVE(GDUserProfile::waveIconId),
+    WAVE(GDUserProfile::waveIconId, "dart"),
 
     /**
      * A robot icon.
      */
-    ROBOT(GDUserProfile::robotIconId),
+    ROBOT(GDUserProfile::robotIconId, "robot"),
 
     /**
      * A spider icon.
      */
-    SPIDER(GDUserProfile::spiderIconId),
+    SPIDER(GDUserProfile::spiderIconId, "spider"),
 
     /**
      * A swing icon.
      */
-    SWING(GDUserProfile::swingIconId),
+    SWING(GDUserProfile::swingIconId, "swing"),
 
     /**
-     * Unknown type.
+     * A jetpack icon.
      */
-    UNKNOWN(__ -> -1);
+    JETPACK(GDUserProfile::jetpackIconId, "jetpack");
 
     private final ToIntFunction<GDUserProfile> idGetter;
+    private final String internalName;
 
-    IconType(ToIntFunction<GDUserProfile> idGetter) {
+    IconType(ToIntFunction<GDUserProfile> idGetter, String internalName) {
         this.idGetter = idGetter;
+        this.internalName = internalName;
     }
 
     /**
@@ -81,5 +83,14 @@ public enum IconType {
      */
     public int idForUser(GDUserProfile user) {
         return idGetter.applyAsInt(Objects.requireNonNull(user));
+    }
+
+    /**
+     * Get the name of the icon type as used internally (for example in sprites).
+     *
+     * @return a {@link String}
+     */
+    public String getInternalName() {
+        return internalName;
     }
 }

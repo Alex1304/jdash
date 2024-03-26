@@ -1,13 +1,13 @@
 package jdash.graphics;
 
 import jdash.common.IconType;
-import jdash.graphics.internal.IconSpriteFactory;
+import jdash.graphics.internal.IconRenderer;
 
 import java.awt.image.BufferedImage;
 
 /**
  * Responsible for loading game assets and generate the images corresponding to the different icons in the game.
- * @deprecated use {@link IconSpriteFactory} instead.
+ * @deprecated use {@link IconRenderer} instead.
  */
 @Deprecated
 public interface SpriteFactory {

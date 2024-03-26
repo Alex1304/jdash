@@ -1,22 +1,24 @@
 package jdash.graphics.internal;
 
-import ij.IJ;
-import ij.ImagePlus;
 import org.apache.commons.configuration2.builder.fluent.Configurations;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.configuration2.plist.XMLPropertyListConfiguration;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 public final class GameSheetParser {
 
-    private final ImagePlus image;
+    private final BufferedImage image;
     private final XMLPropertyListConfiguration plist;
     private final List<SpriteElement> spriteElements;
 
-    private GameSheetParser(ImagePlus image, XMLPropertyListConfiguration plist, List<SpriteElement> spriteElements) {
+    private GameSheetParser(BufferedImage image, XMLPropertyListConfiguration plist, List<SpriteElement> spriteElements) {
         this.image = image;
         this.plist = plist;
         this.spriteElements = spriteElements;
@@ -30,10 +32,10 @@ public final class GameSheetParser {
             if (url == null) {
                 throw new MissingResourceException("PNG resource not found", GameSheetParser.class.getName(), pngName);
             }
-            final var image = IJ.openImage(url.toString());
+            final var image = ImageIO.read(url);
             final var plist = new Configurations()
                     .fileBased(XMLPropertyListConfiguration.class, GameSheetParser.class
-                            .getResource("/GJ_GameSheetIcons-hd.plist"));
+                            .getResource(plistName));
             final var stream = StreamSupport.stream(Spliterators.spliteratorUnknownSize(plist.getKeys(),
                     Spliterator.ORDERED), false);
             final var mappings = stream.filter(key -> key.startsWith("frames."))
@@ -49,10 +51,12 @@ public final class GameSheetParser {
             return new GameSheetParser(image, plist, spriteElements);
         } catch (ConfigurationException e) {
             throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
         }
     }
 
-    public ImagePlus getImage() {
+    public BufferedImage getImage() {
         return image;
     }
 

@@ -74,6 +74,13 @@ public interface GDUserProfile extends GDUserStats {
     int swingIconId();
 
     /**
+     * The ID of the jetpack icon of the user.
+     *
+     * @return an int
+     */
+    int jetpackIconId();
+
+    /**
      * The YouTube channel ID of the user.
      *
      * @return a string

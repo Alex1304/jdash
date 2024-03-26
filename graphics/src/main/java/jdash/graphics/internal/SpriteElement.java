@@ -1,27 +1,25 @@
 package jdash.graphics.internal;
 
-import java.awt.geom.Point2D;
+import java.awt.*;
 import java.util.Map;
 
 public final class SpriteElement {
 
     private final String name;
-    private final Point2D.Double spriteOffset;
-    private final Point2D.Double spriteSourceSize;
-    private final Point2D.Double textureRect1;
-    private final Point2D.Double textureRect2;
+    private final Point spriteOffset;
+    private final Point spriteSourceSize;
+    private final Rectangle textureRect;
     private final boolean textureRotated;
     private final boolean duplicate;
 
-    private SpriteElement(String name, Point2D.Double spriteOffset,
-                          Point2D.Double spriteSourceSize,
-                          Point2D.Double textureRect1, Point2D.Double textureRect2, boolean textureRotated,
+    private SpriteElement(String name, Point spriteOffset,
+                          Point spriteSourceSize,
+                          Rectangle textureRect, boolean textureRotated,
                           boolean duplicate) {
         this.name = name;
         this.spriteOffset = spriteOffset;
         this.spriteSourceSize = spriteSourceSize;
-        this.textureRect1 = textureRect1;
-        this.textureRect2 = textureRect2;
+        this.textureRect = textureRect;
         this.textureRotated = textureRotated;
         this.duplicate = duplicate;
     }
@@ -29,15 +27,14 @@ public final class SpriteElement {
     public static SpriteElement from(String name, Map<String, String> fields) {
         final var spriteOffset = GraphicsUtils.parsePoint(fields.get("spriteOffset"));
         final var spriteSourceSize = GraphicsUtils.parsePoint(fields.get("spriteSourceSize"));
-        final var textureRect = GraphicsUtils.parsePointPair(fields.get("textureRect"));
+        final var textureRect = GraphicsUtils.parseRectangle(fields.get("textureRect"));
         final var textureRotated = Boolean.parseBoolean(fields.get("textureRotated"));
-        return new SpriteElement(name, spriteOffset,
-                spriteSourceSize, textureRect[0], textureRect[1], textureRotated, false);
+        return new SpriteElement(name, spriteOffset, spriteSourceSize, textureRect, textureRotated, false);
     }
 
 
     public SpriteElement duplicate() {
-        return new SpriteElement(name, spriteOffset, spriteSourceSize, textureRect1, textureRect2,
+        return new SpriteElement(name, spriteOffset, spriteSourceSize, textureRect,
                 textureRotated, true);
     }
 
@@ -45,24 +42,19 @@ public final class SpriteElement {
         return name;
     }
 
-    public Point2D.Double getSpriteOffset() {
+    public Point getSpriteOffset() {
         return spriteOffset;
     }
 
-    public Point2D.Double getSpriteSourceSize() {
+    public Point getSpriteSourceSize() {
         return spriteSourceSize;
     }
 
-    public Point2D.Double getPosition() {
-        return textureRect1;
-    }
-
-    public double getWidth() {
-        return textureRotated ? textureRect2.y - textureRect1.y : textureRect2.x - textureRect1.x;
-    }
-
-    public double getHeight() {
-        return textureRotated ? textureRect2.x - textureRect1.x : textureRect2.y - textureRect1.y;
+    public Rectangle getSourceRectangle() {
+        //noinspection SuspiciousNameCombination
+        return textureRotated ?
+                new Rectangle(textureRect.x, textureRect.y, textureRect.height, textureRect.width) :
+                textureRect;
     }
 
     public boolean isTextureRotated() {
@@ -79,8 +71,7 @@ public final class SpriteElement {
                 "name='" + name + '\'' +
                 ", spriteOffset=" + spriteOffset +
                 ", spriteSourceSize=" + spriteSourceSize +
-                ", textureRect1=" + textureRect1 +
-                ", textureRect2=" + textureRect2 +
+                ", textureRect=" + textureRect +
                 ", textureRotated=" + textureRotated +
                 '}';
     }
