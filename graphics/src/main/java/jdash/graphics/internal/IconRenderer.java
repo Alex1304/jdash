@@ -2,8 +2,15 @@ package jdash.graphics.internal;
 
 import jdash.common.IconType;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.Raster;
+import java.awt.image.WritableRaster;
 import java.util.*;
+import java.util.List;
+
+import static jdash.graphics.internal.GraphicsUtils.applyColor;
 
 public final class IconRenderer {
 
@@ -29,7 +36,7 @@ public final class IconRenderer {
         }
     }
 
-    public BufferedImage render(int color1Id, int color2Id, boolean withGlowOutline) {
+    public BufferedImage render(int color1Id, int color2Id, int glowColorId) {
         if (!colors.containsKey(color1Id)) {
             throw new IllegalArgumentException("Color1 ID=" + color1Id + " does not exist");
         }
@@ -37,7 +44,7 @@ public final class IconRenderer {
             throw new IllegalArgumentException("Color2 ID=" + color2Id + " does not exist");
         }
         final var elements = new ArrayList<>(this.elements);
-        if (!withGlowOutline) {
+        if (!colors.containsKey(glowColorId)) {
             elements.removeIf(el -> el.getName().contains("_glow_"));
         }
         Collections.reverse(elements);
@@ -52,7 +59,16 @@ public final class IconRenderer {
             if (element.isTextureRotated()) {
                 g.rotate(Math.toRadians(-90), rect.width / 2.0, rect.height / 2.0);
             }
-            g.drawImage(subImage, 0, 0, null);
+            Color colorToApply = null;
+            if (element.getName().contains("_glow_")) {
+                colorToApply = colors.get(glowColorId).toColor();
+            } else if (element.getName().contains("_2_00")) {
+                colorToApply = colors.get(color2Id).toColor();
+            } else if (!element.getName().contains("extra") && !element.getName().contains("_3_00")) {
+                colorToApply = colors.get(color1Id).toColor();
+            }
+            final var subImageColored = applyColor(subImage, colorToApply);
+            g.drawImage(subImageColored, 0, 0, null);
             g.setTransform(initialTransform);
         }
         return image;

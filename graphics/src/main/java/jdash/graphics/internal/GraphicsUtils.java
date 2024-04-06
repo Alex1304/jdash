@@ -3,6 +3,8 @@ package jdash.graphics.internal;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.awt.*;
+import java.awt.image.FilteredImageSource;
+import java.awt.image.RGBImageFilter;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.List;
@@ -101,5 +103,29 @@ public final class GraphicsUtils {
                 }
             }
         }
+    }
+
+
+    public static Image applyColor(Image img, Color color) {
+        if (color == null) return img;
+        return Toolkit.getDefaultToolkit().createImage(new FilteredImageSource(img.getSource(), new RGBImageFilter() {
+            @Override
+            public int filterRGB(int x, int y, int rgb) {
+                return rgb & color.getRGB();
+            }
+        }));
+    }
+
+    public static Image reduceBrightness(Image img) {
+        return Toolkit.getDefaultToolkit().createImage(new FilteredImageSource(img.getSource(), new RGBImageFilter() {
+            @Override
+            public int filterRGB(int x, int y, int rgb) {
+                return rgb & 0xFF808080;
+            }
+        }));
+    }
+
+    public static int getGlowColorId(int color1Id, int color2Id) {
+        return color2Id == 15 ? (color1Id == 15 ? 12 : color1Id) : color2Id;
     }
 }
