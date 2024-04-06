@@ -13,7 +13,7 @@ class IconRendererTest {
     @Test
     void makeIcon() {
         final var renderer = IconRenderer.load(IconType.SWING, 1);
-        final var output = renderer.render(0, 4, false);
+        final var output = renderer.render(0, 4, 4);
         showImage(output);
     }
 
