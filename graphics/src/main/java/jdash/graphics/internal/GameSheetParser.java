@@ -67,4 +67,10 @@ public final class GameSheetParser {
     public List<SpriteElement> getSpriteElements() {
         return spriteElements;
     }
+
+    public List<SpriteElement> getAnimatedElements() {
+        return spriteElements.stream()
+                .filter(SpriteElement::isAnimated)
+                .collect(Collectors.toUnmodifiableList());
+    }
 }

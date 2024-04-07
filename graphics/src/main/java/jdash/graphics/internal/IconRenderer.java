@@ -2,27 +2,20 @@ package jdash.graphics.internal;
 
 import jdash.common.IconType;
 
-import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.awt.image.Raster;
-import java.awt.image.WritableRaster;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-
-import static jdash.graphics.internal.GraphicsUtils.applyColor;
+import java.util.MissingResourceException;
 
 public final class IconRenderer {
 
-    private final List<SpriteElement> elements;
-    private final Map<Integer, PlayerColor> colors;
-    private final BufferedImage gameSheet;
+    private final List<? extends Drawable> elements;
+    private final GameResourceContainer resources;
 
-    private IconRenderer(List<SpriteElement> elements, Map<Integer, PlayerColor> colors,
-                         BufferedImage gameSheet) {
+    private IconRenderer(List<? extends Drawable> elements, GameResourceContainer resources) {
         this.elements = elements;
-        this.colors = colors;
-        this.gameSheet = gameSheet;
+        this.resources = resources;
     }
 
     public static IconRenderer load(IconType type, int id) {
@@ -30,47 +23,30 @@ public final class IconRenderer {
         try {
             final var parser = GameSheetParser.parse(iconId.toSpriteResourceName(), iconId.toPlistResourceName());
             final var colors = GraphicsUtils.loadColors();
-            return new IconRenderer(parser.getSpriteElements(), colors, parser.getImage());
+            final var elements = new ArrayList<Drawable>(parser.getSpriteElements());
+            Collections.reverse(elements);
+            if (type == IconType.ROBOT) {
+                elements.addAll(AnimationParser.parseFrames("/Robot_AnimDesc.plist",
+                        "animationContainer.Robot_idle_001..png", parser.getAnimatedElements()));
+            } else if (type == IconType.SPIDER) {
+                elements.addAll(AnimationParser.parseFrames("/Spider_AnimDesc.plist",
+                        "animationContainer.Spider_idle_001..png", parser.getAnimatedElements()));
+            }
+            Collections.sort(elements);
+            return new IconRenderer(elements, GameResourceContainer.of(colors, parser.getImage()));
         } catch (MissingResourceException e) {
             throw new IllegalArgumentException("Icon ID=" + id + " for type " + type.name() + " does not exist", e);
         }
     }
 
-    public BufferedImage render(int color1Id, int color2Id, int glowColorId) {
-        if (!colors.containsKey(color1Id)) {
-            throw new IllegalArgumentException("Color1 ID=" + color1Id + " does not exist");
-        }
-        if (!colors.containsKey(color2Id)) {
-            throw new IllegalArgumentException("Color2 ID=" + color2Id + " does not exist");
-        }
-        final var elements = new ArrayList<>(this.elements);
-        if (!colors.containsKey(glowColorId)) {
-            elements.removeIf(el -> el.getName().contains("_glow_"));
-        }
-        Collections.reverse(elements);
-        final var image = new BufferedImage(250, 250, BufferedImage.TYPE_INT_ARGB);
-        final var g = image.createGraphics();
-        final var initialTransform = g.getTransform();
-        for (final var element : elements) {
-            final var rect = element.getSourceRectangle();
-            final var subImage = gameSheet.getSubimage(rect.x, rect.y, rect.width, rect.height);
-            final var offset = element.getSpriteOffset();
-            g.translate(125 - rect.width / 2 + offset.x, 125 - rect.height / 2 - offset.y);
-            if (element.isTextureRotated()) {
-                g.rotate(Math.toRadians(-90), rect.width / 2.0, rect.height / 2.0);
-            }
-            Color colorToApply = null;
-            if (element.getName().contains("_glow_")) {
-                colorToApply = colors.get(glowColorId).toColor();
-            } else if (element.getName().contains("_2_00")) {
-                colorToApply = colors.get(color2Id).toColor();
-            } else if (!element.getName().contains("extra") && !element.getName().contains("_3_00")) {
-                colorToApply = colors.get(color1Id).toColor();
-            }
-            final var subImageColored = applyColor(subImage, colorToApply);
-            g.drawImage(subImageColored, 0, 0, null);
-            g.setTransform(initialTransform);
-        }
+    public BufferedImage render(ColorSelection colorSelection) {
+        final var image = new BufferedImage(300, 300, BufferedImage.TYPE_INT_ARGB);
+        elements.forEach(element -> {
+            final var g = image.createGraphics();
+            g.setTransform(element.getTransform());
+            element.draw(g, resources, colorSelection);
+            g.dispose();
+        });
         return image;
     }
 }
