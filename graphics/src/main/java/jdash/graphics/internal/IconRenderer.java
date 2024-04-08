@@ -23,14 +23,16 @@ public final class IconRenderer {
         try {
             final var parser = GameSheetParser.parse(iconId.toSpriteResourceName(), iconId.toPlistResourceName());
             final var colors = GraphicsUtils.loadColors();
-            final var elements = new ArrayList<Drawable>(parser.getSpriteElements());
-            Collections.reverse(elements);
+            List<? extends Drawable> elements;
             if (type == IconType.ROBOT) {
-                elements.addAll(AnimationParser.parseFrames("/Robot_AnimDesc.plist",
-                        "animationContainer.Robot_idle_001..png", parser.getAnimatedElements()));
+                elements = new ArrayList<>(AnimationParser.parseFrames("/Robot_AnimDesc.plist",
+                        "animationContainer.Robot_idle_001..png", parser.getSpriteElements()));
             } else if (type == IconType.SPIDER) {
-                elements.addAll(AnimationParser.parseFrames("/Spider_AnimDesc.plist",
-                        "animationContainer.Spider_idle_001..png", parser.getAnimatedElements()));
+                elements = new ArrayList<>(AnimationParser.parseFrames("/Spider_AnimDesc.plist",
+                        "animationContainer.Spider_idle_001..png", parser.getSpriteElements()));
+            } else {
+                elements = new ArrayList<>(parser.getSpriteElements());
+                Collections.reverse(elements);
             }
             Collections.sort(elements);
             return new IconRenderer(elements, GameResourceContainer.of(colors, parser.getImage()));

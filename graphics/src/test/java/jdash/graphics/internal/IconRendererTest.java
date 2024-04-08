@@ -12,7 +12,7 @@ class IconRendererTest {
 
     @Test
     void makeIcon() {
-        final var renderer = IconRenderer.load(IconType.SWING, 1);
+        final var renderer = IconRenderer.load(IconType.SPIDER, 1);
         final var output = renderer.render(ColorSelection.defaultColors(true));
         showImage(output);
     }
