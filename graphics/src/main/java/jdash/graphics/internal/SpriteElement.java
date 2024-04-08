@@ -6,6 +6,7 @@ import java.awt.geom.Point2D;
 import java.util.Map;
 
 import static jdash.graphics.internal.GraphicsUtils.applyColor;
+import static jdash.graphics.internal.GraphicsUtils.reduceBrightness;
 
 public final class SpriteElement implements Drawable {
 
@@ -47,6 +48,10 @@ public final class SpriteElement implements Drawable {
 
     @Override
     public void draw(Graphics2D g, GameResourceContainer resources, ColorSelection colorSelection) {
+        draw(g, resources, colorSelection, false);
+    }
+
+    void draw(Graphics2D g, GameResourceContainer resources, ColorSelection colorSelection, boolean dim) {
         if (name.contains("_glow_") && colorSelection.getGlowColorId().isEmpty()) {
             return;
         }
@@ -61,7 +66,10 @@ public final class SpriteElement implements Drawable {
         } else if (!name.contains("extra") && !name.contains("_3_00")) {
             colorToApply = resources.getColor(colorSelection.getPrimaryColorId());
         }
-        final var subImageColored = applyColor(subImage, colorToApply);
+        var subImageColored = applyColor(subImage, colorToApply);
+        if (dim) {
+            subImageColored = reduceBrightness(subImageColored);
+        }
         g.drawImage(subImageColored, 0, 0, null);
     }
 
@@ -86,11 +94,7 @@ public final class SpriteElement implements Drawable {
         return textureRotated;
     }
 
-    public boolean isAnimated() {
-        return name.matches("^(robot|spider)_[0-9]{2,}_0(1|2|3|4)");
-    }
-
-    private Rectangle getSourceRectangle() {
+    public Rectangle getSourceRectangle() {
         //noinspection SuspiciousNameCombination
         return textureRotated ?
                 new Rectangle(textureRect.x, textureRect.y, textureRect.height, textureRect.width) :
