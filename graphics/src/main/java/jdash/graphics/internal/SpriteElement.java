@@ -3,6 +3,7 @@ package jdash.graphics.internal;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.util.Map;
 
 import static jdash.graphics.internal.GraphicsUtils.applyColor;
@@ -12,32 +13,28 @@ public final class SpriteElement implements Drawable {
 
     private final String name;
     private final Point2D.Double spriteOffset;
-    private final Point2D.Double spriteSourceSize;
-    private final Rectangle textureRect;
+    private final Rectangle2D.Double textureRect;
     private final boolean textureRotated;
 
 
-    private SpriteElement(String name, Point2D.Double spriteOffset,
-                          Point2D.Double spriteSourceSize,
-                          Rectangle textureRect, boolean textureRotated) {
+    private SpriteElement(String name, Point2D.Double spriteOffset,Rectangle2D.Double textureRect,
+                          boolean textureRotated) {
         this.name = name;
         this.spriteOffset = spriteOffset;
-        this.spriteSourceSize = spriteSourceSize;
         this.textureRect = textureRect;
         this.textureRotated = textureRotated;
     }
 
     public static SpriteElement from(String name, Map<String, String> fields) {
         final var spriteOffset = GraphicsUtils.parsePoint(fields.get("spriteOffset"));
-        final var spriteSourceSize = GraphicsUtils.parsePoint(fields.get("spriteSourceSize"));
         final var textureRect = GraphicsUtils.parseRectangle(fields.get("textureRect"));
         final var textureRotated = Boolean.parseBoolean(fields.get("textureRotated"));
-        return new SpriteElement(name, spriteOffset, spriteSourceSize, textureRect, textureRotated);
+        return new SpriteElement(name, spriteOffset, textureRect, textureRotated);
     }
 
     @Override
     public AffineTransform getTransform() {
-        final var rect = getSourceRectangle();
+        final var rect = getTextureRectangle();
         final var transform = new AffineTransform();
         transform.translate(150 - rect.width / 2.0 + spriteOffset.x, 150 - rect.height / 2.0 - spriteOffset.y);
         if (textureRotated) {
@@ -55,9 +52,9 @@ public final class SpriteElement implements Drawable {
         if (name.contains("_glow_") && colorSelection.getGlowColorId().isEmpty()) {
             return;
         }
-        final var rect = getSourceRectangle();
+        final var bounds = getTextureRectangle().getBounds();
         final var gameSheet = resources.getGameSheet();
-        final var subImage = gameSheet.getSubimage(rect.x, rect.y, rect.width, rect.height);
+        final var subImage = gameSheet.getSubimage(bounds.x, bounds.y, bounds.width, bounds.height);
         Color colorToApply = null;
         if (name.contains("_glow_")) {
             colorToApply = resources.getColor(colorSelection.getGlowColorId().orElseThrow());
@@ -86,19 +83,13 @@ public final class SpriteElement implements Drawable {
         return spriteOffset;
     }
 
-    public Point2D.Double getSpriteSourceSize() {
-        return spriteSourceSize;
-    }
-
     public boolean isTextureRotated() {
         return textureRotated;
     }
 
-    public Rectangle getSourceRectangle() {
-        //noinspection SuspiciousNameCombination
-        return textureRotated ?
-                new Rectangle(textureRect.x, textureRect.y, textureRect.height, textureRect.width) :
-                textureRect;
+    public Rectangle2D.Double getTextureRectangle() {
+        return new Rectangle2D.Double(textureRect.x, textureRect.y, textureRotated ? textureRect.height :
+                textureRect.width, textureRotated ? textureRect.width : textureRect.height);
     }
 
     @Override
@@ -106,7 +97,6 @@ public final class SpriteElement implements Drawable {
         return "SpriteElement{" +
                 "name='" + name + '\'' +
                 ", spriteOffset=" + spriteOffset +
-                ", spriteSourceSize=" + spriteSourceSize +
                 ", textureRect=" + textureRect +
                 ", textureRotated=" + textureRotated +
                 '}';

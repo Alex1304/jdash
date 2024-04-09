@@ -15,8 +15,7 @@ public final class AnimationParser {
         throw new AssertionError();
     }
 
-    public static List<AnimationFrame> parseFrames(String plistName, String prefix,
-                                                   List<SpriteElement> animatedElements) {
+    public static List<AnimationFrame> parseFrames(String plistName, String prefix, List<SpriteElement> elements) {
         try {
             final var plist = new Configurations()
                     .fileBased(XMLPropertyListConfiguration.class, GameSheetParser.class
@@ -28,7 +27,7 @@ public final class AnimationParser {
                     .collect(groupingBy(entry -> entry.getKey()[0], toUnmodifiableMap(entry -> entry.getKey()[1],
                             Map.Entry::getValue)));
             return mappings.values().stream()
-                    .flatMap(fields -> animatedElements.stream()
+                    .flatMap(fields -> elements.stream()
                             .filter(el -> Objects.equals(
                                     el.getName().split("_")[2],
                                     fields.get("texture").split("_")[2]))

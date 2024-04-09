@@ -39,7 +39,7 @@ public final class AnimationFrame implements Drawable {
     @Override
     public AffineTransform getTransform() {
         final var transform = new AffineTransform();
-        final var rect = spriteElement.getSourceRectangle();
+        final var rect = spriteElement.getTextureRectangle();
         final var factor = 4;
         var tX = 150 - rect.width / 2.0 + (spriteElement.getSpriteOffset().x + position.x * factor);
         var tY = 150 - rect.height / 2.0 - (spriteElement.getSpriteOffset().y + position.y * factor);
