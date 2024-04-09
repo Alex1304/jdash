@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.FilteredImageSource;
 import java.awt.image.RGBImageFilter;
 import java.io.IOException;
@@ -41,10 +42,10 @@ public final class GraphicsUtils {
         return new Point2D.Double(tuple.getA(), tuple.getB());
     }
 
-    public static Rectangle parseRectangle(String tupleStr) {
+    public static Rectangle2D.Double parseRectangle(String tupleStr) {
         String[] split = tupleStr.substring(2, tupleStr.length() - 2).split("}?,\\{?");
-        return new Rectangle((int) Double.parseDouble(split[0]), (int) Double.parseDouble(split[1]),
-                (int) Double.parseDouble(split[2]), (int) Double.parseDouble(split[3]));
+        return new Rectangle2D.Double(Double.parseDouble(split[0]), Double.parseDouble(split[1]),
+                Double.parseDouble(split[2]), Double.parseDouble(split[3]));
     }
 
     public static Image applyColor(Image img, Color color) {
