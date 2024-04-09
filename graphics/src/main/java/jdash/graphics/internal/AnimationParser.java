@@ -4,10 +4,7 @@ import org.apache.commons.configuration2.builder.fluent.Configurations;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.configuration2.plist.XMLPropertyListConfiguration;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Spliterator;
-import java.util.Spliterators;
+import java.util.*;
 import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.*;
@@ -32,7 +29,9 @@ public final class AnimationParser {
                             Map.Entry::getValue)));
             return mappings.values().stream()
                     .flatMap(fields -> animatedElements.stream()
-                            .filter(el -> el.getName().startsWith(fields.get("texture").replace("_001.png", "")))
+                            .filter(el -> Objects.equals(
+                                    el.getName().split("_")[2],
+                                    fields.get("texture").split("_")[2]))
                             .map(el -> AnimationFrame.from(el, fields)))
                     .collect(toUnmodifiableList());
         } catch (ConfigurationException e) {
