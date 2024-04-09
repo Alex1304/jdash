@@ -32,8 +32,8 @@ public final class IconRenderer {
                         "animationContainer.Spider_idle_001..png", parser.getSpriteElements()));
             } else {
                 elements = new ArrayList<>(parser.getSpriteElements());
-                Collections.reverse(elements);
             }
+            Collections.reverse(elements);
             Collections.sort(elements);
             return new IconRenderer(elements, GameResourceContainer.of(colors, parser.getImage()));
         } catch (MissingResourceException e) {
