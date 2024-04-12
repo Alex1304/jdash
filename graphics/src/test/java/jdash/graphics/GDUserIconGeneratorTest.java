@@ -4,14 +4,17 @@ import jdash.common.AccessPolicy;
 import jdash.common.IconType;
 import jdash.common.Role;
 import jdash.common.entity.ImmutableGDUserProfile;
+import org.junit.jupiter.api.Test;
 
-import javax.imageio.ImageIO;
-import java.io.File;
-import java.io.IOException;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.util.Scanner;
 
-public final class GDUserIconSetTest {
+class GDUserIconGeneratorTest {
 
-    public static void main(String[] args) throws IOException {
+    @Test
+    void generateIcon() {
         var user = ImmutableGDUserProfile.builder()
                 .commentHistoryPolicy(AccessPolicy.ALL)
                 .privateMessagePolicy(AccessPolicy.ALL)
@@ -29,6 +32,8 @@ public final class GDUserIconSetTest {
                 .ufoIconId(3)
                 .shipIconId(7)
                 .cubeIconId(29)
+                .swingIconId(1)
+                .jetpackIconId(1)
                 .globalRank(33266)
                 .diamonds(19336)
                 .demons(46)
@@ -41,8 +46,19 @@ public final class GDUserIconSetTest {
                 .name("Alex1304")
                 .playerId(4063664)
                 .build();
-        var iconSet = GDUserIconSet.create(user, LegacySpriteFactory.create());
-        ImageIO.write(iconSet.generateIcon(IconType.BALL), "png",
-                new File(System.getProperty("java.io.tmpdir") + File.separator + "icon.png"));
+        final var iconGenerator = GDUserIconGenerator.create(user);
+        final var output = iconGenerator.generateIcon(IconType.BALL);
+        showImage(output);
+    }
+
+    static void showImage(BufferedImage image) {
+        final var panel = new JPanel();
+        panel.setBackground(Color.DARK_GRAY);
+        panel.add(new JLabel(new ImageIcon(image)));
+        final var f = new JFrame();
+        f.setSize(new Dimension(image.getWidth(), image.getHeight()));
+        f.add(panel);
+        f.setVisible(true);
+        new Scanner(System.in).nextLine();
     }
 }

@@ -5,12 +5,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
 import java.awt.image.FilteredImageSource;
 import java.awt.image.RGBImageFilter;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import static jdash.graphics.internal.IconRenderer.*;
 
 public final class GraphicsUtils {
 
@@ -38,8 +42,11 @@ public final class GraphicsUtils {
     }
 
     public static Point2D.Double parsePoint(String tupleStr) {
-        final var tuple = Tuple.parse(tupleStr, Double::parseDouble);
-        return new Point2D.Double(tuple.getA(), tuple.getB());
+        return Tuple.parse(tupleStr, Double::parseDouble).as(Point2D.Double::new);
+    }
+
+    public static Dimension parseDimension(String tupleStr) {
+        return Tuple.parse(tupleStr, s -> (int) Math.ceil(Double.parseDouble(s))).as(Dimension::new);
     }
 
     public static Rectangle2D.Double parseRectangle(String tupleStr) {
@@ -65,5 +72,15 @@ public final class GraphicsUtils {
                 return rgb & 0xFF808080;
             }
         }));
+    }
+
+    public static BufferedImage renderLayers(List<? extends Drawable> layers, GameResourceContainer resources,
+                                             ColorSelection colorSelection) {
+        final var image = new BufferedImage(ICON_WIDTH, ICON_HEIGHT, BufferedImage.TYPE_INT_ARGB);
+        final var g = image.createGraphics();
+        layers.forEach(layer -> g.drawImage(layer.render(resources, colorSelection),
+                (ICON_WIDTH - layer.getWidth()) / 2, (ICON_HEIGHT - layer.getHeight()) / 2, null));
+        g.dispose();
+        return image;
     }
 }

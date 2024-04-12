@@ -5,6 +5,7 @@ import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.configuration2.plist.XMLPropertyListConfiguration;
 
 import java.util.*;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.*;
@@ -27,14 +28,21 @@ public final class AnimationParser {
                     .collect(groupingBy(entry -> entry.getKey()[0], toUnmodifiableMap(entry -> entry.getKey()[1],
                             Map.Entry::getValue)));
             return mappings.values().stream()
-                    .flatMap(fields -> elements.stream()
-                            .filter(el -> Objects.equals(
-                                    el.getName().split("_")[2],
-                                    fields.get("texture").split("_")[2]))
-                            .map(el -> AnimationFrame.from(el, fields)))
+                    .flatMap(fields -> Stream.of(
+                            groupElements(elements, fields, false),
+                            groupElements(elements, fields, true)))
                     .collect(toUnmodifiableList());
         } catch (ConfigurationException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static AnimationFrame groupElements(List<SpriteElement> elements, Map<String, String> fields,
+                                                boolean glow) {
+        return AnimationFrame.from(elements.stream()
+                .filter(el -> Objects.equals(
+                        el.getName().split("_")[2],
+                        fields.get("texture").split("_")[2]) && el.getName().contains("_glow_") == glow)
+                .collect(toUnmodifiableList()), fields, glow);
     }
 }

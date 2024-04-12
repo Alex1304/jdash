@@ -1,7 +1,6 @@
 module jdash.graphics {
 
     exports jdash.graphics;
-    exports jdash.graphics.exception;
 
     opens jdash.graphics.internal to com.fasterxml.jackson.databind;
 

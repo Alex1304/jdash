@@ -2,6 +2,8 @@ package jdash.graphics;
 
 import jdash.common.IconType;
 import jdash.common.entity.GDUserProfile;
+import jdash.graphics.internal.ColorSelection;
+import jdash.graphics.internal.IconRenderer;
 
 import java.awt.image.BufferedImage;
 import java.util.Objects;
@@ -9,25 +11,23 @@ import java.util.Objects;
 /**
  * Allows to generate user icons.
  */
-public final class GDUserIconSet {
+public final class GDUserIconGenerator {
 
     private final GDUserProfile user;
-    private final SpriteFactory factory;
 
-    private GDUserIconSet(GDUserProfile user, SpriteFactory factory) {
-        this.user = Objects.requireNonNull(user);
-        this.factory = Objects.requireNonNull(factory);
+    private GDUserIconGenerator(GDUserProfile user) {
+        this.user = user;
     }
 
     /**
-     * Creates a new {@link GDUserIconSet} for the given user.
+     * Creates a new {@link GDUserIconGenerator} for the given user.
      *
-     * @param user    the user to generate the icon set for
-     * @param factory the factory that will handle the creation of icons
-     * @return a new {@link GDUserIconSet}
+     * @param user    the user to generate icons for
+     * @return a new {@link GDUserIconGenerator}
      */
-    public static GDUserIconSet create(GDUserProfile user, SpriteFactory factory) {
-        return new GDUserIconSet(user, factory);
+    public static GDUserIconGenerator create(GDUserProfile user) {
+        Objects.requireNonNull(user);
+        return new GDUserIconGenerator(user);
     }
 
     /**
@@ -37,8 +37,10 @@ public final class GDUserIconSet {
      * @return the requested icon as a {@link BufferedImage}
      */
     public BufferedImage generateIcon(IconType iconType) {
-        return factory.makeSprite(iconType, Math.max(1, iconType.idForUser(user)), user.color1Id(),
-                user.color2Id(), user.hasGlowOutline());
+        final var renderer = IconRenderer.load(iconType, Math.max(1, iconType.idForUser(user)));
+        final var colors = user.hasGlowOutline() ? ColorSelection.of(user.color1Id(), user.color2Id(),
+                user.color2Id()) : ColorSelection.of(user.color1Id(), user.color2Id());
+        return renderer.render(colors);
     }
 
     /**
@@ -50,10 +52,10 @@ public final class GDUserIconSet {
      */
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof GDUserIconSet)) {
+        if (!(obj instanceof GDUserIconGenerator)) {
             return false;
         }
-        GDUserIconSet o = (GDUserIconSet) obj;
+        GDUserIconGenerator o = (GDUserIconGenerator) obj;
         if (user.equals(o.user)) {
             return true;
         }
@@ -68,9 +70,9 @@ public final class GDUserIconSet {
 
     @Override
     public int hashCode() {
-        int hash = user.color1Id() ^ user.color2Id() ^ Boolean.hashCode(user.hasGlowOutline());
+        int hash = Objects.hash(user.color1Id(), user.color2Id(), user.hasGlowOutline());
         for (IconType t : IconType.values()) {
-            hash ^= t.idForUser(user);
+            hash = Objects.hash(hash, t.idForUser(user));
         }
         return hash;
     }
