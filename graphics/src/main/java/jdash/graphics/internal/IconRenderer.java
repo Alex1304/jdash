@@ -8,7 +8,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.MissingResourceException;
 
+import static jdash.graphics.internal.GraphicsUtils.renderLayers;
+
 public final class IconRenderer {
+
+    public static final int ICON_WIDTH = 300;
+    public static final int ICON_HEIGHT = 300;
 
     private final List<? extends Drawable> elements;
     private final GameResourceContainer resources;
@@ -32,8 +37,8 @@ public final class IconRenderer {
                         "animationContainer.Spider_idle_001..png", parser.getSpriteElements()));
             } else {
                 elements = new ArrayList<>(parser.getSpriteElements());
+                Collections.reverse(elements);
             }
-            Collections.reverse(elements);
             Collections.sort(elements);
             return new IconRenderer(elements, GameResourceContainer.of(colors, parser.getImage()));
         } catch (MissingResourceException e) {
@@ -42,13 +47,6 @@ public final class IconRenderer {
     }
 
     public BufferedImage render(ColorSelection colorSelection) {
-        final var image = new BufferedImage(300, 300, BufferedImage.TYPE_INT_ARGB);
-        elements.forEach(element -> {
-            final var g = image.createGraphics();
-            g.setTransform(element.getTransform());
-            element.draw(g, resources, colorSelection);
-            g.dispose();
-        });
-        return image;
+        return renderLayers(elements, resources, colorSelection);
     }
 }

@@ -1,13 +1,14 @@
 package jdash.graphics.internal;
 
-import java.awt.*;
-import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
 
 public interface Drawable extends Comparable<Drawable> {
 
-    AffineTransform getTransform();
+    int getWidth();
 
-    void draw(Graphics2D g, GameResourceContainer resources, ColorSelection colorSelection);
+    int getHeight();
+
+    BufferedImage render(GameResourceContainer resources, ColorSelection colorSelection);
 
     int drawOrder();
 

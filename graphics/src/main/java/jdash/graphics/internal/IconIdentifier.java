@@ -8,23 +8,26 @@ public final class IconIdentifier {
 
     private final IconType type;
     private final int id;
-    private final String part;
 
-    private IconIdentifier(IconType type, int id, String part) {
+    private IconIdentifier(IconType type, int id) {
         this.type = type;
         this.id = id;
-        this.part = part;
     }
 
     public static IconIdentifier of(IconType type, int id) {
-        return new IconIdentifier(type, id, "");
+        return new IconIdentifier(type, id);
+    }
+
+    public String formatted() {
+        return type.getInternalName() + "_" + String.format("%02d", id);
     }
 
     public String toSpriteResourceName() {
-        return "/icons/" + type.getInternalName() + "_" + String.format("%02d", id) + "-uhd.png";
+        return "/icons/" + formatted() + "-uhd.png";
     }
+
     public String toPlistResourceName() {
-        return "/icons/" + type.getInternalName() + "_" + String.format("%02d", id) + "-uhd.plist";
+        return "/icons/" + formatted() + "-uhd.plist";
     }
 
     public IconType getType() {
@@ -33,10 +36,6 @@ public final class IconIdentifier {
 
     public int getId() {
         return id;
-    }
-
-    public String getPart() {
-        return part;
     }
 
     @Override
@@ -57,7 +56,6 @@ public final class IconIdentifier {
         return "IconIdentifier{" +
                 "type=" + type +
                 ", id=" + id +
-                ", part='" + part + '\'' +
                 '}';
     }
 }

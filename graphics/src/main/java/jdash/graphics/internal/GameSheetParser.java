@@ -18,7 +18,8 @@ public final class GameSheetParser {
     private final XMLPropertyListConfiguration plist;
     private final List<SpriteElement> spriteElements;
 
-    private GameSheetParser(BufferedImage image, XMLPropertyListConfiguration plist, List<SpriteElement> spriteElements) {
+    private GameSheetParser(BufferedImage image, XMLPropertyListConfiguration plist,
+                            List<SpriteElement> spriteElements) {
         this.image = image;
         this.plist = plist;
         this.spriteElements = spriteElements;
@@ -39,7 +40,7 @@ public final class GameSheetParser {
             final var stream = StreamSupport.stream(Spliterators.spliteratorUnknownSize(plist.getKeys(),
                     Spliterator.ORDERED), false);
             final var mappings = stream.filter(key -> key.startsWith("frames."))
-                    .map(key -> key.substring(7).split("\\.\\" +".png\\.", -1))
+                    .map(key -> key.substring(7).split("\\.\\" + ".png\\.", -1))
                     .collect(Collectors.groupingBy(s -> s[0]));
             final var spriteElements = mappings.entrySet().stream()
                     .map(entry -> SpriteElement.from(entry.getKey(), entry.getValue().stream()

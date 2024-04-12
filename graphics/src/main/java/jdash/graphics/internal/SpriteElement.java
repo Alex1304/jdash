@@ -1,58 +1,60 @@
 package jdash.graphics.internal;
 
 import java.awt.*;
-import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
 import java.util.Map;
 
 import static jdash.graphics.internal.GraphicsUtils.applyColor;
-import static jdash.graphics.internal.GraphicsUtils.reduceBrightness;
 
 public final class SpriteElement implements Drawable {
 
     private final String name;
     private final Point2D.Double spriteOffset;
+    private final Dimension spriteSourceSize;
     private final Rectangle2D.Double textureRect;
     private final boolean textureRotated;
 
 
-    private SpriteElement(String name, Point2D.Double spriteOffset,Rectangle2D.Double textureRect,
-                          boolean textureRotated) {
+    private SpriteElement(String name, Point2D.Double spriteOffset, Dimension spriteSourceSize,
+                          Rectangle2D.Double textureRect, boolean textureRotated) {
         this.name = name;
         this.spriteOffset = spriteOffset;
+        this.spriteSourceSize = spriteSourceSize;
         this.textureRect = textureRect;
         this.textureRotated = textureRotated;
     }
 
     public static SpriteElement from(String name, Map<String, String> fields) {
         final var spriteOffset = GraphicsUtils.parsePoint(fields.get("spriteOffset"));
+        final var spriteSourceSize = GraphicsUtils.parseDimension(fields.get("spriteSourceSize"));
         final var textureRect = GraphicsUtils.parseRectangle(fields.get("textureRect"));
         final var textureRotated = Boolean.parseBoolean(fields.get("textureRotated"));
-        return new SpriteElement(name, spriteOffset, textureRect, textureRotated);
+        return new SpriteElement(name, spriteOffset, spriteSourceSize, textureRect, textureRotated);
     }
 
     @Override
-    public AffineTransform getTransform() {
-        final var rect = getTextureRectangle();
-        final var transform = new AffineTransform();
-        transform.translate(150 - rect.width / 2.0 + spriteOffset.x, 150 - rect.height / 2.0 - spriteOffset.y);
-        if (textureRotated) {
-            transform.rotate(Math.toRadians(-90), rect.width / 2.0, rect.height / 2.0);
-        }
-        return transform;
+    public int getWidth() {
+        return spriteSourceSize.width;
     }
 
     @Override
-    public void draw(Graphics2D g, GameResourceContainer resources, ColorSelection colorSelection) {
-        draw(g, resources, colorSelection, false);
+    public int getHeight() {
+        return spriteSourceSize.height;
     }
 
-    void draw(Graphics2D g, GameResourceContainer resources, ColorSelection colorSelection, boolean dim) {
+    @Override
+    public BufferedImage render(GameResourceContainer resources, ColorSelection colorSelection) {
         if (name.contains("_glow_") && colorSelection.getGlowColorId().isEmpty()) {
-            return;
+            return new BufferedImage(0, 0, BufferedImage.TYPE_INT_ARGB);
         }
-        final var bounds = getTextureRectangle().getBounds();
+        final var rect = new Rectangle2D.Double(textureRect.x, textureRect.y,
+                textureRotated ? textureRect.height : textureRect.width,
+                textureRotated ? textureRect.width : textureRect.height);
+        final var bounds = rect.getBounds();
+        final var width = spriteSourceSize.width;
+        final var height = spriteSourceSize.height;
         final var gameSheet = resources.getGameSheet();
         final var subImage = gameSheet.getSubimage(bounds.x, bounds.y, bounds.width, bounds.height);
         Color colorToApply = null;
@@ -64,32 +66,34 @@ public final class SpriteElement implements Drawable {
             colorToApply = resources.getColor(colorSelection.getPrimaryColorId());
         }
         var subImageColored = applyColor(subImage, colorToApply);
-        if (dim) {
-            subImageColored = reduceBrightness(subImageColored);
+        final var image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        final var g = image.createGraphics();
+        g.translate(width / 2.0 - rect.width / 2.0 + spriteOffset.x,
+                height / 2.0 - rect.height / 2.0 - spriteOffset.y);
+        if (textureRotated) {
+            g.rotate(Math.toRadians(-90), rect.width / 2.0, rect.height / 2.0);
         }
         g.drawImage(subImageColored, 0, 0, null);
+        g.dispose();
+        return image;
     }
 
     @Override
     public int drawOrder() {
-        return name.contains("_glow_") ? -99 : 0;
+        if (name.contains("_glow_")) {
+            return -999;
+        }
+        if (name.contains("_2_00") || name.contains("_3_00")) {
+            return 0;
+        }
+        if (name.contains("extra")) {
+            return 2;
+        }
+        return 1;
     }
 
     public String getName() {
         return name;
-    }
-
-    public Point2D.Double getSpriteOffset() {
-        return spriteOffset;
-    }
-
-    public boolean isTextureRotated() {
-        return textureRotated;
-    }
-
-    public Rectangle2D.Double getTextureRectangle() {
-        return new Rectangle2D.Double(textureRect.x, textureRect.y, textureRotated ? textureRect.height :
-                textureRect.width, textureRotated ? textureRect.width : textureRect.height);
     }
 
     @Override
@@ -97,6 +101,7 @@ public final class SpriteElement implements Drawable {
         return "SpriteElement{" +
                 "name='" + name + '\'' +
                 ", spriteOffset=" + spriteOffset +
+                ", spriteSourceSize=" + spriteSourceSize +
                 ", textureRect=" + textureRect +
                 ", textureRotated=" + textureRotated +
                 '}';

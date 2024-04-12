@@ -1,6 +1,7 @@
 package jdash.graphics.internal;
 
 import java.util.Objects;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 final class Tuple<T> {
@@ -13,6 +14,11 @@ final class Tuple<T> {
         this.b = b;
     }
 
+    static <T> Tuple<T> parse(String s, Function<String, T> parser) {
+        String[] split = s.substring(1, s.length() - 1).split(",");
+        return new Tuple<>(parser.apply(split[0]), parser.apply(split[1]));
+    }
+
     T getA() {
         return a;
     }
@@ -21,9 +27,8 @@ final class Tuple<T> {
         return b;
     }
 
-    static <T> Tuple<T> parse(String s, Function<String, T> parser) {
-        String[] split = s.substring(1, s.length() - 1).split(",");
-        return new Tuple<>(parser.apply(split[0]), parser.apply(split[1]));
+    <R> R as(BiFunction<T, T, R> f) {
+        return f.apply(a, b);
     }
 
     @Override

@@ -13,11 +13,11 @@ class IconRendererTest {
     @Test
     void makeIcon() {
         final var renderer = IconRenderer.load(IconType.SPIDER, 7);
-        final var output = renderer.render(ColorSelection.defaultColors(true));
+        final var output = renderer.render(ColorSelection.defaultColors(false));
         showImage(output);
     }
 
-    void showImage(BufferedImage image) {
+    static void showImage(BufferedImage image) {
         final var panel = new JPanel();
         panel.setBackground(Color.DARK_GRAY);
         panel.add(new JLabel(new ImageIcon(image)));
