@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.MissingResourceException;
 
 import static jdash.graphics.internal.GraphicsUtils.renderLayers;
+import static jdash.graphics.internal.GraphicsUtils.trim;
 
 public final class IconRenderer {
 
@@ -47,6 +48,6 @@ public final class IconRenderer {
     }
 
     public BufferedImage render(ColorSelection colorSelection) {
-        return renderLayers(elements, resources, colorSelection);
+        return trim(renderLayers(elements, resources, colorSelection));
     }
 }

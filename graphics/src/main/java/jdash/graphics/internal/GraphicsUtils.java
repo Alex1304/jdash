@@ -10,6 +10,7 @@ import java.awt.image.FilteredImageSource;
 import java.awt.image.RGBImageFilter;
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.nio.Buffer;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -82,5 +83,35 @@ public final class GraphicsUtils {
                 (ICON_WIDTH - layer.getWidth()) / 2, (ICON_HEIGHT - layer.getHeight()) / 2, null));
         g.dispose();
         return image;
+    }
+
+    @SuppressWarnings("SuspiciousNameCombination")
+    public static BufferedImage trim(BufferedImage source) {
+        final var w = source.getWidth() - 1;
+        final var h = source.getHeight() - 1;
+        final var x1 = indexOfLastEmptyRow(source, 0, w, 0, h, false);
+        final var y1 = indexOfLastEmptyRow(source, 0, h, x1, w, true);
+        final var x2 = indexOfLastEmptyRow(source, w, x1, y1, h, false);
+        final var y2 = indexOfLastEmptyRow(source, h, y1, x1, x2, true);
+        return source.getSubimage(x1, y1, x2 - x1, y2 - y1);
+    }
+
+    private static int indexOfLastEmptyRow(BufferedImage source, int fromX, int toX, int fromY, int toY,
+                                           boolean swapped) {
+        final var factor = fromX < toX ? 1 : -1;
+        for (var x = fromX * factor ; x < toX * factor; x++) {
+            final var realX = x / factor;
+            var isRowEmpty = true;
+            for (var y = fromY ; y < toY ; y++) {
+                if (source.getRGB(swapped ? y : realX, swapped ? realX : y) != 0) {
+                    isRowEmpty = false;
+                    break;
+                }
+            }
+            if (!isRowEmpty) {
+                return realX;
+            }
+        }
+        return fromX;
     }
 }
