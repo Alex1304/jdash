@@ -13,6 +13,8 @@ import java.util.Objects;
  */
 public final class GDUserIconGenerator {
 
+    private static final int ICON_SLOT_SIZE = 200;
+
     private final GDUserProfile user;
 
     private GDUserIconGenerator(GDUserProfile user) {
@@ -41,6 +43,25 @@ public final class GDUserIconGenerator {
         final var colors = user.hasGlowOutline() ? ColorSelection.of(user.color1Id(), user.color2Id(),
                 user.color2Id()) : ColorSelection.of(user.color1Id(), user.color2Id());
         return renderer.render(colors);
+    }
+
+    /**
+     * Generates the full icon set for the underlying user.
+     *
+     * @return all user icons packed into a single {@link BufferedImage}
+     */
+    public BufferedImage generateIconSet() {
+        final var types = IconType.values();
+        final var result = new BufferedImage(ICON_SLOT_SIZE * types.length, ICON_SLOT_SIZE, BufferedImage.TYPE_INT_ARGB);
+        final var g = result.createGraphics();
+        for (final var type : types) {
+            final var image = generateIcon(type);
+            final var x = (int) (ICON_SLOT_SIZE * (type.ordinal() + 0.5) - image.getWidth() / 2);
+            final var y = (ICON_SLOT_SIZE - image.getHeight()) / 2;
+            g.drawImage(image, x, y, null);
+        }
+        g.dispose();
+        return result;
     }
 
     /**
