@@ -28,12 +28,11 @@ public final class GameSheetParser {
     public static GameSheetParser parse(String pngName, String plistName) {
         Objects.requireNonNull(pngName);
         Objects.requireNonNull(plistName);
-        try {
-            final var url = GameSheetParser.class.getResource(pngName);
-            if (url == null) {
+        try (final var resource = GameSheetParser.class.getResourceAsStream(pngName)) {
+            if (resource == null) {
                 throw new MissingResourceException("PNG resource not found", GameSheetParser.class.getName(), pngName);
             }
-            final var image = ImageIO.read(url);
+            final var image = ImageIO.read(resource);
             final var plist = new Configurations()
                     .fileBased(XMLPropertyListConfiguration.class, GameSheetParser.class
                             .getResource(plistName));

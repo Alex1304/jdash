@@ -1,6 +1,8 @@
 package jdash.graphics.internal;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jdash.graphics.ColorSelection;
+import jdash.graphics.GameResourceContainer;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
@@ -10,16 +12,16 @@ import java.awt.image.FilteredImageSource;
 import java.awt.image.RGBImageFilter;
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.nio.Buffer;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static jdash.graphics.internal.IconRenderer.*;
+import static jdash.graphics.IconRenderer.ICON_HEIGHT;
+import static jdash.graphics.IconRenderer.ICON_WIDTH;
 
 public final class GraphicsUtils {
 
-    public static Map<Integer, PlayerColor> loadColors() {
+    public static Map<Integer, Color> loadColors() {
         try {
             final var colorsFile = GraphicsUtils.class.getResource("/colors.json");
             if (colorsFile == null) {
@@ -28,13 +30,13 @@ public final class GraphicsUtils {
             final var objectMapper = new ObjectMapper();
             final var object = objectMapper.readTree(colorsFile);
             final var fields = object.fields();
-            final var colorMap = new HashMap<Integer, PlayerColor>();
+            final var colorMap = new HashMap<Integer, Color>();
             while (fields.hasNext()) {
                 final var field = fields.next();
                 final var name = field.getKey();
                 final var element = field.getValue();
                 final var colorValue = objectMapper.treeToValue(element, PlayerColor.class);
-                colorMap.put(Integer.parseInt(name), colorValue);
+                colorMap.put(Integer.parseInt(name), colorValue.toColor());
             }
             return colorMap;
         } catch (IOException e) {
@@ -75,7 +77,7 @@ public final class GraphicsUtils {
         }));
     }
 
-    public static BufferedImage renderLayers(List<? extends Drawable> layers, GameResourceContainer resources,
+    public static BufferedImage renderLayers(List<? extends Renderable> layers, GameResourceContainer resources,
                                              ColorSelection colorSelection) {
         final var image = new BufferedImage(ICON_WIDTH, ICON_HEIGHT, BufferedImage.TYPE_INT_ARGB);
         final var g = image.createGraphics();
@@ -99,10 +101,10 @@ public final class GraphicsUtils {
     private static int indexOfLastEmptyRow(BufferedImage source, int fromX, int toX, int fromY, int toY,
                                            boolean swapped) {
         final var factor = fromX < toX ? 1 : -1;
-        for (var x = fromX * factor ; x < toX * factor; x++) {
+        for (var x = fromX * factor; x < toX * factor; x++) {
             final var realX = x / factor;
             var isRowEmpty = true;
-            for (var y = fromY ; y < toY ; y++) {
+            for (var y = fromY; y < toY; y++) {
                 if (source.getRGB(swapped ? y : realX, swapped ? realX : y) != 0) {
                     isRowEmpty = false;
                     break;

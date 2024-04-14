@@ -1,26 +1,29 @@
 package jdash.graphics.internal;
 
+import jdash.graphics.ColorSelection;
+import jdash.graphics.GameResourceContainer;
+
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.*;
 
+import static jdash.graphics.IconRenderer.ICON_HEIGHT;
+import static jdash.graphics.IconRenderer.ICON_WIDTH;
 import static jdash.graphics.internal.GraphicsUtils.reduceBrightness;
 import static jdash.graphics.internal.GraphicsUtils.renderLayers;
-import static jdash.graphics.internal.IconRenderer.ICON_HEIGHT;
-import static jdash.graphics.internal.IconRenderer.ICON_WIDTH;
 
-public final class AnimationFrame implements Drawable {
+public final class AnimationFrame implements Renderable {
 
-    private final List<Drawable> elements;
+    private final List<Renderable> elements;
     private final Point2D.Double position;
     private final Point2D.Double scale;
     private final double rotation;
     private final int zValue;
     private final boolean isGlow;
 
-    private AnimationFrame(List<Drawable> elements, Point2D.Double position, Point2D.Double scale, double rotation,
+    private AnimationFrame(List<Renderable> elements, Point2D.Double position, Point2D.Double scale, double rotation,
                            int zValue, boolean isGlow) {
         this.elements = elements;
         this.position = position;
@@ -30,7 +33,7 @@ public final class AnimationFrame implements Drawable {
         this.isGlow = isGlow;
     }
 
-    public static AnimationFrame from(List<Drawable> elements, Map<String, String> fields, boolean isGlow) {
+    public static AnimationFrame from(List<Renderable> elements, Map<String, String> fields, boolean isGlow) {
         final var position = GraphicsUtils.parsePoint(fields.get("position"));
         final var scale = GraphicsUtils.parsePoint(fields.get("scale"));
         final var rotation = Double.parseDouble(fields.get("rotation"));
@@ -75,7 +78,19 @@ public final class AnimationFrame implements Drawable {
     }
 
     @Override
-    public int drawOrder() {
+    public int getZIndex() {
         return isGlow ? -999 : zValue;
+    }
+
+    @Override
+    public String toString() {
+        return "AnimationFrame{" +
+                "elements=" + elements +
+                ", position=" + position +
+                ", scale=" + scale +
+                ", rotation=" + rotation +
+                ", zValue=" + zValue +
+                ", isGlow=" + isGlow +
+                '}';
     }
 }

@@ -2,43 +2,41 @@ package jdash.graphics;
 
 import jdash.common.IconType;
 import jdash.common.entity.GDUserProfile;
-import jdash.graphics.internal.ColorSelection;
-import jdash.graphics.internal.IconRenderer;
 
 import java.awt.image.BufferedImage;
 import java.util.Objects;
 
 /**
- * Allows to generate user icons.
+ * Allows to generate icons for a specific user.
  */
-public final class GDUserIconGenerator {
+public final class IconSetFactory {
 
     private static final int ICON_SLOT_SIZE = 200;
 
     private final GDUserProfile user;
 
-    private GDUserIconGenerator(GDUserProfile user) {
+    private IconSetFactory(GDUserProfile user) {
         this.user = user;
     }
 
     /**
-     * Creates a new {@link GDUserIconGenerator} for the given user.
+     * Creates a new {@link IconSetFactory} for the given user.
      *
-     * @param user    the user to generate icons for
-     * @return a new {@link GDUserIconGenerator}
+     * @param user the user to generate icons for
+     * @return a new {@link IconSetFactory}
      */
-    public static GDUserIconGenerator create(GDUserProfile user) {
+    public static IconSetFactory forUser(GDUserProfile user) {
         Objects.requireNonNull(user);
-        return new GDUserIconGenerator(user);
+        return new IconSetFactory(user);
     }
 
     /**
-     * Generates the icon of the specified type for the underlying user.
+     * Creates the icon of the specified type for the underlying user.
      *
      * @param iconType the typeof icon to generate
      * @return the requested icon as a {@link BufferedImage}
      */
-    public BufferedImage generateIcon(IconType iconType) {
+    public BufferedImage createIcon(IconType iconType) {
         final var renderer = IconRenderer.load(iconType, Math.max(1, iconType.idForUser(user)));
         final var colors = user.hasGlowOutline() ? ColorSelection.of(user.color1Id(), user.color2Id(),
                 user.color2Id()) : ColorSelection.of(user.color1Id(), user.color2Id());
@@ -46,16 +44,17 @@ public final class GDUserIconGenerator {
     }
 
     /**
-     * Generates the full icon set for the underlying user.
+     * Creates the full icon set for the underlying user.
      *
-     * @return all user icons packed into a single {@link BufferedImage}
+     * @return all user icons packed into a 1800x200 {@link BufferedImage}
      */
-    public BufferedImage generateIconSet() {
+    public BufferedImage createIconSet() {
         final var types = IconType.values();
-        final var result = new BufferedImage(ICON_SLOT_SIZE * types.length, ICON_SLOT_SIZE, BufferedImage.TYPE_INT_ARGB);
+        final var result = new BufferedImage(ICON_SLOT_SIZE * types.length, ICON_SLOT_SIZE,
+                BufferedImage.TYPE_INT_ARGB);
         final var g = result.createGraphics();
         for (final var type : types) {
-            final var image = generateIcon(type);
+            final var image = createIcon(type);
             final var x = (int) (ICON_SLOT_SIZE * (type.ordinal() + 0.5) - image.getWidth() / 2);
             final var y = (ICON_SLOT_SIZE - image.getHeight()) / 2;
             g.drawImage(image, x, y, null);
@@ -73,10 +72,10 @@ public final class GDUserIconGenerator {
      */
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof GDUserIconGenerator)) {
+        if (!(obj instanceof IconSetFactory)) {
             return false;
         }
-        GDUserIconGenerator o = (GDUserIconGenerator) obj;
+        IconSetFactory o = (IconSetFactory) obj;
         if (user.equals(o.user)) {
             return true;
         }

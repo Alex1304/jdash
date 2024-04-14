@@ -1,5 +1,8 @@
 package jdash.graphics.internal;
 
+import jdash.graphics.ColorSelection;
+import jdash.graphics.GameResourceContainer;
+
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -8,7 +11,7 @@ import java.util.Map;
 
 import static jdash.graphics.internal.GraphicsUtils.applyColor;
 
-public final class SpriteElement implements Drawable {
+public final class SpriteElement implements Renderable {
 
     private final String name;
     private final Point2D.Double spriteOffset;
@@ -46,16 +49,17 @@ public final class SpriteElement implements Drawable {
 
     @Override
     public BufferedImage render(GameResourceContainer resources, ColorSelection colorSelection) {
+        final var width = spriteSourceSize.width;
+        final var height = spriteSourceSize.height;
+        final var image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         if (name.contains("_glow_") && colorSelection.getGlowColorId().isEmpty()) {
-            return new BufferedImage(0, 0, BufferedImage.TYPE_INT_ARGB);
+            return image;
         }
         final var rect = new Rectangle2D.Double(textureRect.x, textureRect.y,
                 textureRotated ? textureRect.height : textureRect.width,
                 textureRotated ? textureRect.width : textureRect.height);
         final var bounds = rect.getBounds();
-        final var width = spriteSourceSize.width;
-        final var height = spriteSourceSize.height;
-        final var gameSheet = resources.getGameSheet();
+        final var gameSheet = resources.getSpriteSheet();
         final var subImage = gameSheet.getSubimage(bounds.x, bounds.y, bounds.width, bounds.height);
         Color colorToApply = null;
         if (name.contains("_glow_")) {
@@ -66,7 +70,6 @@ public final class SpriteElement implements Drawable {
             colorToApply = resources.getColor(colorSelection.getPrimaryColorId());
         }
         var subImageColored = applyColor(subImage, colorToApply);
-        final var image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         final var g = image.createGraphics();
         g.translate(width / 2.0 - rect.width / 2.0 + spriteOffset.x,
                 height / 2.0 - rect.height / 2.0 - spriteOffset.y);
@@ -79,7 +82,7 @@ public final class SpriteElement implements Drawable {
     }
 
     @Override
-    public int drawOrder() {
+    public int getZIndex() {
         if (name.contains("_glow_")) {
             return -999;
         }
