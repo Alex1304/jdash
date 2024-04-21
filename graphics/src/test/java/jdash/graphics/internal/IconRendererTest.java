@@ -13,9 +13,9 @@ import static jdash.graphics.test.ImageTestUtils.loadTestImage;
 class IconRendererTest {
 
     @Test
-    void shouldReturnGameResources() throws IOException {
+    void shouldReturnSpriteSheet() throws IOException {
         final var renderer = IconRenderer.load(IconType.CUBE, 1);
-        assertImageEquals(loadTestImage("/icons/player_01-uhd.png"), renderer.getGameResources().getSpriteSheet());
+        assertImageEquals(loadTestImage("/icons/player_01-uhd.png"), renderer.getSpriteSheet());
     }
 
     @Test

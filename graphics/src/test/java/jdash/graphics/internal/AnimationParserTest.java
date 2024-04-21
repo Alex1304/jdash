@@ -4,8 +4,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static jdash.graphics.IconRenderer.ICON_HEIGHT;
-import static jdash.graphics.IconRenderer.ICON_WIDTH;
+import static jdash.graphics.internal.AnimationFrame.ICON_HEIGHT;
+import static jdash.graphics.internal.AnimationFrame.ICON_WIDTH;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class AnimationParserTest {
