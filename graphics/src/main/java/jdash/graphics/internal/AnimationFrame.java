@@ -1,7 +1,6 @@
 package jdash.graphics.internal;
 
-import jdash.graphics.ColorSelection;
-import jdash.graphics.GameResourceContainer;
+import org.apache.commons.lang3.StringUtils;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
@@ -9,12 +8,13 @@ import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.*;
 
-import static jdash.graphics.IconRenderer.ICON_HEIGHT;
-import static jdash.graphics.IconRenderer.ICON_WIDTH;
 import static jdash.graphics.internal.GraphicsUtils.reduceBrightness;
 import static jdash.graphics.internal.GraphicsUtils.renderLayers;
 
 public final class AnimationFrame implements Renderable {
+
+    public static final int ICON_WIDTH = 300;
+    public static final int ICON_HEIGHT = 300;
 
     private final List<Renderable> elements;
     private final Point2D.Double position;
@@ -49,6 +49,11 @@ public final class AnimationFrame implements Renderable {
     }
 
     @Override
+    public String getName() {
+        return StringUtils.getCommonPrefix(elements.stream().map(Renderable::getName).toArray(String[]::new));
+    }
+
+    @Override
     public int getWidth() {
         return ICON_WIDTH;
     }
@@ -59,8 +64,8 @@ public final class AnimationFrame implements Renderable {
     }
 
     @Override
-    public BufferedImage render(GameResourceContainer resources, ColorSelection colorSelection) {
-        Image frame = renderLayers(elements, resources, colorSelection);
+    public BufferedImage render(BufferedImage spriteSheet, RenderController controller) {
+        Image frame = renderLayers(elements, spriteSheet, controller);
         if (!isGlow && zValue <= 2) {
             frame = reduceBrightness(frame);
         }

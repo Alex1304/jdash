@@ -1,15 +1,10 @@
 package jdash.graphics.internal;
 
-import jdash.graphics.ColorSelection;
-import jdash.graphics.GameResourceContainer;
-
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.Map;
-
-import static jdash.graphics.internal.GraphicsUtils.applyColor;
 
 public final class SpriteElement implements Renderable {
 
@@ -38,6 +33,11 @@ public final class SpriteElement implements Renderable {
     }
 
     @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
     public int getWidth() {
         return spriteSourceSize.width;
     }
@@ -48,35 +48,26 @@ public final class SpriteElement implements Renderable {
     }
 
     @Override
-    public BufferedImage render(GameResourceContainer resources, ColorSelection colorSelection) {
+    public BufferedImage render(BufferedImage spriteSheet, RenderController controller) {
         final var width = spriteSourceSize.width;
         final var height = spriteSourceSize.height;
         final var image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-        if (name.contains("_glow_") && colorSelection.getGlowColorId().isEmpty()) {
+        if (!controller.shouldRender(this)) {
             return image;
         }
         final var rect = new Rectangle2D.Double(textureRect.x, textureRect.y,
                 textureRotated ? textureRect.height : textureRect.width,
                 textureRotated ? textureRect.width : textureRect.height);
         final var bounds = rect.getBounds();
-        final var gameSheet = resources.getSpriteSheet();
-        final var subImage = gameSheet.getSubimage(bounds.x, bounds.y, bounds.width, bounds.height);
-        Color colorToApply = null;
-        if (name.contains("_glow_")) {
-            colorToApply = resources.getColor(colorSelection.getGlowColorId().orElseThrow());
-        } else if (name.contains("_2_00")) {
-            colorToApply = resources.getColor(colorSelection.getSecondaryColorId());
-        } else if (!name.contains("extra") && !name.contains("_3_00")) {
-            colorToApply = resources.getColor(colorSelection.getPrimaryColorId());
-        }
-        var subImageColored = applyColor(subImage, colorToApply);
+        final var subImage = spriteSheet.getSubimage(bounds.x, bounds.y, bounds.width, bounds.height);
+        final var toRender = controller.postprocess(this, subImage);
         final var g = image.createGraphics();
         g.translate(width / 2.0 - rect.width / 2.0 + spriteOffset.x,
                 height / 2.0 - rect.height / 2.0 - spriteOffset.y);
         if (textureRotated) {
             g.rotate(Math.toRadians(-90), rect.width / 2.0, rect.height / 2.0);
         }
-        g.drawImage(subImageColored, 0, 0, null);
+        g.drawImage(toRender, 0, 0, null);
         g.dispose();
         return image;
     }
@@ -93,10 +84,6 @@ public final class SpriteElement implements Renderable {
             return 2;
         }
         return 1;
-    }
-
-    public String getName() {
-        return name;
     }
 
     @Override

@@ -1,13 +1,15 @@
 package jdash.graphics;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jdash.common.IconType;
 import jdash.graphics.internal.*;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.util.*;
 import java.util.List;
-import java.util.MissingResourceException;
 
 import static jdash.graphics.internal.GraphicsUtils.renderLayers;
 import static jdash.graphics.internal.GraphicsUtils.trim;
@@ -17,15 +19,36 @@ import static jdash.graphics.internal.GraphicsUtils.trim;
  */
 public final class IconRenderer {
 
-    public static final int ICON_WIDTH = 300;
-    public static final int ICON_HEIGHT = 300;
-
+    public static final Map<Integer, Color> COLORS = loadColors();
     private final List<? extends Renderable> elements;
-    private final GameResourceContainer gameResources;
+    private final BufferedImage spriteSheet;
 
-    private IconRenderer(List<? extends Renderable> elements, GameResourceContainer gameResources) {
+    private IconRenderer(List<? extends Renderable> elements, BufferedImage spriteSheet) {
         this.elements = elements;
-        this.gameResources = gameResources;
+        this.spriteSheet = spriteSheet;
+    }
+
+    private static Map<Integer, Color> loadColors() {
+        try {
+            final var colorsFile = GraphicsUtils.class.getResource("/colors.json");
+            if (colorsFile == null) {
+                throw new AssertionError("/colors.json not found");
+            }
+            final var objectMapper = new ObjectMapper();
+            final var object = objectMapper.readTree(colorsFile);
+            final var fields = object.fields();
+            final var colorMap = new HashMap<Integer, Color>();
+            while (fields.hasNext()) {
+                final var field = fields.next();
+                final var name = field.getKey();
+                final var element = field.getValue();
+                final var colorValue = objectMapper.treeToValue(element, PlayerColor.class);
+                colorMap.put(Integer.parseInt(name), colorValue.toColor());
+            }
+            return colorMap;
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 
     /**
@@ -40,7 +63,6 @@ public final class IconRenderer {
         final var iconId = IconIdentifier.of(type, id);
         try {
             final var parser = GameSheetParser.parse(iconId.toSpriteResourceName(), iconId.toPlistResourceName());
-            final var colors = GraphicsUtils.loadColors();
             List<? extends Renderable> elements;
             if (type == IconType.ROBOT) {
                 elements = new ArrayList<>(AnimationParser.parseFrames("/Robot_AnimDesc.plist",
@@ -53,7 +75,7 @@ public final class IconRenderer {
                 Collections.reverse(elements);
             }
             Collections.sort(elements);
-            return new IconRenderer(elements, new GameResourceContainer(colors, parser.getImage()));
+            return new IconRenderer(elements, parser.getImage());
         } catch (MissingResourceException e) {
             throw new IllegalArgumentException("Icon ID=" + id + " for type " + type.name() + " does not exist", e);
         }
@@ -66,15 +88,15 @@ public final class IconRenderer {
      * @return a {@link BufferedImage} of the rendered icon
      */
     public BufferedImage render(ColorSelection colorSelection) {
-        return trim(renderLayers(elements, gameResources, colorSelection));
+        return trim(renderLayers(elements, spriteSheet, RenderController.icon(colorSelection)));
     }
 
     /**
-     * Gets the game resources object that gives you access to colors and the raw sprite sheet data.
+     * Gets the original sprite sheet of the icon from the game.
      *
-     * @return the {@link GameResourceContainer}
+     * @return a {@link BufferedImage}
      */
-    public GameResourceContainer getGameResources() {
-        return gameResources;
+    public BufferedImage getSpriteSheet() {
+        return spriteSheet;
     }
 }

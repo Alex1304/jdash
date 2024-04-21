@@ -1,48 +1,17 @@
 package jdash.graphics.internal;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import jdash.graphics.ColorSelection;
-import jdash.graphics.GameResourceContainer;
-
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.FilteredImageSource;
 import java.awt.image.RGBImageFilter;
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import static jdash.graphics.IconRenderer.ICON_HEIGHT;
-import static jdash.graphics.IconRenderer.ICON_WIDTH;
+import static jdash.graphics.internal.AnimationFrame.ICON_HEIGHT;
+import static jdash.graphics.internal.AnimationFrame.ICON_WIDTH;
 
 public final class GraphicsUtils {
-
-    public static Map<Integer, Color> loadColors() {
-        try {
-            final var colorsFile = GraphicsUtils.class.getResource("/colors.json");
-            if (colorsFile == null) {
-                throw new AssertionError("/colors.json not found");
-            }
-            final var objectMapper = new ObjectMapper();
-            final var object = objectMapper.readTree(colorsFile);
-            final var fields = object.fields();
-            final var colorMap = new HashMap<Integer, Color>();
-            while (fields.hasNext()) {
-                final var field = fields.next();
-                final var name = field.getKey();
-                final var element = field.getValue();
-                final var colorValue = objectMapper.treeToValue(element, PlayerColor.class);
-                colorMap.put(Integer.parseInt(name), colorValue.toColor());
-            }
-            return colorMap;
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
-    }
 
     public static Point2D.Double parsePoint(String tupleStr) {
         return Tuple.parse(tupleStr, Double::parseDouble).as(Point2D.Double::new);
@@ -77,11 +46,11 @@ public final class GraphicsUtils {
         }));
     }
 
-    public static BufferedImage renderLayers(List<? extends Renderable> layers, GameResourceContainer resources,
-                                             ColorSelection colorSelection) {
+    public static BufferedImage renderLayers(List<? extends Renderable> layers,
+                                             BufferedImage spriteSheet, RenderController controller) {
         final var image = new BufferedImage(ICON_WIDTH, ICON_HEIGHT, BufferedImage.TYPE_INT_ARGB);
         final var g = image.createGraphics();
-        layers.forEach(layer -> g.drawImage(layer.render(resources, colorSelection),
+        layers.forEach(layer -> g.drawImage(layer.render(spriteSheet, controller),
                 (ICON_WIDTH - layer.getWidth()) / 2, (ICON_HEIGHT - layer.getHeight()) / 2, null));
         g.dispose();
         return image;

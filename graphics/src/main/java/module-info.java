@@ -8,6 +8,7 @@ module jdash.graphics {
     requires com.fasterxml.jackson.core;
     requires com.fasterxml.jackson.databind;
     requires org.apache.commons.configuration2;
+    requires org.apache.commons.lang3;
     requires java.desktop;
     requires transitive jdash.common;
 
