@@ -136,7 +136,7 @@ public final class InternalUtils {
     public static GDLevel buildLevel(Map<Integer, String> data, Map<Long, String> structuredCreatorsInfo,
                                      Map<Long, GDSong> structuredSongsInfo) {
         requireKeys(data, LEVEL_ID, LEVEL_NAME, LEVEL_CREATOR_ID, LEVEL_DESCRIPTION, LEVEL_DIFFICULTY,
-                LEVEL_DEMON_DIFFICULTY, LEVEL_STARS, LEVEL_FEATURED_SCORE, LEVEL_IS_EPIC, LEVEL_DOWNLOADS,
+                LEVEL_DEMON_DIFFICULTY, LEVEL_STARS, LEVEL_FEATURED_SCORE, LEVEL_QUALITY_RATING, LEVEL_DOWNLOADS,
                 LEVEL_LIKES, LEVEL_LENGTH, LEVEL_COIN_COUNT, LEVEL_COIN_VERIFIED, LEVEL_VERSION, LEVEL_GAME_VERSION,
                 LEVEL_OBJECT_COUNT, LEVEL_IS_DEMON, LEVEL_IS_AUTO, LEVEL_ORIGINAL, LEVEL_REQUESTED_STARS,
                 LEVEL_SONG_ID, LEVEL_AUDIO_TRACK);
@@ -145,6 +145,7 @@ public final class InternalUtils {
         var song = songId.map(id -> Optional.ofNullable(structuredSongsInfo.get(id)))
                 .orElseGet(() -> GDSong.getOfficialSong(Integer.parseInt(data.get(LEVEL_AUDIO_TRACK))));
         var creatorName = structuredCreatorsInfo.get(Long.parseLong(data.get(LEVEL_CREATOR_ID)));
+        final var featuredScore = Integer.parseInt(data.get(LEVEL_FEATURED_SCORE));
         return ImmutableGDLevel.builder()
                 .id(Long.parseLong(data.get(LEVEL_ID)))
                 .name(data.get(LEVEL_NAME))
@@ -153,8 +154,8 @@ public final class InternalUtils {
                 .difficulty(Difficulty.parse(data.get(LEVEL_DIFFICULTY)))
                 .demonDifficulty(DemonDifficulty.parse(data.get(LEVEL_DEMON_DIFFICULTY)))
                 .stars(Integer.parseInt(data.get(LEVEL_STARS)))
-                .featuredScore(Integer.parseInt(data.get(LEVEL_FEATURED_SCORE)))
-                .isEpic(!data.get(LEVEL_IS_EPIC).equals("0"))
+                .featuredScore(featuredScore)
+                .qualityRating(QualityRating.parse(data.get(LEVEL_QUALITY_RATING), featuredScore > 0))
                 .downloads(Integer.parseInt(data.get(LEVEL_DOWNLOADS)))
                 .likes(Integer.parseInt(data.get(LEVEL_LIKES)))
                 .length(Length.parse(data.get(LEVEL_LENGTH)))
@@ -222,6 +223,9 @@ public final class InternalUtils {
                 .waveIconId(Integer.parseInt(data.get(USER_ICON_WAVE)))
                 .robotIconId(Integer.parseInt(data.get(USER_ICON_ROBOT)))
                 .spiderIconId(Integer.parseInt(data.get(USER_ICON_SPIDER)))
+                .swingIconId(Integer.parseInt(data.get(USER_ICON_SWING)))
+                .jetpackIconId(Integer.parseInt(data.get(USER_ICON_JETPACK)))
+                .glowColorId(Integer.parseInt(data.get(USER_COLOR_GLOW)))
                 .youtube(data.get(USER_YOUTUBE))
                 .twitter(data.get(USER_TWITTER))
                 .twitch(data.get(USER_TWITCH))

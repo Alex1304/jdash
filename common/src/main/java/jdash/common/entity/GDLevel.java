@@ -3,6 +3,7 @@ package jdash.common.entity;
 import jdash.common.DemonDifficulty;
 import jdash.common.Difficulty;
 import jdash.common.Length;
+import jdash.common.QualityRating;
 import org.immutables.value.Value;
 
 import java.util.Optional;
@@ -92,7 +93,7 @@ public interface GDLevel {
      *
      * @return a boolean
      */
-    boolean isEpic();
+    QualityRating qualityRating();
 
     /**
      * The number of downloads of the level.

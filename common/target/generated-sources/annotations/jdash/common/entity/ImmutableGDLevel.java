@@ -7,6 +7,7 @@ import java.util.Optional;
 import jdash.common.DemonDifficulty;
 import jdash.common.Difficulty;
 import jdash.common.Length;
+import jdash.common.QualityRating;
 import org.immutables.value.Generated;
 
 /**
@@ -26,7 +27,7 @@ public final class ImmutableGDLevel implements GDLevel {
   private final DemonDifficulty demonDifficulty;
   private final int stars;
   private final int featuredScore;
-  private final boolean isEpic;
+  private final QualityRating qualityRating;
   private final int downloads;
   private final int likes;
   private final Length length;
@@ -52,7 +53,7 @@ public final class ImmutableGDLevel implements GDLevel {
       DemonDifficulty demonDifficulty,
       int stars,
       int featuredScore,
-      boolean isEpic,
+      QualityRating qualityRating,
       int downloads,
       int likes,
       Length length,
@@ -76,7 +77,7 @@ public final class ImmutableGDLevel implements GDLevel {
     this.demonDifficulty = demonDifficulty;
     this.stars = stars;
     this.featuredScore = featuredScore;
-    this.isEpic = isEpic;
+    this.qualityRating = qualityRating;
     this.downloads = downloads;
     this.likes = likes;
     this.length = length;
@@ -173,8 +174,8 @@ public final class ImmutableGDLevel implements GDLevel {
    * @return a boolean
    */
   @Override
-  public boolean isEpic() {
-    return isEpic;
+  public QualityRating qualityRating() {
+    return qualityRating;
   }
 
   /**
@@ -334,7 +335,7 @@ public final class ImmutableGDLevel implements GDLevel {
         this.demonDifficulty,
         this.stars,
         this.featuredScore,
-        this.isEpic,
+        this.qualityRating,
         this.downloads,
         this.likes,
         this.length,
@@ -370,7 +371,7 @@ public final class ImmutableGDLevel implements GDLevel {
         this.demonDifficulty,
         this.stars,
         this.featuredScore,
-        this.isEpic,
+        this.qualityRating,
         this.downloads,
         this.likes,
         this.length,
@@ -405,7 +406,7 @@ public final class ImmutableGDLevel implements GDLevel {
         this.demonDifficulty,
         this.stars,
         this.featuredScore,
-        this.isEpic,
+        this.qualityRating,
         this.downloads,
         this.likes,
         this.length,
@@ -441,7 +442,7 @@ public final class ImmutableGDLevel implements GDLevel {
         this.demonDifficulty,
         this.stars,
         this.featuredScore,
-        this.isEpic,
+        this.qualityRating,
         this.downloads,
         this.likes,
         this.length,
@@ -477,7 +478,7 @@ public final class ImmutableGDLevel implements GDLevel {
         this.demonDifficulty,
         this.stars,
         this.featuredScore,
-        this.isEpic,
+        this.qualityRating,
         this.downloads,
         this.likes,
         this.length,
@@ -513,7 +514,7 @@ public final class ImmutableGDLevel implements GDLevel {
         newValue,
         this.stars,
         this.featuredScore,
-        this.isEpic,
+        this.qualityRating,
         this.downloads,
         this.likes,
         this.length,
@@ -548,7 +549,7 @@ public final class ImmutableGDLevel implements GDLevel {
         this.demonDifficulty,
         value,
         this.featuredScore,
-        this.isEpic,
+        this.qualityRating,
         this.downloads,
         this.likes,
         this.length,
@@ -583,7 +584,7 @@ public final class ImmutableGDLevel implements GDLevel {
         this.demonDifficulty,
         this.stars,
         value,
-        this.isEpic,
+        this.qualityRating,
         this.downloads,
         this.likes,
         this.length,
@@ -602,13 +603,14 @@ public final class ImmutableGDLevel implements GDLevel {
   }
 
   /**
-   * Copy the current immutable object by setting a value for the {@link GDLevel#isEpic() isEpic} attribute.
+   * Copy the current immutable object by setting a value for the {@link GDLevel#qualityRating() qualityRating} attribute.
    * A value equality check is used to prevent copying of the same value by returning {@code this}.
-   * @param value A new value for isEpic
+   * @param value A new value for qualityRating
    * @return A modified copy of the {@code this} object
    */
-  public final ImmutableGDLevel withIsEpic(boolean value) {
-    if (this.isEpic == value) return this;
+  public final ImmutableGDLevel withQualityRating(QualityRating value) {
+    QualityRating newValue = Objects.requireNonNull(value, "qualityRating");
+    if (this.qualityRating == newValue) return this;
     return new ImmutableGDLevel(
         this.id,
         this.name,
@@ -618,7 +620,7 @@ public final class ImmutableGDLevel implements GDLevel {
         this.demonDifficulty,
         this.stars,
         this.featuredScore,
-        value,
+        newValue,
         this.downloads,
         this.likes,
         this.length,
@@ -653,7 +655,7 @@ public final class ImmutableGDLevel implements GDLevel {
         this.demonDifficulty,
         this.stars,
         this.featuredScore,
-        this.isEpic,
+        this.qualityRating,
         value,
         this.likes,
         this.length,
@@ -688,7 +690,7 @@ public final class ImmutableGDLevel implements GDLevel {
         this.demonDifficulty,
         this.stars,
         this.featuredScore,
-        this.isEpic,
+        this.qualityRating,
         this.downloads,
         value,
         this.length,
@@ -724,7 +726,7 @@ public final class ImmutableGDLevel implements GDLevel {
         this.demonDifficulty,
         this.stars,
         this.featuredScore,
-        this.isEpic,
+        this.qualityRating,
         this.downloads,
         this.likes,
         newValue,
@@ -759,7 +761,7 @@ public final class ImmutableGDLevel implements GDLevel {
         this.demonDifficulty,
         this.stars,
         this.featuredScore,
-        this.isEpic,
+        this.qualityRating,
         this.downloads,
         this.likes,
         this.length,
@@ -794,7 +796,7 @@ public final class ImmutableGDLevel implements GDLevel {
         this.demonDifficulty,
         this.stars,
         this.featuredScore,
-        this.isEpic,
+        this.qualityRating,
         this.downloads,
         this.likes,
         this.length,
@@ -829,7 +831,7 @@ public final class ImmutableGDLevel implements GDLevel {
         this.demonDifficulty,
         this.stars,
         this.featuredScore,
-        this.isEpic,
+        this.qualityRating,
         this.downloads,
         this.likes,
         this.length,
@@ -864,7 +866,7 @@ public final class ImmutableGDLevel implements GDLevel {
         this.demonDifficulty,
         this.stars,
         this.featuredScore,
-        this.isEpic,
+        this.qualityRating,
         this.downloads,
         this.likes,
         this.length,
@@ -899,7 +901,7 @@ public final class ImmutableGDLevel implements GDLevel {
         this.demonDifficulty,
         this.stars,
         this.featuredScore,
-        this.isEpic,
+        this.qualityRating,
         this.downloads,
         this.likes,
         this.length,
@@ -934,7 +936,7 @@ public final class ImmutableGDLevel implements GDLevel {
         this.demonDifficulty,
         this.stars,
         this.featuredScore,
-        this.isEpic,
+        this.qualityRating,
         this.downloads,
         this.likes,
         this.length,
@@ -969,7 +971,7 @@ public final class ImmutableGDLevel implements GDLevel {
         this.demonDifficulty,
         this.stars,
         this.featuredScore,
-        this.isEpic,
+        this.qualityRating,
         this.downloads,
         this.likes,
         this.length,
@@ -1004,7 +1006,7 @@ public final class ImmutableGDLevel implements GDLevel {
         this.demonDifficulty,
         this.stars,
         this.featuredScore,
-        this.isEpic,
+        this.qualityRating,
         this.downloads,
         this.likes,
         this.length,
@@ -1040,7 +1042,7 @@ public final class ImmutableGDLevel implements GDLevel {
         this.demonDifficulty,
         this.stars,
         this.featuredScore,
-        this.isEpic,
+        this.qualityRating,
         this.downloads,
         this.likes,
         this.length,
@@ -1075,7 +1077,7 @@ public final class ImmutableGDLevel implements GDLevel {
         this.demonDifficulty,
         this.stars,
         this.featuredScore,
-        this.isEpic,
+        this.qualityRating,
         this.downloads,
         this.likes,
         this.length,
@@ -1110,7 +1112,7 @@ public final class ImmutableGDLevel implements GDLevel {
         this.demonDifficulty,
         this.stars,
         this.featuredScore,
-        this.isEpic,
+        this.qualityRating,
         this.downloads,
         this.likes,
         this.length,
@@ -1146,7 +1148,7 @@ public final class ImmutableGDLevel implements GDLevel {
         this.demonDifficulty,
         this.stars,
         this.featuredScore,
-        this.isEpic,
+        this.qualityRating,
         this.downloads,
         this.likes,
         this.length,
@@ -1181,7 +1183,7 @@ public final class ImmutableGDLevel implements GDLevel {
         this.demonDifficulty,
         this.stars,
         this.featuredScore,
-        this.isEpic,
+        this.qualityRating,
         this.downloads,
         this.likes,
         this.length,
@@ -1218,7 +1220,7 @@ public final class ImmutableGDLevel implements GDLevel {
         this.demonDifficulty,
         this.stars,
         this.featuredScore,
-        this.isEpic,
+        this.qualityRating,
         this.downloads,
         this.likes,
         this.length,
@@ -1253,7 +1255,7 @@ public final class ImmutableGDLevel implements GDLevel {
         this.demonDifficulty,
         this.stars,
         this.featuredScore,
-        this.isEpic,
+        this.qualityRating,
         this.downloads,
         this.likes,
         this.length,
@@ -1289,7 +1291,7 @@ public final class ImmutableGDLevel implements GDLevel {
         this.demonDifficulty,
         this.stars,
         this.featuredScore,
-        this.isEpic,
+        this.qualityRating,
         this.downloads,
         this.likes,
         this.length,
@@ -1327,7 +1329,7 @@ public final class ImmutableGDLevel implements GDLevel {
         && demonDifficulty.equals(another.demonDifficulty)
         && stars == another.stars
         && featuredScore == another.featuredScore
-        && isEpic == another.isEpic
+        && qualityRating.equals(another.qualityRating)
         && downloads == another.downloads
         && likes == another.likes
         && length.equals(another.length)
@@ -1346,7 +1348,7 @@ public final class ImmutableGDLevel implements GDLevel {
   }
 
   /**
-   * Computes a hash code from attributes: {@code id}, {@code name}, {@code creatorPlayerId}, {@code description}, {@code difficulty}, {@code demonDifficulty}, {@code stars}, {@code featuredScore}, {@code isEpic}, {@code downloads}, {@code likes}, {@code length}, {@code coinCount}, {@code hasCoinsVerified}, {@code levelVersion}, {@code gameVersion}, {@code objectCount}, {@code isDemon}, {@code isAuto}, {@code originalLevelId}, {@code requestedStars}, {@code songId}, {@code song}, {@code creatorName}.
+   * Computes a hash code from attributes: {@code id}, {@code name}, {@code creatorPlayerId}, {@code description}, {@code difficulty}, {@code demonDifficulty}, {@code stars}, {@code featuredScore}, {@code qualityRating}, {@code downloads}, {@code likes}, {@code length}, {@code coinCount}, {@code hasCoinsVerified}, {@code levelVersion}, {@code gameVersion}, {@code objectCount}, {@code isDemon}, {@code isAuto}, {@code originalLevelId}, {@code requestedStars}, {@code songId}, {@code song}, {@code creatorName}.
    * @return hashCode value
    */
   @Override
@@ -1360,7 +1362,7 @@ public final class ImmutableGDLevel implements GDLevel {
     h += (h << 5) + demonDifficulty.hashCode();
     h += (h << 5) + stars;
     h += (h << 5) + featuredScore;
-    h += (h << 5) + Boolean.hashCode(isEpic);
+    h += (h << 5) + qualityRating.hashCode();
     h += (h << 5) + downloads;
     h += (h << 5) + likes;
     h += (h << 5) + length.hashCode();
@@ -1402,7 +1404,7 @@ public final class ImmutableGDLevel implements GDLevel {
     builder.append(", ");
     builder.append("featuredScore=").append(featuredScore);
     builder.append(", ");
-    builder.append("isEpic=").append(isEpic);
+    builder.append("qualityRating=").append(qualityRating);
     builder.append(", ");
     builder.append("downloads=").append(downloads);
     builder.append(", ");
@@ -1472,7 +1474,7 @@ public final class ImmutableGDLevel implements GDLevel {
    *    .demonDifficulty(jdash.common.DemonDifficulty) // required {@link GDLevel#demonDifficulty() demonDifficulty}
    *    .stars(int) // required {@link GDLevel#stars() stars}
    *    .featuredScore(int) // required {@link GDLevel#featuredScore() featuredScore}
-   *    .isEpic(boolean) // required {@link GDLevel#isEpic() isEpic}
+   *    .qualityRating(jdash.common.QualityRating) // required {@link GDLevel#qualityRating() qualityRating}
    *    .downloads(int) // required {@link GDLevel#downloads() downloads}
    *    .likes(int) // required {@link GDLevel#likes() likes}
    *    .length(jdash.common.Length) // required {@link GDLevel#length() length}
@@ -1513,7 +1515,7 @@ public final class ImmutableGDLevel implements GDLevel {
     private static final long INIT_BIT_DEMON_DIFFICULTY = 0x20L;
     private static final long INIT_BIT_STARS = 0x40L;
     private static final long INIT_BIT_FEATURED_SCORE = 0x80L;
-    private static final long INIT_BIT_IS_EPIC = 0x100L;
+    private static final long INIT_BIT_QUALITY_RATING = 0x100L;
     private static final long INIT_BIT_DOWNLOADS = 0x200L;
     private static final long INIT_BIT_LIKES = 0x400L;
     private static final long INIT_BIT_LENGTH = 0x800L;
@@ -1535,7 +1537,7 @@ public final class ImmutableGDLevel implements GDLevel {
     private DemonDifficulty demonDifficulty;
     private int stars;
     private int featuredScore;
-    private boolean isEpic;
+    private QualityRating qualityRating;
     private int downloads;
     private int likes;
     private Length length;
@@ -1572,7 +1574,7 @@ public final class ImmutableGDLevel implements GDLevel {
       demonDifficulty(instance.demonDifficulty());
       stars(instance.stars());
       featuredScore(instance.featuredScore());
-      isEpic(instance.isEpic());
+      qualityRating(instance.qualityRating());
       downloads(instance.downloads());
       likes(instance.likes());
       length(instance.length());
@@ -1692,13 +1694,13 @@ public final class ImmutableGDLevel implements GDLevel {
     }
 
     /**
-     * Initializes the value for the {@link GDLevel#isEpic() isEpic} attribute.
-     * @param isEpic The value for isEpic 
+     * Initializes the value for the {@link GDLevel#qualityRating() qualityRating} attribute.
+     * @param qualityRating The value for qualityRating 
      * @return {@code this} builder for use in a chained invocation
      */
-    public final Builder isEpic(boolean isEpic) {
-      this.isEpic = isEpic;
-      initBits &= ~INIT_BIT_IS_EPIC;
+    public final Builder qualityRating(QualityRating qualityRating) {
+      this.qualityRating = Objects.requireNonNull(qualityRating, "qualityRating");
+      initBits &= ~INIT_BIT_QUALITY_RATING;
       return this;
     }
 
@@ -1921,7 +1923,7 @@ public final class ImmutableGDLevel implements GDLevel {
           demonDifficulty,
           stars,
           featuredScore,
-          isEpic,
+          qualityRating,
           downloads,
           likes,
           length,
@@ -1949,7 +1951,7 @@ public final class ImmutableGDLevel implements GDLevel {
       if ((initBits & INIT_BIT_DEMON_DIFFICULTY) != 0) attributes.add("demonDifficulty");
       if ((initBits & INIT_BIT_STARS) != 0) attributes.add("stars");
       if ((initBits & INIT_BIT_FEATURED_SCORE) != 0) attributes.add("featuredScore");
-      if ((initBits & INIT_BIT_IS_EPIC) != 0) attributes.add("isEpic");
+      if ((initBits & INIT_BIT_QUALITY_RATING) != 0) attributes.add("qualityRating");
       if ((initBits & INIT_BIT_DOWNLOADS) != 0) attributes.add("downloads");
       if ((initBits & INIT_BIT_LIKES) != 0) attributes.add("likes");
       if ((initBits & INIT_BIT_LENGTH) != 0) attributes.add("length");

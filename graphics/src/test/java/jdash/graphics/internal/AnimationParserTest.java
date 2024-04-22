@@ -8,10 +8,10 @@ import static jdash.graphics.internal.AnimationFrame.ICON_HEIGHT;
 import static jdash.graphics.internal.AnimationFrame.ICON_WIDTH;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class AnimationParserTest {
+public final class AnimationParserTest {
 
     @Test
-    void shouldParseFrames() {
+    public void shouldParseFrames() {
         final var frames = AnimationParser.parseFrames("/Robot_AnimDesc.plist",
                 "animationContainer.Robot_idle_001..png", List.of());
         assertEquals(14, frames.size());

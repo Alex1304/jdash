@@ -10,10 +10,10 @@ import java.io.IOException;
 import static jdash.graphics.test.ImageTestUtils.assertImageEquals;
 import static jdash.graphics.test.ImageTestUtils.loadTestImage;
 
-class IconSetFactoryTest {
+public final class IconSetFactoryTest {
 
     @Test
-    void shouldGenerateIconSetForAlex1304() throws IOException {
+    public void shouldGenerateIconSetForAlex1304() throws IOException {
         var user = ImmutableGDUserProfile.builder()
                 .commentHistoryPolicy(AccessPolicy.ALL)
                 .privateMessagePolicy(AccessPolicy.ALL)
@@ -33,6 +33,7 @@ class IconSetFactoryTest {
                 .cubeIconId(29)
                 .swingIconId(22)
                 .jetpackIconId(1)
+                .glowColorId(9)
                 .globalRank(33266)
                 .diamonds(19336)
                 .demons(46)

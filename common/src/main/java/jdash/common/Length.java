@@ -30,7 +30,12 @@ public enum Length {
     /**
      * A level that is more than 120 seconds long.
      */
-    XL;
+    XL,
+
+    /**
+     * A level that is in Platformer mode.
+     */
+    PLATFORMER;
 
     /**
      * Convenience method to get a {@link Length} based on the in-game encoding of a length.
