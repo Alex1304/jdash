@@ -5,10 +5,10 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class GameSheetParserTest {
+public final class GameSheetParserTest {
 
     @Test
-    void shouldParseGameSheet() {
+    public void shouldParseGameSheet() {
         final var parser = assertDoesNotThrow(() -> GameSheetParser.parse("/icons/bird_01-uhd.png",
                 "/icons/bird_01-uhd.plist"));
         assertEquals(231, parser.getImage().getWidth());

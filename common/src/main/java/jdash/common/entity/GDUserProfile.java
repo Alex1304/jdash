@@ -81,6 +81,13 @@ public interface GDUserProfile extends GDUserStats {
     int jetpackIconId();
 
     /**
+     * The ID of the glow color of the user.
+     *
+     * @return an int
+     */
+    int glowColorId();
+
+    /**
      * The YouTube channel ID of the user.
      *
      * @return a string

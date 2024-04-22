@@ -86,7 +86,7 @@ class AwardedEventProducer implements GDEventProducer {
                                     GDLevel::actualDifficulty,
                                     GDLevel::demonDifficulty,
                                     GDLevel::featuredScore,
-                                    GDLevel::isEpic
+                                    GDLevel::qualityRating
                             )))
                             .map(function(ImmutableAwardedUpdate::of));
                     return Flux.concat(added, removed, updated);

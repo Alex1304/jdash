@@ -7,6 +7,7 @@ import jdash.client.request.GDRequests;
 import jdash.common.DemonDifficulty;
 import jdash.common.Difficulty;
 import jdash.common.Length;
+import jdash.common.QualityRating;
 import jdash.common.entity.GDLevel;
 import jdash.common.entity.GDTimelyInfo;
 import jdash.common.entity.ImmutableGDLevel;
@@ -46,7 +47,7 @@ public class GDEventProducerTest {
                 .id(id)
                 .isAuto(false)
                 .isDemon(false)
-                .isEpic(false)
+                .qualityRating(QualityRating.NONE)
                 .length(Length.TINY)
                 .levelVersion(1)
                 .name("test level " + id)

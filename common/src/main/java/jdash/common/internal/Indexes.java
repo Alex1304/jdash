@@ -30,7 +30,7 @@ public final class Indexes {
     public static final int LEVEL_COIN_COUNT = 37;
     public static final int LEVEL_COIN_VERIFIED = 38;
     public static final int LEVEL_REQUESTED_STARS = 39;
-    public static final int LEVEL_IS_EPIC = 42;
+    public static final int LEVEL_QUALITY_RATING = 42;
     public static final int LEVEL_DEMON_DIFFICULTY = 43;
     public static final int LEVEL_OBJECT_COUNT = 45;
 
@@ -73,6 +73,9 @@ public final class Indexes {
     public static final int USER_DIAMONDS = 46;
     public static final int USER_ROLE = 49;
     public static final int USER_COMMENT_HISTORY_POLICY = 50;
+    public static final int USER_COLOR_GLOW = 51;
+    public static final int USER_ICON_SWING = 53;
+    public static final int USER_ICON_JETPACK = 54;
 
     /* Message data */
     public static final int MESSAGE_ID = 1;
