@@ -48,11 +48,11 @@ public final class SpriteElement implements Renderable {
     }
 
     @Override
-    public BufferedImage render(BufferedImage spriteSheet, RenderController controller) {
+    public BufferedImage render(BufferedImage spriteSheet, RenderFilter filter) {
         final var width = spriteSourceSize.width;
         final var height = spriteSourceSize.height;
         final var image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-        if (!controller.shouldRender(this)) {
+        if (!filter.shouldRender(this)) {
             return image;
         }
         final var rect = new Rectangle2D.Double(textureRect.x, textureRect.y,
@@ -60,7 +60,7 @@ public final class SpriteElement implements Renderable {
                 textureRotated ? textureRect.width : textureRect.height);
         final var bounds = rect.getBounds();
         final var subImage = spriteSheet.getSubimage(bounds.x, bounds.y, bounds.width, bounds.height);
-        final var toRender = controller.postprocess(this, subImage);
+        final var toRender = filter.filter(this, subImage);
         final var g = image.createGraphics();
         g.translate(width / 2.0 - rect.width / 2.0 + spriteOffset.x,
                 height / 2.0 - rect.height / 2.0 - spriteOffset.y);

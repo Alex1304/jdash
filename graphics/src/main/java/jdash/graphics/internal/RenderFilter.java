@@ -8,9 +8,9 @@ import java.awt.image.BufferedImage;
 import static jdash.graphics.IconRenderer.COLORS;
 import static jdash.graphics.internal.GraphicsUtils.applyColor;
 
-public interface RenderController {
+public interface RenderFilter {
 
-    RenderController NONE = new RenderController() {
+    RenderFilter NONE = new RenderFilter() {
 
         @Override
         public boolean shouldRender(Renderable renderable) {
@@ -18,24 +18,24 @@ public interface RenderController {
         }
 
         @Override
-        public Image postprocess(Renderable renderable, BufferedImage image) {
+        public Image filter(Renderable renderable, BufferedImage image) {
             return image;
         }
     };
 
     boolean shouldRender(Renderable renderable);
 
-    Image postprocess(Renderable renderable, BufferedImage image);
+    Image filter(Renderable renderable, BufferedImage image);
 
-    static RenderController icon(ColorSelection colorSelection) {
-        return new IconRenderController(colorSelection);
+    static RenderFilter applyingIconColors(ColorSelection colorSelection) {
+        return new IconRenderFilter(colorSelection);
     }
 
-    final class IconRenderController implements RenderController {
+    final class IconRenderFilter implements RenderFilter {
 
         private final ColorSelection colorSelection;
 
-        IconRenderController(ColorSelection colorSelection) {
+        IconRenderFilter(ColorSelection colorSelection) {
             this.colorSelection = colorSelection;
         }
 
@@ -45,7 +45,7 @@ public interface RenderController {
         }
 
         @Override
-        public Image postprocess(Renderable renderable, BufferedImage image) {
+        public Image filter(Renderable renderable, BufferedImage image) {
             final var name = renderable.getName();
             Color colorToApply = null;
             if (name.contains("_glow_")) {
