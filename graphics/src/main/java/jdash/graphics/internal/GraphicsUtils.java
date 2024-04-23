@@ -47,10 +47,10 @@ public final class GraphicsUtils {
     }
 
     public static BufferedImage renderLayers(List<? extends Renderable> layers,
-                                             BufferedImage spriteSheet, RenderController controller) {
+                                             BufferedImage spriteSheet, RenderFilter filter) {
         final var image = new BufferedImage(ICON_WIDTH, ICON_HEIGHT, BufferedImage.TYPE_INT_ARGB);
         final var g = image.createGraphics();
-        layers.forEach(layer -> g.drawImage(layer.render(spriteSheet, controller),
+        layers.forEach(layer -> g.drawImage(layer.render(spriteSheet, filter),
                 (ICON_WIDTH - layer.getWidth()) / 2, (ICON_HEIGHT - layer.getHeight()) / 2, null));
         g.dispose();
         return image;

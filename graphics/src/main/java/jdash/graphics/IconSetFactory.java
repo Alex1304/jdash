@@ -39,7 +39,7 @@ public final class IconSetFactory {
     public BufferedImage createIcon(IconType iconType) {
         final var renderer = IconRenderer.load(iconType, Math.max(1, iconType.idForUser(user)));
         final var colors = user.hasGlowOutline() ? ColorSelection.of(user.color1Id(), user.color2Id(),
-                user.color2Id()) : ColorSelection.of(user.color1Id(), user.color2Id());
+                user.glowColorId()) : ColorSelection.of(user.color1Id(), user.color2Id());
         return renderer.render(colors);
     }
 
@@ -64,11 +64,7 @@ public final class IconSetFactory {
     }
 
     /**
-     * Two icon sets are equal if:
-     * <ul>
-     * <li>For each icon type, both users have the same icon ID and the same color.</li>
-     * <li>Both users either have the glow outline on their icons or do not have it.</li>
-     * </ul>
+     * Two icon sets are equal if both users have the same icon ID and the same color.
      */
     @Override
     public boolean equals(Object obj) {
@@ -85,12 +81,12 @@ public final class IconSetFactory {
             }
         }
         return user.color1Id() == o.user.color1Id() && user.color2Id() == o.user.color2Id()
-                && user.hasGlowOutline() == o.user.hasGlowOutline();
+                && user.glowColorId() == o.user.glowColorId();
     }
 
     @Override
     public int hashCode() {
-        int hash = Objects.hash(user.color1Id(), user.color2Id(), user.hasGlowOutline());
+        int hash = Objects.hash(user.color1Id(), user.color2Id(), user.glowColorId());
         for (IconType t : IconType.values()) {
             hash = Objects.hash(hash, t.idForUser(user));
         }

@@ -117,6 +117,15 @@ public interface GDLevel {
     Length length();
 
     /**
+     * Whether this level is in Platformer mode. Shorthand for {@code length() == Length.PLATFORMER}.
+     *
+     * @return a boolean
+     */
+    default boolean isPlatformer() {
+        return length() == Length.PLATFORMER;
+    }
+
+    /**
      * The number of user coins the level has.
      *
      * @return an int

@@ -10,7 +10,7 @@ public interface Renderable extends Comparable<Renderable> {
 
     int getHeight();
 
-    BufferedImage render(BufferedImage spriteSheet, RenderController controller);
+    BufferedImage render(BufferedImage spriteSheet, RenderFilter filter);
 
     int getZIndex();
 

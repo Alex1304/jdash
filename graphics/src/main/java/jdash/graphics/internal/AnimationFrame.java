@@ -64,8 +64,8 @@ public final class AnimationFrame implements Renderable {
     }
 
     @Override
-    public BufferedImage render(BufferedImage spriteSheet, RenderController controller) {
-        Image frame = renderLayers(elements, spriteSheet, controller);
+    public BufferedImage render(BufferedImage spriteSheet, RenderFilter filter) {
+        Image frame = renderLayers(elements, spriteSheet, filter);
         if (!isGlow && zValue <= 2) {
             frame = reduceBrightness(frame);
         }

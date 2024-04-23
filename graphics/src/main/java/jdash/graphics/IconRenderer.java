@@ -20,6 +20,7 @@ import static jdash.graphics.internal.GraphicsUtils.trim;
 public final class IconRenderer {
 
     public static final Map<Integer, Color> COLORS = loadColors();
+
     private final List<? extends Renderable> elements;
     private final BufferedImage spriteSheet;
 
@@ -88,7 +89,7 @@ public final class IconRenderer {
      * @return a {@link BufferedImage} of the rendered icon
      */
     public BufferedImage render(ColorSelection colorSelection) {
-        return trim(renderLayers(elements, spriteSheet, RenderController.icon(colorSelection)));
+        return trim(renderLayers(elements, spriteSheet, RenderFilter.applyingIconColors(colorSelection)));
     }
 
     /**
