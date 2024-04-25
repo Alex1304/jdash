@@ -12,6 +12,10 @@ public interface Renderable extends Comparable<Renderable> {
 
     BufferedImage render(BufferedImage spriteSheet, RenderFilter filter);
 
+    default BufferedImage render(BufferedImage spriteSheet) {
+        return render(spriteSheet, RenderFilter.NONE);
+    }
+
     int getZIndex();
 
     @Override

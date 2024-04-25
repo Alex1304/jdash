@@ -4,14 +4,29 @@ import jdash.common.DemonDifficulty;
 import jdash.common.Difficulty;
 import jdash.common.QualityRating;
 import jdash.common.entity.GDLevel;
-import jdash.graphics.internal.GameSheetParser;
-import jdash.graphics.internal.RenderFilter;
+import jdash.graphics.internal.SpriteSheet;
 import jdash.graphics.internal.SpriteElement;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.Map;
+import java.util.MissingResourceException;
 import java.util.Objects;
 
+/**
+ * Allows to generate images representing the difficulty of a level. It supports all difficulties as well as demon
+ * difficulties as defined by the {@link Difficulty} and the {@link DemonDifficulty} enums respectively. You may as well
+ * choose to display stars or moons below the difficulty icon, as well as a {@link QualityRating} that will add the
+ * corresponding glowing effect around the difficulty icon.
+ * <p>
+ * You may use {@link #create(Difficulty)} or {@link #create(DemonDifficulty)} to generate an arbitrary combination of
+ * difficulty, quality rating and stars/moons, or you may use {@link #forLevel(GDLevel)} for convenience if you are
+ * manipulating level data.
+ * <p>
+ * This class is immutable: methods that enrich rendering specifications (prefixed by {@code with*}) always create a new
+ * instance of this class.
+ */
 public final class DifficultyRenderer {
 
     private static final Map<Difficulty, String> DIFFICULTY_ASSET_NAMES = Map.ofEntries(
@@ -21,13 +36,14 @@ public final class DifficultyRenderer {
             Map.entry(Difficulty.NORMAL, "difficulty_02_btn_001"),
             Map.entry(Difficulty.HARD, "difficulty_03_btn_001"),
             Map.entry(Difficulty.HARDER, "difficulty_04_btn_001"),
-            Map.entry(Difficulty.INSANE, "difficulty_05_btn_001")
+            Map.entry(Difficulty.INSANE, "difficulty_05_btn_001"),
+            Map.entry(Difficulty.DEMON, "difficulty_06_btn_001")
     );
 
     private static final Map<DemonDifficulty, String> DEMON_DIFFICULTY_ASSET_NAMES = Map.ofEntries(
-            Map.entry(DemonDifficulty.EASY, "difficulty_06_btn2_001"),
-            Map.entry(DemonDifficulty.MEDIUM, "difficulty_07_btn2_001"),
-            Map.entry(DemonDifficulty.HARD, "difficulty_08_btn2_001"),
+            Map.entry(DemonDifficulty.EASY, "difficulty_07_btn2_001"),
+            Map.entry(DemonDifficulty.MEDIUM, "difficulty_08_btn2_001"),
+            Map.entry(DemonDifficulty.HARD, "difficulty_06_btn2_001"),
             Map.entry(DemonDifficulty.INSANE, "difficulty_09_btn2_001"),
             Map.entry(DemonDifficulty.EXTREME, "difficulty_10_btn2_001")
     );
@@ -39,52 +55,205 @@ public final class DifficultyRenderer {
             Map.entry(QualityRating.MYTHIC, "GJ_epicCoin3_001")
     );
 
-    private DifficultyRenderer() {
+    private static final SpriteSheet SPRITE_SHEET = SpriteSheet.parse("/GJ_GameSheet03-uhd.png",
+            "/GJ_GameSheet03-uhd.plist");
+
+    /**
+     * The width of the images rendered by this class.
+     */
+    public static final int WIDTH = 250;
+
+    /**
+     * The height of the images rendered by this class.
+     */
+    public static final int HEIGHT = 350;
+
+    static {
+        try (final var ttf = DifficultyRenderer.class.getResourceAsStream("/pusab.ttf")) {
+            if (ttf == null) {
+                throw new MissingResourceException("Font not found", DifficultyRenderer.class.getName(), "pusab.ttf");
+            }
+            final var ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, ttf));
+        } catch (IOException | FontFormatException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private final Difficulty difficulty;
+    private final DemonDifficulty demonDifficulty;
+    private final QualityRating qualityRating;
+    private final int rate;
+    private final boolean showRate;
+    private final boolean isPlatformer;
+
+    private DifficultyRenderer(Difficulty difficulty, DemonDifficulty demonDifficulty, QualityRating qualityRating,
+                               int rate, boolean showRate, boolean isPlatformer) {
+        this.difficulty = difficulty;
+        this.demonDifficulty = demonDifficulty;
+        this.qualityRating = qualityRating;
+        this.rate = rate;
+        this.showRate = showRate;
+        this.isPlatformer = isPlatformer;
+    }
+
+    /**
+     * Creates a new {@link DifficultyRenderer} with the given difficulty. The resulting image will only show the
+     * difficulty icon with no other information. Use {@code with*} methods to enrich the definition of this renderer.
+     *
+     * @param difficulty the difficulty to render
+     * @return a new {@link DifficultyRenderer}
+     */
+    public static DifficultyRenderer create(Difficulty difficulty) {
+        Objects.requireNonNull(difficulty);
+        return new DifficultyRenderer(difficulty, null, QualityRating.NONE, 0, false, false);
+    }
+
+    /**
+     * Creates a new {@link DifficultyRenderer} with the given demon difficulty. The resulting image will only show the
+     * demon difficulty icon with no other information. Use {@code with*} methods to enrich the definition of this
+     * renderer.
+     *
+     * @param demonDifficulty the demon difficulty to render
+     * @return a new {@link DifficultyRenderer}
+     */
+    public static DifficultyRenderer create(DemonDifficulty demonDifficulty) {
+        Objects.requireNonNull(demonDifficulty);
+        return new DifficultyRenderer(null, demonDifficulty, QualityRating.NONE, 0, false, false);
+    }
+
+    /**
+     * Creates a new {@link DifficultyRenderer} that is directly able to render the difficulty of the given level,
+     * including quality rating, stars or moons when applicable.
+     *
+     * @param level the level providing all the information to render the difficulty
+     * @return a new {@link DifficultyRenderer}
+     */
+    public static DifficultyRenderer forLevel(GDLevel level) {
+        Objects.requireNonNull(level);
+        return new DifficultyRenderer(
+                level.isDemon() ? null : level.difficulty(),
+                level.isDemon() ? level.demonDifficulty() : null,
+                level.qualityRating(),
+                level.rewards(),
+                level.rewards() > 0,
+                level.isPlatformer());
+    }
+
+    /**
+     * Creates a new {@link DifficultyRenderer} identical to the current one but enriched with the given quality
+     * rating.
+     *
+     * @param qualityRating the quality rating
+     * @return a new {@link DifficultyRenderer}
+     */
+    public DifficultyRenderer withQualityRating(QualityRating qualityRating) {
+        Objects.requireNonNull(qualityRating);
+        return new DifficultyRenderer(difficulty, demonDifficulty, qualityRating, rate, showRate, isPlatformer);
+    }
+
+    /**
+     * Creates a new {@link DifficultyRenderer} identical to the current one but enriched with the given stars.
+     *
+     * @param stars the stars
+     * @return a new {@link DifficultyRenderer}
+     */
+    public DifficultyRenderer withStars(int stars) {
+        return new DifficultyRenderer(difficulty, demonDifficulty, qualityRating, stars, true, false);
+    }
+
+    /**
+     * Creates a new {@link DifficultyRenderer} identical to the current one but enriched with the given moons.
+     *
+     * @param moons the moons
+     * @return a new {@link DifficultyRenderer}
+     */
+    public DifficultyRenderer withMoons(int moons) {
+        return new DifficultyRenderer(difficulty, demonDifficulty, qualityRating, moons, true, true);
+    }
+
+    /**
+     * Creates a new {@link DifficultyRenderer} identical to the current one, but without any star or moon value.
+     * Typically used to cancel a previous use of {@link #withStars(int)} or {@link #withMoons(int)}.
+     *
+     * @return a new {@link DifficultyRenderer}
+     */
+    public DifficultyRenderer withoutStarsOrMoons() {
+        return new DifficultyRenderer(difficulty, demonDifficulty, qualityRating, 0, false, false);
+    }
+
+    /**
+     * Renders an image of the difficulty using all the current information. All images have an identical size of
+     * {@link #WIDTH}x{@link #HEIGHT}, and centered on a best-effort basis.
+     *
+     * @return the rendered image as a {@link BufferedImage}
+     */
+    public BufferedImage render() {
+        if (difficulty != null) {
+            return render(DIFFICULTY_ASSET_NAMES.get(difficulty), rate,
+                    QUALITY_RATING_ASSET_NAMES.get(qualityRating), isPlatformer, false, showRate);
+        } else if (demonDifficulty != null) {
+            return render(DEMON_DIFFICULTY_ASSET_NAMES.get(demonDifficulty), rate,
+                    QUALITY_RATING_ASSET_NAMES.get(qualityRating), isPlatformer, true, showRate);
+        }
         throw new AssertionError();
     }
 
     private static BufferedImage render(String difficultyAssetName, int starsOrMoons, String qualityAssetName,
-                                        boolean isPlatformer) {
-        final var parser = GameSheetParser.parse("/GJ_GameSheet03-uhd.png", "/GJ_GameSheet03-uhd.plist");
-        final var elements = parser.getSpriteElements();
-        SpriteElement difficultyElement = null, qualityElement = null;
+                                        boolean isPlatformer, boolean twoLines, boolean showRate) {
+        final var elements = SPRITE_SHEET.getSpriteElements();
+        SpriteElement difficultyElement = null, qualityElement = null, starOrMoonElement = null;
         for (final var element : elements) {
             if (element.getName().equals(difficultyAssetName)) {
                 difficultyElement = element;
             } else if (element.getName().equals(qualityAssetName)) {
                 qualityElement = element;
+            } else if (element.getName().equals((isPlatformer ? "moon" : "star") + "_small01_001")) {
+                starOrMoonElement = element;
             }
         }
         Objects.requireNonNull(difficultyElement);
-        Objects.requireNonNull(qualityElement);
-        final var difficultySprite = difficultyElement.render(parser.getImage(), RenderFilter.NONE);
-        final var qualitySprite = qualityElement.render(parser.getImage(), RenderFilter.NONE);
-        final var image = new BufferedImage(280, 400, java.awt.image.BufferedImage.TYPE_INT_ARGB);
+        Objects.requireNonNull(starOrMoonElement);
+        final var image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
         final var g = image.createGraphics();
-        g.translate(0, -50);
-        g.drawImage(qualitySprite, (280 - qualityElement.getWidth()) / 2, (400 - qualityElement.getHeight()) / 2, null);
-        g.drawImage(difficultySprite, (280 - difficultyElement.getWidth()) / 2,
-                (400 - difficultyElement.getHeight()) / 2, null);
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+        g.translate(0, (showRate ? -25 : 0) + (twoLines ? -15 : 0));
+        if (qualityElement != null) {
+            g.drawImage(qualityElement.render(SPRITE_SHEET.getImage()),
+                    (WIDTH - qualityElement.getWidth()) / 2,
+                    (HEIGHT - qualityElement.getHeight()) / 2, null);
+        }
+        final var difficultyX = (WIDTH - difficultyElement.getWidth()) / 2;
+        final var difficultyY = (HEIGHT - difficultyElement.getHeight()) / 2;
+        g.drawImage(difficultyElement.render(SPRITE_SHEET.getImage()), difficultyX, difficultyY, null);
+        if (showRate) {
+            final var starX = (WIDTH - starOrMoonElement.getWidth()) / 2 + 35;
+            final var starY = starOrMoonElement.getHeight() / 2 + difficultyY + difficultyElement.getHeight() - 10;
+            g.drawImage(starOrMoonElement.render(SPRITE_SHEET.getImage()), starX, starY, null);
+            drawStarCount(g, "" + starsOrMoons, starX - 20, starY + 44);
+        }
         g.dispose();
         return image;
     }
 
-    public static BufferedImage render(Difficulty difficulty, int starsOrMoons, QualityRating qualityRating,
-                                       boolean isPlatformer) {
-        return render(DIFFICULTY_ASSET_NAMES.get(difficulty), starsOrMoons,
-                QUALITY_RATING_ASSET_NAMES.get(qualityRating), isPlatformer);
-    }
+    private static void drawStarCount(Graphics2D g, String count, int x, int y) {
+        final var originalColor = g.getColor();
+        final var originalStroke = g.getStroke();
+        final var originalTransform = g.getTransform();
 
-    public static BufferedImage render(DemonDifficulty demonDifficulty, int starsOrMoons, QualityRating qualityRating,
-                                       boolean isPlatformer) {
-        return render(DEMON_DIFFICULTY_ASSET_NAMES.get(demonDifficulty), starsOrMoons,
-                QUALITY_RATING_ASSET_NAMES.get(qualityRating), isPlatformer);
-    }
+        final var glyphVector = new Font("Pusab", Font.PLAIN, 55)
+                .createGlyphVector(g.getFontRenderContext(), count);
+        final var textShape = glyphVector.getOutline();
+        g.translate(x - textShape.getBounds().width, y);
+        g.setColor(Color.BLACK);
+        g.setStroke(new BasicStroke(8));
+        g.draw(textShape);
+        g.setColor(Color.WHITE);
+        g.fill(textShape);
 
-    public static BufferedImage render(GDLevel level) {
-        if (level.isDemon()) {
-            return render(level.demonDifficulty(), level.stars(), level.qualityRating(), level.isPlatformer());
-        }
-        return render(level.actualDifficulty(), level.stars(), level.qualityRating(), level.isPlatformer());
+        g.setColor(originalColor);
+        g.setStroke(originalStroke);
+        g.setTransform(originalTransform);
     }
 }

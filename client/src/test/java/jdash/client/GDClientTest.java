@@ -98,7 +98,7 @@ public final class GDClientTest {
                 .demonDifficulty(DemonDifficulty.EXTREME)
                 .description("Whose blood will be spilt in the Bloodbath? Who will the victors be? How many will " +
                         "survive? Good luck...")
-                .difficulty(Difficulty.INSANE)
+                .votedDifficulty(Difficulty.INSANE)
                 .downloads(26672952)
                 .likes(1505455)
                 .featuredScore(10330)
@@ -123,7 +123,7 @@ public final class GDClientTest {
                                 ".com%2F467000%2F467339_At_the_Speed_of_Light_FINA.mp3"))
                         .id(467339)
                         .build())
-                .stars(10)
+                .rewards(10)
                 .build();
         var actual = client.findLevelById(10565740).block();
         assertEquals(expected, actual);
@@ -224,7 +224,7 @@ public final class GDClientTest {
                 .demonDifficulty(DemonDifficulty.EXTREME)
                 .description("Whose blood will be spilt in the Bloodbath? Who will the victors be? How many will " +
                         "survive? Good luck...")
-                .difficulty(Difficulty.INSANE)
+                .votedDifficulty(Difficulty.INSANE)
                 .downloads(26746554)
                 .likes(1506769)
                 .featuredScore(10330)
@@ -241,7 +241,7 @@ public final class GDClientTest {
                 .originalLevelId(7679228)
                 .requestedStars(0)
                 .songId(467339)
-                .stars(10)
+                .rewards(10)
                 .uploadedAgo("5 years")
                 .updatedAgo("6 months")
                 .isCopyable(false)

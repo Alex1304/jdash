@@ -3,6 +3,8 @@ package jdash.graphics.test;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.MissingResourceException;
 
 import static org.junit.jupiter.api.Assertions.fail;
@@ -35,6 +37,12 @@ public final class ImageTestUtils {
                 throw new MissingResourceException("Test image not found", ImageTestUtils.class.getName(), name);
             }
             return ImageIO.read(resource);
+        }
+    }
+
+    public static void writeToTempDir(BufferedImage image, String name) throws IOException {
+        try (final var output = Files.newOutputStream(Path.of(System.getProperty("java.io.tmpdir"), name))) {
+            ImageIO.write(image, "png", output);
         }
     }
 }
