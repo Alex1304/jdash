@@ -19,7 +19,7 @@ public final class AnimationParser {
     public static List<AnimationFrame> parseFrames(String plistName, String prefix, List<SpriteElement> elements) {
         try {
             final var plist = new Configurations()
-                    .fileBased(XMLPropertyListConfiguration.class, GameSheetParser.class
+                    .fileBased(XMLPropertyListConfiguration.class, SpriteSheet.class
                             .getResource(plistName));
             final var stream = StreamSupport.stream(Spliterators.spliteratorUnknownSize(plist.getKeys(prefix),
                     Spliterator.ORDERED), false);

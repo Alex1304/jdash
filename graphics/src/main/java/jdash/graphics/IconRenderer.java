@@ -61,9 +61,10 @@ public final class IconRenderer {
      * image of it with the desired colors.
      */
     public static IconRenderer load(IconType type, int id) {
+        Objects.requireNonNull(type);
         final var iconId = IconIdentifier.of(type, id);
         try {
-            final var parser = GameSheetParser.parse(iconId.toSpriteResourceName(), iconId.toPlistResourceName());
+            final var parser = SpriteSheet.parse(iconId.toSpriteResourceName(), iconId.toPlistResourceName());
             List<? extends Renderable> elements;
             if (type == IconType.ROBOT) {
                 elements = new ArrayList<>(AnimationParser.parseFrames("/Robot_AnimDesc.plist",
@@ -89,6 +90,7 @@ public final class IconRenderer {
      * @return a {@link BufferedImage} of the rendered icon
      */
     public BufferedImage render(ColorSelection colorSelection) {
+        Objects.requireNonNull(colorSelection);
         return trim(renderLayers(elements, spriteSheet, RenderFilter.applyingIconColors(colorSelection)));
     }
 

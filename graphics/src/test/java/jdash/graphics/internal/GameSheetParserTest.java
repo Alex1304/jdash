@@ -9,7 +9,7 @@ public final class GameSheetParserTest {
 
     @Test
     public void shouldParseGameSheet() {
-        final var parser = assertDoesNotThrow(() -> GameSheetParser.parse("/icons/bird_01-uhd.png",
+        final var parser = assertDoesNotThrow(() -> SpriteSheet.parse("/icons/bird_01-uhd.png",
                 "/icons/bird_01-uhd.plist"));
         assertEquals(231, parser.getImage().getWidth());
         assertEquals(199, parser.getImage().getHeight());

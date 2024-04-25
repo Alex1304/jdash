@@ -43,27 +43,27 @@ public interface GDLevel {
     String description();
 
     /**
-     * The difficulty of the level. This only takes into account community votes and ignores the actual rating as shown
-     * in-game. Use {@link #actualDifficulty()} to get a more accurate result.
+     * The difficulty of the level based on community votes. Use {@link #difficulty()} to get the actual difficulty as
+     * shown in-game.
      *
      * @return a {@link Difficulty}
      */
-    Difficulty difficulty();
+    Difficulty votedDifficulty();
 
     /**
-     * The actual difficulty of the level as shown in-game. It is computed based on the results of {@link
-     * #difficulty()}, {@link #isDemon()} and {@link #isAuto()}.
+     * The actual difficulty of the level as shown in-game. It is computed based on the results of
+     * {@link #votedDifficulty()}, {@link #isDemon()} and {@link #isAuto()}.
      *
      * @return a {@link Difficulty}
      */
-    default Difficulty actualDifficulty() {
+    default Difficulty difficulty() {
         if (isDemon()) {
             return Difficulty.DEMON;
         }
         if (isAuto()) {
             return Difficulty.AUTO;
         }
-        return difficulty();
+        return votedDifficulty();
     }
 
     /**
@@ -75,11 +75,11 @@ public interface GDLevel {
     DemonDifficulty demonDifficulty();
 
     /**
-     * The stars of the level.
+     * The rewards of the level (stars or moons).
      *
      * @return an int
      */
-    int stars();
+    int rewards();
 
     /**
      * The featured score of the level. It is generally used to position levels in the featured section of the game.
@@ -89,9 +89,10 @@ public interface GDLevel {
     int featuredScore();
 
     /**
-     * Whether the level is epic.
+     * The quality rating of the level. It corresponds to the decoration of the difficulty face as shown in-game
+     * (featured, epic, legendary, mythic).
      *
-     * @return a boolean
+     * @return a {@link QualityRating}
      */
     QualityRating qualityRating();
 

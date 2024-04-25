@@ -38,7 +38,7 @@ public class GDEventProducerTest {
                 .creatorName("")
                 .demonDifficulty(DemonDifficulty.HARD)
                 .description("")
-                .difficulty(Difficulty.NA)
+                .votedDifficulty(Difficulty.NA)
                 .downloads(0)
                 .likes(0)
                 .featuredScore(0)
@@ -55,7 +55,7 @@ public class GDEventProducerTest {
                 .originalLevelId(0)
                 .requestedStars(0)
                 .songId(0)
-                .stars(stars)
+                .rewards(stars)
                 .build();
     }
 

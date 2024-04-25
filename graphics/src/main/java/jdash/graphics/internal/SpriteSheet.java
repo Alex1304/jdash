@@ -12,29 +12,29 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-public final class GameSheetParser {
+public final class SpriteSheet {
 
     private final BufferedImage image;
     private final XMLPropertyListConfiguration plist;
     private final List<SpriteElement> spriteElements;
 
-    private GameSheetParser(BufferedImage image, XMLPropertyListConfiguration plist,
-                            List<SpriteElement> spriteElements) {
+    private SpriteSheet(BufferedImage image, XMLPropertyListConfiguration plist,
+                        List<SpriteElement> spriteElements) {
         this.image = image;
         this.plist = plist;
         this.spriteElements = spriteElements;
     }
 
-    public static GameSheetParser parse(String pngName, String plistName) {
+    public static SpriteSheet parse(String pngName, String plistName) {
         Objects.requireNonNull(pngName);
         Objects.requireNonNull(plistName);
-        try (final var resource = GameSheetParser.class.getResourceAsStream(pngName)) {
+        try (final var resource = SpriteSheet.class.getResourceAsStream(pngName)) {
             if (resource == null) {
-                throw new MissingResourceException("PNG resource not found", GameSheetParser.class.getName(), pngName);
+                throw new MissingResourceException("PNG resource not found", SpriteSheet.class.getName(), pngName);
             }
             final var image = ImageIO.read(resource);
             final var plist = new Configurations()
-                    .fileBased(XMLPropertyListConfiguration.class, GameSheetParser.class
+                    .fileBased(XMLPropertyListConfiguration.class, SpriteSheet.class
                             .getResource(plistName));
             final var stream = StreamSupport.stream(Spliterators.spliteratorUnknownSize(plist.getKeys(),
                     Spliterator.ORDERED), false);
@@ -48,7 +48,7 @@ public final class GameSheetParser {
                                     .getString("frames." + field[0] + "..png." + field[1], "null")))
                             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))))
                     .collect(Collectors.toUnmodifiableList());
-            return new GameSheetParser(image, plist, spriteElements);
+            return new SpriteSheet(image, plist, spriteElements);
         } catch (ConfigurationException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {

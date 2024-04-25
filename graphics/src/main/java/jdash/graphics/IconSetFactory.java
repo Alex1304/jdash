@@ -37,6 +37,7 @@ public final class IconSetFactory {
      * @return the requested icon as a {@link BufferedImage}
      */
     public BufferedImage createIcon(IconType iconType) {
+        Objects.requireNonNull(iconType);
         final var renderer = IconRenderer.load(iconType, Math.max(1, iconType.idForUser(user)));
         final var colors = user.hasGlowOutline() ? ColorSelection.of(user.color1Id(), user.color2Id(),
                 user.glowColorId()) : ColorSelection.of(user.color1Id(), user.color2Id());

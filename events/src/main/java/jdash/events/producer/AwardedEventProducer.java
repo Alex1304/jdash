@@ -82,8 +82,8 @@ class AwardedEventProducer implements GDEventProducer {
                                             .findAny()
                                             .orElseThrow()))
                             .filter(predicate(haveDifferentFields(
-                                    GDLevel::stars,
-                                    GDLevel::actualDifficulty,
+                                    GDLevel::rewards,
+                                    GDLevel::difficulty,
                                     GDLevel::demonDifficulty,
                                     GDLevel::featuredScore,
                                     GDLevel::qualityRating
