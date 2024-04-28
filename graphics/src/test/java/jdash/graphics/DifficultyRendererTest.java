@@ -4,14 +4,16 @@ import jdash.common.DemonDifficulty;
 import jdash.common.Difficulty;
 import jdash.common.Length;
 import jdash.common.QualityRating;
-import jdash.common.entity.ImmutableGDLevel;
-import jdash.common.entity.ImmutableGDSong;
+import jdash.common.entity.GDLevel;
+import jdash.common.entity.GDSong;
 import jdash.common.internal.InternalUtils;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.util.Optional;
 
-import static jdash.graphics.test.ImageTestUtils.*;
+import static jdash.graphics.test.ImageTestUtils.assertImageEquals;
+import static jdash.graphics.test.ImageTestUtils.loadTestImage;
 
 public final class DifficultyRendererTest {
 
@@ -76,41 +78,57 @@ public final class DifficultyRendererTest {
     }
 
     @Test
+    public void shouldRenderMediumDemon10Diamonds() throws IOException {
+        final var image = DifficultyRenderer.create(DemonDifficulty.EASY)
+                .withDiamonds(10)
+                .render();
+        assertImageEquals(loadTestImage("/tests/demon-medium-10-diamonds.png"), image);
+    }
+
+    @Test
+    public void shouldRenderWhateverTheFuckYouWant() throws IOException {
+        final var image = DifficultyRenderer.create(Difficulty.NA)
+                .withDiamonds(-99)
+                .withQualityRating(QualityRating.MYTHIC)
+                .render();
+        assertImageEquals(loadTestImage("/tests/na--99-diamonds-mythic.png"), image);
+    }
+
+    @Test
     public void shouldRenderForLevel() throws IOException {
-        final var level = ImmutableGDLevel.builder()
-                .coinCount(0)
-                .creatorPlayerId(503085)
-                .creatorName("Riot")
-                .demonDifficulty(DemonDifficulty.EXTREME)
-                .description("Whose blood will be spilt in the Bloodbath? Who will the victors be? How many will " +
-                        "survive? Good luck...")
-                .votedDifficulty(Difficulty.INSANE)
-                .downloads(26672952)
-                .likes(1505455)
-                .featuredScore(10330)
-                .gameVersion(21)
-                .hasCoinsVerified(false)
-                .id(10565740)
-                .isAuto(false)
-                .isDemon(true)
-                .qualityRating(QualityRating.FEATURED)
-                .length(Length.LONG)
-                .levelVersion(3)
-                .name("Bloodbath")
-                .objectCount(24746)
-                .originalLevelId(7679228)
-                .requestedStars(0)
-                .songId(467339)
-                .song(ImmutableGDSong.builder()
-                        .artist("Dimrain47")
-                        .title("At the Speed of Light")
-                        .size("9.56")
-                        .downloadUrl(InternalUtils.urlDecode("http%3A%2F%2Faudio.ngfiles" +
-                                ".com%2F467000%2F467339_At_the_Speed_of_Light_FINA.mp3"))
-                        .id(467339)
-                        .build())
-                .rewards(10)
-                .build();
+        final var level = new GDLevel(
+                10565740,
+                "Bloodbath",
+                503085,
+                "Whose blood will be spilt in the Bloodbath? Who will the victors be? How many will " +
+                        "survive? Good luck...",
+                Difficulty.INSANE,
+                DemonDifficulty.EXTREME,
+                10,
+                10330,
+                QualityRating.FEATURED,
+                26672952,
+                1505455,
+                Length.LONG,
+                0,
+                false,
+                3,
+                21,
+                24746,
+                true,
+                false,
+                Optional.of(7679228L),
+                0,
+                Optional.of(467339L),
+                Optional.of(new GDSong(
+                        467339,
+                        "At the Speed of Light",
+                        "Dimrain47",
+                        Optional.of("9.56"),
+                        Optional.ofNullable(InternalUtils.urlDecode("http%3A%2F%2Faudio.ngfiles" +
+                                ".com%2F467000%2F467339_At_the_Speed_of_Light_FINA.mp3")))),
+                Optional.of("Riot")
+        );
         final var image = DifficultyRenderer.forLevel(level).render();
         assertImageEquals(loadTestImage("/tests/level.png"), image);
     }

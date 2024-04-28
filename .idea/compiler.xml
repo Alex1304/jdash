@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
+      <profile name="Annotation profile for JDash" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$MAVEN_REPOSITORY$/org/immutables/value/2.8.9-ea-1/value-2.8.9-ea-1.jar" />
+        </processorPath>
+        <module name="common" />
+        <module name="client" />
+        <module name="graphics" />
+        <module name="events" />
+      </profile>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="jdash-events" />
+        <module name="jdash-graphics" />
+        <module name="jdash-common" />
+        <module name="jdash-client" />
+      </profile>
+    </annotationProcessing>
+  </component>
+</project>

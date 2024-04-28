@@ -13,7 +13,7 @@ import java.util.Map;
 
 import static jdash.client.request.GDRequests.*;
 
-public final class GDRouterMockUp implements GDRouter {
+public final class GDRouterMock implements GDRouter {
 
     private static final Map<String, String> AUTH_PARAMS = Map.of("accountID", "1", "gjp",
             RobTopsWeakEncryption.encodeAccountPassword("test"));

@@ -26,6 +26,7 @@ class GDRouterImpl extends BaseSubscriber<RequestWithCallback> implements GDRout
     private final Scheduler scheduler;
     private final HttpClient httpClient;
     private final Sinks.Many<RequestWithCallback> requestQueue = Sinks.many().multicast().onBackpressureBuffer();
+    private final Sinks.Many<Duration> nextRequestScheduler = Sinks.many().multicast().onBackpressureBuffer();
 
     public GDRouterImpl(RequestLimiter limiter, Duration timeout, String baseUrl, Scheduler scheduler) {
         this.limiter = limiter;
@@ -42,6 +43,10 @@ class GDRouterImpl extends BaseSubscriber<RequestWithCallback> implements GDRout
         }
         this.httpClient = httpClient;
         requestQueue.asFlux().subscribe(this);
+        nextRequestScheduler.asFlux()
+                .flatMap(Mono::delay)
+                .then(Mono.fromRunnable(() -> request(1)))
+                .subscribe();
     }
 
     @Override
@@ -67,8 +72,8 @@ class GDRouterImpl extends BaseSubscriber<RequestWithCallback> implements GDRout
     @Override
     protected void hookOnNext(RequestWithCallback value) {
         limiter.fire();
-        var request = value.request;
-        var callback = value.callback;
+        var request = value.request();
+        var callback = value.callback();
         final var requestId = UUID.randomUUID().toString();
         httpClient.doAfterRequest((httpClientRequest, connection) -> LOGGER
                         .debug("[requestId: {}] Request sent: {}", requestId, request))
@@ -88,11 +93,10 @@ class GDRouterImpl extends BaseSubscriber<RequestWithCallback> implements GDRout
                 .onErrorMap(IOException.class, e -> Exceptions.retryExhausted("Giving up after 10 I/O failures", e))
                 .doFinally(signalType -> {
                     var remaining = limiter.remaining();
-                    if (remaining.getRemainingPermits() > 0) {
+                    if (remaining.remainingPermits() > 0) {
                         request(1);
                     } else {
-                        Mono.delay(remaining.getTimeLeftBeforeNextPermit())
-                                .subscribe(__ -> request(1));
+                        nextRequestScheduler.emitNext(remaining.timeLeftBeforeNextPermit(), FAIL_FAST);
                     }
                 })
                 .subscribe(response -> {
@@ -110,13 +114,4 @@ class GDRouterImpl extends BaseSubscriber<RequestWithCallback> implements GDRout
 
 }
 
-class RequestWithCallback {
-
-    final GDRequest request;
-    final Sinks.One<String> callback;
-
-    RequestWithCallback(GDRequest request, Sinks.One<String> callback) {
-        this.request = request;
-        this.callback = callback;
-    }
-}
+record RequestWithCallback(GDRequest request, Sinks.One<String> callback) {}

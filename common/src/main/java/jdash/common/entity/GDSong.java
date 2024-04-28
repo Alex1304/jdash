@@ -1,23 +1,29 @@
 package jdash.common.entity;
 
-import org.immutables.value.Value;
-
 import java.util.Map;
 import java.util.Optional;
 
 /**
- * Represents a song that can be used in-game. It can be a custom song from Newgrounds or one of the official game
- * songs.
+ * Represents a song that can be used in-game. It can be a custom song from Newgrounds, a song from the Music Library,
+ * or one of the official game songs.
+ *
+ * @param id          The ID of the song. For a custom song, this is the Newgrounds ID. For an official song, this is
+ *                    its in-game ID.
+ * @param title       The title of the song.
+ * @param artist      The display name of the artist of the song.
+ * @param size        A string that indicates the size of the song. The structure of the string is not guaranteed. Only
+ *                    present for Newgrounds and Music Library songs.
+ * @param downloadUrl The download URL of the song. Only present for Newgrounds songs.
  */
-@Value.Immutable
-public interface GDSong {
+public record GDSong(
+        long id,
+        String title,
+        String artist,
+        Optional<String> size,
+        Optional<String> downloadUrl
+) {
 
-    /**
-     * An unmodifiable map containing all official songs. It is generally recommended to use {@link
-     * #getOfficialSong(int)} that provides safe access to individual songs, but it can be used to iterate through all
-     * official songs for example.
-     */
-    Map<Integer, GDSong> OFFICIAL_SONGS = initOfficialSongs();
+    private static final Map<Integer, GDSong> OFFICIAL_SONGS = initOfficialSongs();
 
     private static Map<Integer, GDSong> initOfficialSongs() {
         return Map.ofEntries(
@@ -41,15 +47,12 @@ public interface GDSong {
                 officialSongEntry(17, "DJ-Nate", "Theory of Everything 2"),
                 officialSongEntry(18, "Waterflame", "Geometrical Dominator"),
                 officialSongEntry(19, "F-777", "Deadlocked"),
-                officialSongEntry(20, "MDK", "Fingerdash"));
+                officialSongEntry(20, "MDK", "Fingerdash"),
+                officialSongEntry(21, "MDK", "Dash"));
     }
 
     private static Map.Entry<Integer, GDSong> officialSongEntry(int id, String artist, String title) {
-        return Map.entry(id, ImmutableGDSong.builder()
-                .id(id)
-                .title(title)
-                .artist(artist)
-                .build());
+        return Map.entry(id, new GDSong(id, title, artist, Optional.empty(), Optional.empty()));
     }
 
     /**
@@ -58,53 +61,34 @@ public interface GDSong {
      * @param id the official song ID
      * @return the song, or empty if the id doesn't correspond to any existing song
      */
-    static Optional<GDSong> getOfficialSong(int id) {
+    public static Optional<GDSong> getOfficialSong(int id) {
         return Optional.ofNullable(OFFICIAL_SONGS.get(id));
     }
 
     /**
-     * The ID of the song. For a custom song, this is the Newgrounds ID. For an official song, this is its in-game ID.
-     *
-     * @return a long
-     */
-    long id();
-
-    /**
-     * The title of the song.
-     *
-     * @return a string
-     */
-    String title();
-
-    /**
-     * The display name of the artist of the song.
-     *
-     * @return a string
-     */
-    String artist();
-
-    /**
-     * A string that indicates the size of the song. The structure of the string is not guaranteed. Only applicable for
-     * custom songs.
-     *
-     * @return an {@link Optional} containing a string if present
-     */
-    Optional<String> size();
-
-    /**
-     * The download URL of the song. Only applicable for custom songs.
-     *
-     * @return an {@link Optional} containing a string if present
-     */
-    Optional<String> downloadUrl();
-
-    /**
-     * Convenience method to check whether this song represents a custom song on Newgrounds or an official in-game
-     * song.
+     * Convenience method to check whether this song represents an official in-game song.
      *
      * @return a boolean
      */
-    default boolean isCustom() {
-        return !OFFICIAL_SONGS.containsKey((int) id()) || size().isPresent() || downloadUrl().isPresent();
+    public boolean isOfficial() {
+        return OFFICIAL_SONGS.containsKey((int) id);
+    }
+
+    /**
+     * Convenience method to check whether this song represents song from Newgrounds.
+     *
+     * @return a boolean
+     */
+    public boolean isFromNewgrounds() {
+        return downloadUrl.isPresent();
+    }
+
+    /**
+     * Convenience method to check whether this song represents song from the in-game Music Library.
+     *
+     * @return a boolean
+     */
+    public boolean isFromMusicLibrary() {
+        return !isOfficial() && !isFromNewgrounds();
     }
 }

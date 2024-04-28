@@ -27,11 +27,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.immutables</groupId>
-            <artifactId>value</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>com.alex1304.jdash</groupId>
             <artifactId>jdash-common</artifactId>
         </dependency>

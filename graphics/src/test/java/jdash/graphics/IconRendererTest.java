@@ -4,6 +4,7 @@ import jdash.common.IconType;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.util.OptionalInt;
 
 import static jdash.graphics.test.ImageTestUtils.assertImageEquals;
 import static jdash.graphics.test.ImageTestUtils.loadTestImage;
@@ -33,7 +34,7 @@ public final class IconRendererTest {
     @Test
     public void shouldRenderRobot1WithCustomColors() throws IOException {
         final var renderer = IconRenderer.load(IconType.ROBOT, 1);
-        final var output = renderer.render(ColorSelection.of(16, 11, 14));
+        final var output = renderer.render(new ColorSelection(16, 11, OptionalInt.of(14)));
         assertImageEquals(loadTestImage("/tests/robot-1.png"), output);
     }
 
@@ -47,7 +48,7 @@ public final class IconRendererTest {
     @Test
     public void shouldRenderSpider15WithCustomColors() throws IOException {
         final var renderer = IconRenderer.load(IconType.SPIDER, 15);
-        final var output = renderer.render(ColorSelection.of(12, 9, 9));
+        final var output = renderer.render(new ColorSelection(12, 9, OptionalInt.of(9)));
         assertImageEquals(loadTestImage("/tests/spider-15.png"), output);
     }
 }

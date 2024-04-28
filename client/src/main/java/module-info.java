@@ -1,3 +1,4 @@
+@SuppressWarnings("requires-transitive-automatic")
 module jdash.client {
 
     exports jdash.client;

@@ -30,16 +30,12 @@ public interface GDEventProducer {
 
     /**
      * An event producer that requests information on the current Daily level and Weekly demon on each iteration in
-     * order to detect when the Daily level or the Weekly demon changes. It may emit:
-     * <ul>
-     *     <li>{@link DailyLevelChange} when it detects that the Daily level has changed</li>
-     *     <li>{@link WeeklyDemonChange} when it detects that the Weekly demon has changed</li>
-     * </ul>
+     * order to detect when the Daily level or the Weekly demon changes.
      *
      * @return a {@link GDEventProducer}
      */
     static GDEventProducer timelyLevels() {
-        return new TimelyEventProducer();
+        return new DailyEventProducer();
     }
 
     /**

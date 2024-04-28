@@ -3,7 +3,6 @@ package jdash.client.response;
 import jdash.client.exception.ActionFailedException;
 import jdash.common.entity.GDComment;
 import jdash.common.entity.GDUser;
-import jdash.common.entity.ImmutableGDComment;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,7 +17,7 @@ class CommentsResponseDeserializer implements Function<String, List<GDComment>> 
 
     @Override
     public List<GDComment> apply(String response) {
-        ActionFailedException.throwIfEquals(response, "-1", "No comments could be loaded");
+        ActionFailedException.throwIfEquals(response, "-1", "Failed to load comments");
         var list = new ArrayList<GDComment>();
         for (var comment : response.split("#")[0].split("\\|")) {
             var parts = comment.split(":");
@@ -32,22 +31,22 @@ class CommentsResponseDeserializer implements Function<String, List<GDComment>> 
                 authorData.put(USER_ROLE, commentData.getOrDefault(COMMENT_AUTHOR_ROLE, "0"));
                 author = buildUser(authorData);
             }
-            list.add(ImmutableGDComment.builder()
-                    .id(Long.parseLong(commentData.get(COMMENT_ID)))
-                    .author(Optional.ofNullable(author))
-                    .content(b64Decode(commentData.get(COMMENT_CONTENT)))
-                    .likes(Integer.parseInt(commentData.get(COMMENT_LIKES)))
-                    .postedAgo(commentData.get(COMMENT_POSTED_AGO))
-                    .percentage(Optional.ofNullable(commentData.get(COMMENT_PERCENTAGE))
-                            .map(Integer::parseInt))
-                    .color(Optional.ofNullable(commentData.get(COMMENT_COLOR))
+            list.add(new GDComment(
+                    Long.parseLong(commentData.get(COMMENT_ID)),
+                    Optional.ofNullable(author),
+                    b64Decode(commentData.get(COMMENT_CONTENT)),
+                    Integer.parseInt(commentData.get(COMMENT_LIKES)),
+                    commentData.get(COMMENT_POSTED_AGO),
+                    Optional.ofNullable(commentData.get(COMMENT_PERCENTAGE))
+                            .map(Integer::parseInt),
+                    Optional.ofNullable(commentData.get(COMMENT_COLOR))
                             .map(color -> {
                                 var rgb = Arrays.stream(color.split(","))
                                         .map(Integer::parseInt)
                                         .toArray(Integer[]::new);
                                 return 0xFFFFFF & (rgb[0] << 16 | rgb[1] << 8 | rgb[2]);
-                            }))
-                    .build());
+                            })
+            ));
         }
         return list;
     }

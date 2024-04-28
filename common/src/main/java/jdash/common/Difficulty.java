@@ -58,20 +58,14 @@ public enum Difficulty {
      * @return a {@link Difficulty}
      */
     public static Difficulty parse(String str) {
-        switch (str) {
-            case "10":
-                return Difficulty.EASY;
-            case "20":
-                return Difficulty.NORMAL;
-            case "30":
-                return Difficulty.HARD;
-            case "40":
-                return Difficulty.HARDER;
-            case "50":
-                return Difficulty.INSANE;
-            default:
-                return Difficulty.NA;
-        }
+        return switch (str) {
+            case "10" -> Difficulty.EASY;
+            case "20" -> Difficulty.NORMAL;
+            case "30" -> Difficulty.HARD;
+            case "40" -> Difficulty.HARDER;
+            case "50" -> Difficulty.INSANE;
+            default -> Difficulty.NA;
+        };
     }
 
     /**

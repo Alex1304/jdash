@@ -16,14 +16,14 @@ public final class AnimationFrame implements Renderable {
     public static final int ICON_WIDTH = 300;
     public static final int ICON_HEIGHT = 300;
 
-    private final List<Renderable> elements;
+    private final List<? extends Renderable> elements;
     private final Point2D.Double position;
     private final Point2D.Double scale;
     private final double rotation;
     private final int zValue;
     private final boolean isGlow;
 
-    private AnimationFrame(List<Renderable> elements, Point2D.Double position, Point2D.Double scale, double rotation,
+    private AnimationFrame(List<? extends Renderable> elements, Point2D.Double position, Point2D.Double scale, double rotation,
                            int zValue, boolean isGlow) {
         this.elements = elements;
         this.position = position;
@@ -33,15 +33,15 @@ public final class AnimationFrame implements Renderable {
         this.isGlow = isGlow;
     }
 
-    public static AnimationFrame from(List<Renderable> elements, Map<String, String> fields, boolean isGlow) {
+    public static AnimationFrame from(List<? extends Renderable> elements, Map<String, String> fields, boolean isGlow) {
         final var position = GraphicsUtils.parsePoint(fields.get("position"));
         final var scale = GraphicsUtils.parsePoint(fields.get("scale"));
         final var rotation = Double.parseDouble(fields.get("rotation"));
         final var flipped = Tuple.parse(fields.get("flipped"), s -> Objects.equals(s, "1"));
         final var zValue = Integer.parseInt(fields.get("zValue"));
         final var actualScale = new Point2D.Double(
-                flipped.getA() ? -scale.x : scale.x,
-                flipped.getB() ? -scale.y : scale.y
+                flipped.a() ? -scale.x : scale.x,
+                flipped.b() ? -scale.y : scale.y
         );
         final var sorted = new ArrayList<>(elements);
         Collections.sort(sorted);

@@ -5,29 +5,30 @@ import jdash.common.entity.GDUserProfile;
 
 import java.awt.image.BufferedImage;
 import java.util.Objects;
+import java.util.OptionalInt;
 
 /**
- * Allows to generate icons for a specific user.
+ * Allows to generate icons for a specific user profile.
  */
 public final class IconSetFactory {
 
     private static final int ICON_SLOT_SIZE = 200;
 
-    private final GDUserProfile user;
+    private final GDUserProfile profile;
 
-    private IconSetFactory(GDUserProfile user) {
-        this.user = user;
+    private IconSetFactory(GDUserProfile profile) {
+        this.profile = profile;
     }
 
     /**
-     * Creates a new {@link IconSetFactory} for the given user.
+     * Creates a new {@link IconSetFactory} for the given user profile.
      *
-     * @param user the user to generate icons for
+     * @param profile the user profile to generate icons for
      * @return a new {@link IconSetFactory}
      */
-    public static IconSetFactory forUser(GDUserProfile user) {
-        Objects.requireNonNull(user);
-        return new IconSetFactory(user);
+    public static IconSetFactory forUser(GDUserProfile profile) {
+        Objects.requireNonNull(profile);
+        return new IconSetFactory(profile);
     }
 
     /**
@@ -38,9 +39,9 @@ public final class IconSetFactory {
      */
     public BufferedImage createIcon(IconType iconType) {
         Objects.requireNonNull(iconType);
-        final var renderer = IconRenderer.load(iconType, Math.max(1, iconType.idForUser(user)));
-        final var colors = user.hasGlowOutline() ? ColorSelection.of(user.color1Id(), user.color2Id(),
-                user.glowColorId()) : ColorSelection.of(user.color1Id(), user.color2Id());
+        final var renderer = IconRenderer.load(iconType, Math.max(1, iconType.idForUser(profile)));
+        final var colors = new ColorSelection(profile.user().color1Id(), profile.user().color2Id(),
+                profile.user().hasGlowOutline() ? OptionalInt.of(profile.glowColorId()) : OptionalInt.empty());
         return renderer.render(colors);
     }
 
@@ -69,27 +70,27 @@ public final class IconSetFactory {
      */
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof IconSetFactory)) {
+        if (!(obj instanceof IconSetFactory o)) {
             return false;
         }
-        IconSetFactory o = (IconSetFactory) obj;
-        if (user.equals(o.user)) {
+        if (profile.equals(o.profile)) {
             return true;
         }
         for (IconType t : IconType.values()) {
-            if (t.idForUser(user) != t.idForUser(o.user)) {
+            if (t.idForUser(profile) != t.idForUser(o.profile)) {
                 return false;
             }
         }
-        return user.color1Id() == o.user.color1Id() && user.color2Id() == o.user.color2Id()
-                && user.glowColorId() == o.user.glowColorId();
+        return profile.user().color1Id() == o.profile.user().color1Id()
+                && profile.user().color2Id() == o.profile.user().color2Id()
+                && profile.glowColorId() == o.profile.glowColorId();
     }
 
     @Override
     public int hashCode() {
-        int hash = Objects.hash(user.color1Id(), user.color2Id(), user.glowColorId());
+        int hash = Objects.hash(profile.user().color1Id(), profile.user().color2Id(), profile.glowColorId());
         for (IconType t : IconType.values()) {
-            hash = Objects.hash(hash, t.idForUser(user));
+            hash = Objects.hash(hash, t.idForUser(profile));
         }
         return hash;
     }

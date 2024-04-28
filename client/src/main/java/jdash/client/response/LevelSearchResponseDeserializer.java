@@ -15,7 +15,7 @@ class LevelSearchResponseDeserializer implements Function<String, List<GDLevel>>
 
     @Override
     public List<GDLevel> apply(String response) {
-        ActionFailedException.throwIfEquals(response, "-1", "No results found");
+        ActionFailedException.throwIfEquals(response, "-1", "Failed to load levels");
         ArrayList<GDLevel> list = new ArrayList<>();
         String[] split1 = response.split("#");
         String levels = split1[0];

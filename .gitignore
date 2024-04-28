@@ -28,6 +28,7 @@
 .*
 !.gitignore
 !.github
+!.idea
 
 # Maven
 target/

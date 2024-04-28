@@ -21,7 +21,7 @@ public final class GDResponseDeserializers {
     private static final SongInfoResponseDeserializer SONG_INFO_RESPONSE = new SongInfoResponseDeserializer();
     private static final LevelDownloadResponseDeserializer LEVEL_DOWNLOAD_RESPONSE =
             new LevelDownloadResponseDeserializer();
-    private static final TimelyInfoResponseDeserializer TIMELY_INFO_RESPONSE = new TimelyInfoResponseDeserializer();
+    private static final DailyInfoResponseDeserializer TIMELY_INFO_RESPONSE = new DailyInfoResponseDeserializer();
     private static final CommentsResponseDeserializer COMMENTS_RESPONSE = new CommentsResponseDeserializer();
     private static final PrivateMessagesResponseDeserializer PRIVATE_MESSAGES_RESPONSE =
             new PrivateMessagesResponseDeserializer();
@@ -100,7 +100,7 @@ public final class GDResponseDeserializers {
      *
      * @return a deserializer function
      */
-    public static Function<String, GDTimelyInfo> timelyInfoResponse() {
+    public static Function<String, GDDailyInfo> timelyInfoResponse() {
         return TIMELY_INFO_RESPONSE;
     }
 

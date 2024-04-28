@@ -13,5 +13,4 @@ module jdash.graphics {
     requires transitive jdash.common;
 
     requires static com.fasterxml.jackson.annotation;
-    requires static org.immutables.value;
 }

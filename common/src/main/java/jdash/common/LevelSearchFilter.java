@@ -160,8 +160,7 @@ public final class LevelSearchFilter {
 
     /**
      * Gives a map representation of this filter, that can be directly sent as request parameters by a web client to
-     * Geometry Dash servers. The returned {@link Map} is unmodifiable and won't reflect changes made to this {@link
-     * LevelSearchFilter} after this call.
+     * Geometry Dash servers. The returned {@link Map} is unmodifiable.
      *
      * @return a map
      */

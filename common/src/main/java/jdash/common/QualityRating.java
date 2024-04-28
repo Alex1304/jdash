@@ -37,15 +37,11 @@ public enum QualityRating {
      * @return a {@link Difficulty}
      */
     public static QualityRating parse(String str, boolean defaultFeatured) {
-        switch (str) {
-            case "1":
-                return EPIC;
-            case "2":
-                return LEGENDARY;
-            case "3":
-                return MYTHIC;
-            default:
-                return defaultFeatured ? FEATURED : NONE;
-        }
+        return switch (str) {
+            case "1" -> EPIC;
+            case "2" -> LEGENDARY;
+            case "3" -> MYTHIC;
+            default -> defaultFeatured ? FEATURED : NONE;
+        };
     }
 }

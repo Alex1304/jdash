@@ -12,7 +12,7 @@ class UserProfileResponseDeserializer implements Function<String, GDUserProfile>
 
     @Override
     public GDUserProfile apply(String response) {
-        ActionFailedException.throwIfEquals(response, "-1", "User profile not found or not accessible");
+        ActionFailedException.throwIfEquals(response, "-1", "Failed to load user profile");
         return buildUserProfile(splitToMap(response, ":"));
     }
 }

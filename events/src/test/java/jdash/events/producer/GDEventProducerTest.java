@@ -8,11 +8,12 @@ import jdash.common.DemonDifficulty;
 import jdash.common.Difficulty;
 import jdash.common.Length;
 import jdash.common.QualityRating;
+import jdash.common.entity.GDDailyInfo;
 import jdash.common.entity.GDLevel;
-import jdash.common.entity.GDTimelyInfo;
-import jdash.common.entity.ImmutableGDLevel;
-import jdash.common.entity.ImmutableGDTimelyInfo;
-import jdash.events.object.*;
+import jdash.events.object.AwardedAdd;
+import jdash.events.object.AwardedRemove;
+import jdash.events.object.AwardedUpdate;
+import jdash.events.object.DailyLevelChange;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -29,38 +30,39 @@ public class GDEventProducerTest {
     private EventProducerTestCache cache;
     private GDClient client;
     private AwardedEventProducer awardedProducer;
-    private TimelyEventProducer timelyProducer;
+    private DailyEventProducer timelyProducer;
 
     private static GDLevel createLevel(long id, int stars) {
-        return ImmutableGDLevel.builder()
-                .coinCount(0)
-                .creatorPlayerId(0)
-                .creatorName("")
-                .demonDifficulty(DemonDifficulty.HARD)
-                .description("")
-                .votedDifficulty(Difficulty.NA)
-                .downloads(0)
-                .likes(0)
-                .featuredScore(0)
-                .gameVersion(0)
-                .hasCoinsVerified(false)
-                .id(id)
-                .isAuto(false)
-                .isDemon(false)
-                .qualityRating(QualityRating.NONE)
-                .length(Length.TINY)
-                .levelVersion(1)
-                .name("test level " + id)
-                .objectCount(0)
-                .originalLevelId(0)
-                .requestedStars(0)
-                .songId(0)
-                .rewards(stars)
-                .build();
+        return new GDLevel(
+                id,
+                "test level " + id,
+                0,
+                "",
+                Difficulty.NA,
+                DemonDifficulty.HARD,
+                stars,
+                0,
+                QualityRating.NONE,
+                0,
+                0,
+                Length.TINY,
+                0,
+                false,
+                1,
+                0,
+                0,
+                false,
+                false,
+                Optional.empty(),
+                0,
+                Optional.empty(),
+                Optional.empty(),
+                Optional.empty()
+        );
     }
 
-    private static GDTimelyInfo createTimelyInfo(long number) {
-        return ImmutableGDTimelyInfo.builder().number(number).nextIn(Duration.ofSeconds(1)).build();
+    private static GDDailyInfo createTimelyInfo(long number) {
+        return new GDDailyInfo(number, Duration.ofSeconds(1));
     }
 
     @BeforeEach
@@ -68,7 +70,7 @@ public class GDEventProducerTest {
         cache = new EventProducerTestCache();
         client = GDClient.create().withCache(cache);
         awardedProducer = new AwardedEventProducer();
-        timelyProducer = new TimelyEventProducer();
+        timelyProducer = new DailyEventProducer();
     }
 
     @Test
@@ -113,7 +115,7 @@ public class GDEventProducerTest {
 
         var events2 = awardedProducer.produce(client).collectList().block();
         assertNotNull(events2);
-        assertEquals(List.of(ImmutableAwardedAdd.of(added)), events2);
+        assertEquals(List.of(new AwardedAdd(added)), events2);
     }
 
     @Test
@@ -141,7 +143,7 @@ public class GDEventProducerTest {
 
         var events2 = awardedProducer.produce(client).collectList().block();
         assertNotNull(events2);
-        assertEquals(List.of(ImmutableAwardedRemove.of(removed)), events2);
+        assertEquals(List.of(new AwardedRemove(removed)), events2);
     }
 
     @Test
@@ -163,7 +165,7 @@ public class GDEventProducerTest {
 
         var events2 = awardedProducer.produce(client).collectList().block();
         assertNotNull(events2);
-        assertEquals(List.of(ImmutableAwardedUpdate.of(before, after)), events2);
+        assertEquals(List.of(new AwardedUpdate(before, after)), events2);
     }
 
     @Test
@@ -198,12 +200,12 @@ public class GDEventProducerTest {
         var events2 = awardedProducer.produce(client).collect(Collectors.toUnmodifiableSet()).block();
         assertNotNull(events2);
         assertEquals(Set.of(
-                ImmutableAwardedAdd.of(added1),
-                ImmutableAwardedAdd.of(added2),
-                ImmutableAwardedRemove.of(removed1),
-                ImmutableAwardedRemove.of(removed2),
-                ImmutableAwardedRemove.of(removed3),
-                ImmutableAwardedUpdate.of(before, after)), events2);
+                new AwardedAdd(added1),
+                new AwardedAdd(added2),
+                new AwardedRemove(removed1),
+                new AwardedRemove(removed2),
+                new AwardedRemove(removed3),
+                new AwardedUpdate(before, after)), events2);
     }
 
     @Test
@@ -223,8 +225,8 @@ public class GDEventProducerTest {
         var events2 = timelyProducer.produce(client).collect(Collectors.toUnmodifiableSet()).block();
         assertNotNull(events2);
         assertEquals(events2, Set.of(
-                ImmutableDailyLevelChange.of(oldDaily, newDaily),
-                ImmutableWeeklyDemonChange.of(oldWeekly, newWeekly)
+                new DailyLevelChange(oldDaily, newDaily, false),
+                new DailyLevelChange(oldWeekly, newWeekly, true)
         ));
     }
 
@@ -244,49 +246,32 @@ public class GDEventProducerTest {
                 createLevel(9, 10),
                 createLevel(10, 10)
         );
-        GDTimelyInfo daily = createTimelyInfo(1);
-        GDTimelyInfo weekly = createTimelyInfo(10);
+        GDDailyInfo daily = createTimelyInfo(1);
+        GDDailyInfo weekly = createTimelyInfo(10);
 
         @Override
         public Optional<Object> retrieve(GDRequest request) {
-            switch (request.getUri()) {
-                case GDRequests.GET_GJ_LEVELS_21:
-                    return Optional.ofNullable(request.getParams().get("page"))
-                            .map(value -> {
-                                switch (value) {
-                                    case "0":
-                                        return page0;
-                                    case "1":
-                                        return page1;
-                                    default:
-                                        return null;
-                                }
-                            });
-                case GDRequests.GET_GJ_DAILY_LEVEL:
-                    return Optional.ofNullable(request.getParams().get("weekly"))
-                            .map(value -> {
-                                switch (value) {
-                                    case "0":
-                                        return daily;
-                                    case "1":
-                                        return weekly;
-                                    default:
-                                        return null;
-                                }
-                            });
-                default:
-                    return Optional.empty();
-            }
+            return switch (request.getUri()) {
+                case GDRequests.GET_GJ_LEVELS_21 -> Optional.ofNullable(request.getParams().get("page"))
+                        .map(value -> switch (value) {
+                            case "0" -> page0;
+                            case "1" -> page1;
+                            default -> null;
+                        });
+                case GDRequests.GET_GJ_DAILY_LEVEL -> Optional.ofNullable(request.getParams().get("weekly"))
+                        .map(value -> switch (value) {
+                            case "0" -> daily;
+                            case "1" -> weekly;
+                            default -> null;
+                        });
+                default -> Optional.empty();
+            };
         }
 
         @Override
-        public void put(GDRequest request, Object cached) {
-
-        }
+        public void put(GDRequest request, Object cached) {}
 
         @Override
-        public void clear() {
-
-        }
+        public void clear() {}
     }
 }

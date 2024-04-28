@@ -1,27 +1,12 @@
 package jdash.events.object;
 
-import jdash.common.entity.GDTimelyInfo;
-import org.immutables.value.Value;
+import jdash.common.entity.GDDailyInfo;
 
 /**
  * Event emitted when the Daily level changes.
+ *
+ * @param before   The Daily level info before the change.
+ * @param after    The Daily level info after the change.
+ * @param isWeekly Whether this change is referring to the Daily level or the Weekly demon.
  */
-@Value.Immutable
-public interface DailyLevelChange {
-
-    /**
-     * The Daily level info before the change.
-     *
-     * @return a {@link GDTimelyInfo}
-     */
-    @Value.Parameter
-    GDTimelyInfo before();
-
-    /**
-     * The Daily level info after the change.
-     *
-     * @return a {@link GDTimelyInfo}
-     */
-    @Value.Parameter
-    GDTimelyInfo after();
-}
+public record DailyLevelChange(GDDailyInfo before, GDDailyInfo after, boolean isWeekly) {}
