@@ -26,13 +26,13 @@ public final class GDSerializedSourceResponse implements GDResponse {
     @Override
     public <E> Mono<E> deserialize(Function<? super String, E> deserializer) {
         return serializedSource
-                .map(response -> {
+                .<E>handle((response, sink) -> {
                     try {
-                        return deserializer.apply(response);
+                        sink.next(deserializer.apply(response));
                     } catch (GDResponseException e) {
-                        throw e;
+                        sink.error(e);
                     } catch (RuntimeException e) {
-                        throw new ResponseDeserializationException(response, e);
+                        sink.error(new ResponseDeserializationException(response, e));
                     }
                 })
                 .onErrorMap(e -> new GDClientException(request, e))

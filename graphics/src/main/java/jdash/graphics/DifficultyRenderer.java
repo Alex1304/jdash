@@ -4,8 +4,8 @@ import jdash.common.DemonDifficulty;
 import jdash.common.Difficulty;
 import jdash.common.QualityRating;
 import jdash.common.entity.GDLevel;
-import jdash.graphics.internal.SpriteSheet;
 import jdash.graphics.internal.SpriteElement;
+import jdash.graphics.internal.SpriteSheet;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -84,17 +84,26 @@ public final class DifficultyRenderer {
     private final DemonDifficulty demonDifficulty;
     private final QualityRating qualityRating;
     private final int rate;
-    private final boolean showRate;
-    private final boolean isPlatformer;
+    private final RewardType rewardType;
+
+    private enum RewardType {
+        NONE(null),
+        STARS("star"),
+        MOONS("moon"),
+        DIAMONDS("diamond");
+
+        private final String assetName;
+
+        RewardType(String assetName) {this.assetName = assetName;}
+    }
 
     private DifficultyRenderer(Difficulty difficulty, DemonDifficulty demonDifficulty, QualityRating qualityRating,
-                               int rate, boolean showRate, boolean isPlatformer) {
+                               int rate, RewardType rewardType) {
         this.difficulty = difficulty;
         this.demonDifficulty = demonDifficulty;
         this.qualityRating = qualityRating;
         this.rate = rate;
-        this.showRate = showRate;
-        this.isPlatformer = isPlatformer;
+        this.rewardType = rewardType;
     }
 
     /**
@@ -106,7 +115,7 @@ public final class DifficultyRenderer {
      */
     public static DifficultyRenderer create(Difficulty difficulty) {
         Objects.requireNonNull(difficulty);
-        return new DifficultyRenderer(difficulty, null, QualityRating.NONE, 0, false, false);
+        return new DifficultyRenderer(difficulty, null, QualityRating.NONE, 0, RewardType.NONE);
     }
 
     /**
@@ -119,7 +128,7 @@ public final class DifficultyRenderer {
      */
     public static DifficultyRenderer create(DemonDifficulty demonDifficulty) {
         Objects.requireNonNull(demonDifficulty);
-        return new DifficultyRenderer(null, demonDifficulty, QualityRating.NONE, 0, false, false);
+        return new DifficultyRenderer(null, demonDifficulty, QualityRating.NONE, 0, RewardType.NONE);
     }
 
     /**
@@ -131,13 +140,20 @@ public final class DifficultyRenderer {
      */
     public static DifficultyRenderer forLevel(GDLevel level) {
         Objects.requireNonNull(level);
+        RewardType rewardType;
+        if (level.rewards() == 0) {
+            rewardType = RewardType.NONE;
+        } else if (level.isPlatformer()) {
+            rewardType = RewardType.MOONS;
+        } else {
+            rewardType = RewardType.STARS;
+        }
         return new DifficultyRenderer(
                 level.isDemon() ? null : level.difficulty(),
                 level.isDemon() ? level.demonDifficulty() : null,
                 level.qualityRating(),
                 level.rewards(),
-                level.rewards() > 0,
-                level.isPlatformer());
+                rewardType);
     }
 
     /**
@@ -149,7 +165,7 @@ public final class DifficultyRenderer {
      */
     public DifficultyRenderer withQualityRating(QualityRating qualityRating) {
         Objects.requireNonNull(qualityRating);
-        return new DifficultyRenderer(difficulty, demonDifficulty, qualityRating, rate, showRate, isPlatformer);
+        return new DifficultyRenderer(difficulty, demonDifficulty, qualityRating, rate, rewardType);
     }
 
     /**
@@ -159,7 +175,7 @@ public final class DifficultyRenderer {
      * @return a new {@link DifficultyRenderer}
      */
     public DifficultyRenderer withStars(int stars) {
-        return new DifficultyRenderer(difficulty, demonDifficulty, qualityRating, stars, true, false);
+        return new DifficultyRenderer(difficulty, demonDifficulty, qualityRating, stars, RewardType.STARS);
     }
 
     /**
@@ -169,7 +185,17 @@ public final class DifficultyRenderer {
      * @return a new {@link DifficultyRenderer}
      */
     public DifficultyRenderer withMoons(int moons) {
-        return new DifficultyRenderer(difficulty, demonDifficulty, qualityRating, moons, true, true);
+        return new DifficultyRenderer(difficulty, demonDifficulty, qualityRating, moons, RewardType.MOONS);
+    }
+
+    /**
+     * Creates a new {@link DifficultyRenderer} identical to the current one but enriched with the given diamonds.
+     *
+     * @param diamonds the diamonds
+     * @return a new {@link DifficultyRenderer}
+     */
+    public DifficultyRenderer withDiamonds(int diamonds) {
+        return new DifficultyRenderer(difficulty, demonDifficulty, qualityRating, diamonds, RewardType.DIAMONDS);
     }
 
     /**
@@ -179,7 +205,7 @@ public final class DifficultyRenderer {
      * @return a new {@link DifficultyRenderer}
      */
     public DifficultyRenderer withoutStarsOrMoons() {
-        return new DifficultyRenderer(difficulty, demonDifficulty, qualityRating, 0, false, false);
+        return new DifficultyRenderer(difficulty, demonDifficulty, qualityRating, rate, RewardType.NONE);
     }
 
     /**
@@ -191,29 +217,29 @@ public final class DifficultyRenderer {
     public BufferedImage render() {
         if (difficulty != null) {
             return render(DIFFICULTY_ASSET_NAMES.get(difficulty), rate,
-                    QUALITY_RATING_ASSET_NAMES.get(qualityRating), isPlatformer, false, showRate);
+                    QUALITY_RATING_ASSET_NAMES.get(qualityRating), rewardType.assetName, false);
         } else if (demonDifficulty != null) {
             return render(DEMON_DIFFICULTY_ASSET_NAMES.get(demonDifficulty), rate,
-                    QUALITY_RATING_ASSET_NAMES.get(qualityRating), isPlatformer, true, showRate);
+                    QUALITY_RATING_ASSET_NAMES.get(qualityRating), rewardType.assetName, true);
         }
         throw new AssertionError();
     }
 
-    private static BufferedImage render(String difficultyAssetName, int starsOrMoons, String qualityAssetName,
-                                        boolean isPlatformer, boolean twoLines, boolean showRate) {
+    private static BufferedImage render(String difficultyAssetName, int rewards, String qualityAssetName,
+                                        String rewardType, boolean twoLines) {
         final var elements = SPRITE_SHEET.getSpriteElements();
         SpriteElement difficultyElement = null, qualityElement = null, starOrMoonElement = null;
+        final var showRate = rewardType != null;
         for (final var element : elements) {
             if (element.getName().equals(difficultyAssetName)) {
                 difficultyElement = element;
             } else if (element.getName().equals(qualityAssetName)) {
                 qualityElement = element;
-            } else if (element.getName().equals((isPlatformer ? "moon" : "star") + "_small01_001")) {
+            } else if (showRate && element.getName().equals(rewardType + "_small01_001")) {
                 starOrMoonElement = element;
             }
         }
         Objects.requireNonNull(difficultyElement);
-        Objects.requireNonNull(starOrMoonElement);
         final var image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
         final var g = image.createGraphics();
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -228,10 +254,11 @@ public final class DifficultyRenderer {
         final var difficultyY = (HEIGHT - difficultyElement.getHeight()) / 2;
         g.drawImage(difficultyElement.render(SPRITE_SHEET.getImage()), difficultyX, difficultyY, null);
         if (showRate) {
+            Objects.requireNonNull(starOrMoonElement);
             final var starX = (WIDTH - starOrMoonElement.getWidth()) / 2 + 35;
             final var starY = starOrMoonElement.getHeight() / 2 + difficultyY + difficultyElement.getHeight() - 10;
             g.drawImage(starOrMoonElement.render(SPRITE_SHEET.getImage()), starX, starY, null);
-            drawStarCount(g, "" + starsOrMoons, starX - 20, starY + 44);
+            drawStarCount(g, "" + rewards, starX - 20, starY + 44);
         }
         g.dispose();
         return image;

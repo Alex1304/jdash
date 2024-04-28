@@ -1,16 +1,15 @@
 package jdash.events.producer;
 
 import jdash.client.GDClient;
-import jdash.common.entity.GDTimelyInfo;
-import jdash.events.object.ImmutableDailyLevelChange;
-import jdash.events.object.ImmutableWeeklyDemonChange;
+import jdash.common.entity.GDDailyInfo;
+import jdash.events.object.DailyLevelChange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-class TimelyEventProducer implements GDEventProducer {
+class DailyEventProducer implements GDEventProducer {
 
-    private GDTimelyInfo previousDaily;
-    private GDTimelyInfo previousWeekly;
+    private GDDailyInfo previousDaily;
+    private GDDailyInfo previousWeekly;
 
     @Override
     public Flux<Object> produce(GDClient client) {
@@ -20,7 +19,7 @@ class TimelyEventProducer implements GDEventProducer {
                     this.previousDaily = info;
                     return Mono.justOrEmpty(previousDaily)
                             .filter(p -> p.number() < info.number())
-                            .map(p -> ImmutableDailyLevelChange.of(p, info));
+                            .map(p -> new DailyLevelChange(p, info, false));
                 });
         var weekly = client.getWeeklyDemonInfo()
                 .flatMap(info -> {
@@ -28,7 +27,7 @@ class TimelyEventProducer implements GDEventProducer {
                     this.previousWeekly = info;
                     return Mono.justOrEmpty(previousWeekly)
                             .filter(p -> p.number() < info.number())
-                            .map(p -> ImmutableWeeklyDemonChange.of(p, info));
+                            .map(p -> new DailyLevelChange(p, info, true));
                 });
         return Flux.concat(daily, weekly);
     }

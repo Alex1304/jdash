@@ -356,7 +356,7 @@ public final class GDClient {
         return downloadLevel(-2);
     }
 
-    private Mono<GDTimelyInfo> getTimelyInfo(int weekly) {
+    private Mono<GDDailyInfo> getTimelyInfo(int weekly) {
         return Mono.defer(() -> GDRequest.of(GET_GJ_DAILY_LEVEL)
                 .addParameters(commonParams())
                 .addParameter("weekly", weekly)
@@ -367,20 +367,20 @@ public final class GDClient {
     /**
      * Requests information on the current Daily level, such as its number or the time left before the next one.
      *
-     * @return a Mono emitting the {@link GDTimelyInfo} of the Daily level. A {@link GDClientException} will be emitted
+     * @return a Mono emitting the {@link GDDailyInfo} of the Daily level. A {@link GDClientException} will be emitted
      * if an error occurs.
      */
-    public Mono<GDTimelyInfo> getDailyLevelInfo() {
+    public Mono<GDDailyInfo> getDailyLevelInfo() {
         return getTimelyInfo(0);
     }
 
     /**
      * Requests information on the current Weekly demon, such as its number or the time left before the next one.
      *
-     * @return a Mono emitting the {@link GDTimelyInfo} of the Weekly demon. A {@link GDClientException} will be emitted
+     * @return a Mono emitting the {@link GDDailyInfo} of the Weekly demon. A {@link GDClientException} will be emitted
      * if an error occurs.
      */
-    public Mono<GDTimelyInfo> getWeeklyDemonInfo() {
+    public Mono<GDDailyInfo> getWeeklyDemonInfo() {
         return getTimelyInfo(1);
     }
 

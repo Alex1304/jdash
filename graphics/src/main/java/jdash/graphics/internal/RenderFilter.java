@@ -41,7 +41,7 @@ public interface RenderFilter {
 
         @Override
         public boolean shouldRender(Renderable renderable) {
-            return !renderable.getName().contains("_glow_") || colorSelection.getGlowColorId().isPresent();
+            return !renderable.getName().contains("_glow_") || colorSelection.glowColorId().isPresent();
         }
 
         @Override
@@ -49,11 +49,11 @@ public interface RenderFilter {
             final var name = renderable.getName();
             Color colorToApply = null;
             if (name.contains("_glow_")) {
-                colorToApply = COLORS.get(colorSelection.getGlowColorId().orElseThrow());
+                colorToApply = COLORS.get(colorSelection.glowColorId().orElseThrow());
             } else if (name.contains("_2_00")) {
-                colorToApply = COLORS.get(colorSelection.getSecondaryColorId());
+                colorToApply = COLORS.get(colorSelection.secondaryColorId());
             } else if (!name.contains("extra") && !name.contains("_3_00")) {
-                colorToApply = COLORS.get(colorSelection.getPrimaryColorId());
+                colorToApply = COLORS.get(colorSelection.primaryColorId());
             }
             return applyColor(image, colorToApply);
         }

@@ -13,14 +13,15 @@ import reactor.core.publisher.Flux;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public final class GDClientTest {
 
-    private GDCacheMockUp cache;
-    private GDRouterMockUp router;
+    private GDCacheMock cache;
+    private GDRouterMock router;
     private GDClient client;
     private GDClient authClient;
 
@@ -42,8 +43,8 @@ public final class GDClientTest {
 
     @BeforeEach
     public void setUp() {
-        cache = new GDCacheMockUp();
-        router = new GDRouterMockUp();
+        cache = new GDCacheMock();
+        router = new GDRouterMock();
         client = GDClient.create()
                 .withCache(cache)
                 .withRouter(router);
@@ -91,41 +92,40 @@ public final class GDClientTest {
 
     @Test
     public void findLevelByIdTest() {
-        var expected = ImmutableGDLevel.builder()
-                .coinCount(0)
-                .creatorPlayerId(503085)
-                .creatorName("Riot")
-                .demonDifficulty(DemonDifficulty.EXTREME)
-                .description("Whose blood will be spilt in the Bloodbath? Who will the victors be? How many will " +
-                        "survive? Good luck...")
-                .votedDifficulty(Difficulty.INSANE)
-                .downloads(26672952)
-                .likes(1505455)
-                .featuredScore(10330)
-                .gameVersion(21)
-                .hasCoinsVerified(false)
-                .id(10565740)
-                .isAuto(false)
-                .isDemon(true)
-                .qualityRating(QualityRating.FEATURED)
-                .length(Length.LONG)
-                .levelVersion(3)
-                .name("Bloodbath")
-                .objectCount(24746)
-                .originalLevelId(7679228)
-                .requestedStars(0)
-                .songId(467339)
-                .song(ImmutableGDSong.builder()
-                        .artist("Dimrain47")
-                        .title("At the Speed of Light")
-                        .size("9.56")
-                        .downloadUrl(InternalUtils.urlDecode("http%3A%2F%2Faudio.ngfiles" +
-                                ".com%2F467000%2F467339_At_the_Speed_of_Light_FINA.mp3"))
-                        .id(467339)
-                        .build())
-                .rewards(10)
-                .build();
-        var actual = client.findLevelById(10565740).block();
+        final var expected = new GDLevel(
+                10565740,
+                "Bloodbath",
+                503085,
+                "Whose blood will be spilt in the Bloodbath? Who will the victors be? How many will " +
+                        "survive? Good luck...",
+                Difficulty.INSANE,
+                DemonDifficulty.EXTREME,
+                10,
+                10330,
+                QualityRating.FEATURED,
+                26672952,
+                1505455,
+                Length.LONG,
+                0,
+                false,
+                3,
+                21,
+                24746,
+                true,
+                false,
+                Optional.of(7679228L),
+                0,
+                Optional.of(467339L),
+                Optional.of(new GDSong(
+                        467339,
+                        "At the Speed of Light",
+                        "Dimrain47",
+                        Optional.of("9.56"),
+                        Optional.ofNullable(InternalUtils.urlDecode("http%3A%2F%2Faudio.ngfiles" +
+                                ".com%2F467000%2F467339_At_the_Speed_of_Light_FINA.mp3")))),
+                Optional.of("Riot")
+        );
+        final var actual = client.findLevelById(10565740).block();
         assertEquals(expected, actual);
     }
 
@@ -142,157 +142,173 @@ public final class GDClientTest {
 
     @Test
     public void getUserProfileTest() {
-        var expected = ImmutableGDUserProfile.builder()
-                .commentHistoryPolicy(AccessPolicy.ALL)
-                .privateMessagePolicy(AccessPolicy.ALL)
-                .hasFriendRequestsEnabled(true)
-                .role(Role.MODERATOR)
-                .twitch("gd_alex1304")
-                .twitter("gd_alex1304")
-                .youtube("UC0hFAVN-GAbZYuf_Hfk1Iog")
-                .hasGlowOutline(true)
-                .spiderIconId(15)
-                .robotIconId(21)
-                .waveIconId(24)
-                .ballIconId(30)
-                .accountId(98006)
-                .ufoIconId(3)
-                .shipIconId(7)
-                .cubeIconId(29)
-                .swingIconId(22)
-                .jetpackIconId(1)
-                .glowColorId(9)
-                .globalRank(33266)
-                .diamonds(19336)
-                .demons(46)
-                .creatorPoints(21)
-                .stars(5658)
-                .userCoins(818)
-                .color2Id(9)
-                .color1Id(12)
-                .secretCoins(100)
-                .name("Alex1304")
-                .playerId(4063664)
-                .build();
-        var actual = client.getUserProfile(98006).block();
+        final var user = new GDUser(
+                4063664,
+                98006,
+                "Alex1304",
+                12,
+                9,
+                true,
+                Optional.empty(),
+                Optional.empty(),
+                Optional.of(Role.MODERATOR)
+        );
+        final var expected = new GDUserProfile(
+                user,
+                new GDUserStats(
+                        user,
+                        5658,
+                        0,
+                        19336,
+                        100,
+                        818,
+                        46,
+                        21,
+                        Optional.empty()
+                ),
+                33266,
+                29,
+                7,
+                3,
+                30,
+                24,
+                21,
+                15,
+                22,
+                1,
+                9,
+                "UC0hFAVN-GAbZYuf_Hfk1Iog",
+                "gd_alex1304",
+                "gd_alex1304",
+                true,
+                PrivacySetting.ALL,
+                PrivacySetting.ALL
+        );
+        final var actual = client.getUserProfile(98006).block();
         assertEquals(expected, actual);
     }
 
     @Test
     public void searchUsersTest() {
-        var expected = ImmutableGDUserStats.builder()
-                .hasGlowOutline(true)
-                .accountId(98006)
-                .diamonds(0)
-                .demons(23)
-                .creatorPoints(21)
-                .stars(3411)
-                .userCoins(545)
-                .color2Id(9)
-                .color1Id(12)
-                .secretCoins(100)
-                .name("Alex1304")
-                .playerId(4063664)
-                .mainIconId(29)
-                .mainIconType(IconType.CUBE)
-                .build();
-        var actual = client.searchUsers("Alex1304", 0).blockFirst();
+        final var expected = new GDUserStats(
+                new GDUser(
+                        4063664,
+                        98006,
+                        "Alex1304",
+                        12,
+                        9,
+                        true,
+                        Optional.of(29),
+                        Optional.of(IconType.CUBE),
+                        Optional.empty()
+                ),
+                3411,
+                0,
+                0,
+                100,
+                545,
+                23,
+                21,
+                Optional.empty()
+        );
+        final var actual = client.searchUsers("Alex1304", 0).blockFirst();
         assertEquals(expected, actual);
     }
 
     @Test
     public void getSongInfoTest() {
-        var expected = ImmutableGDSong.builder()
-                .id(844899)
-                .title("~:Space soup:~")
-                .artist("lchavasse")
-                .size("8.79")
-                .downloadUrl(InternalUtils.urlDecode("https%3A%2F%2Faudio.ngfiles.com%2F844000%2F844899_Space-soup" +
+        final var expected = new GDSong(
+                844899,
+                "~:Space soup:~",
+                "lchavasse",
+                Optional.of("8.79"),
+                Optional.ofNullable(InternalUtils.urlDecode("https%3A%2F%2Faudio.ngfiles" +
+                        ".com%2F844000%2F844899_Space-soup" +
                         ".mp3%3Ff1548488779"))
-                .build();
-        var actual = client.getSongInfo(844899).block();
+        );
+        final var actual = client.getSongInfo(844899).block();
         assertEquals(expected, actual);
     }
 
     @Test
     public void downloadLevelTest() {
-        var actual = client.downloadLevel(10565740).block();
+        final var actual = client.downloadLevel(10565740).block();
         assertNotNull(actual);
-        var expected = ImmutableGDLevelDownload.builder()
-                .coinCount(0)
-                .creatorPlayerId(503085)
-                .demonDifficulty(DemonDifficulty.EXTREME)
-                .description("Whose blood will be spilt in the Bloodbath? Who will the victors be? How many will " +
-                        "survive? Good luck...")
-                .votedDifficulty(Difficulty.INSANE)
-                .downloads(26746554)
-                .likes(1506769)
-                .featuredScore(10330)
-                .gameVersion(21)
-                .hasCoinsVerified(false)
-                .id(10565740)
-                .isAuto(false)
-                .isDemon(true)
-                .qualityRating(QualityRating.FEATURED)
-                .length(Length.LONG)
-                .levelVersion(3)
-                .name("Bloodbath")
-                .objectCount(24746)
-                .originalLevelId(7679228)
-                .requestedStars(0)
-                .songId(467339)
-                .rewards(10)
-                .uploadedAgo("5 years")
-                .updatedAgo("6 months")
-                .isCopyable(false)
-                .data(actual.data())
-                .build();
+        final var expected = new GDLevelDownload(
+                new GDLevel(
+                        10565740,
+                        "Bloodbath",
+                        503085,
+                        "Whose blood will be spilt in the Bloodbath? Who will the victors be? How many will " +
+                                "survive? Good luck...",
+                        Difficulty.INSANE,
+                        DemonDifficulty.EXTREME,
+                        10,
+                        10330,
+                        QualityRating.FEATURED,
+                        26746554,
+                        1506769,
+                        Length.LONG,
+                        0,
+                        false,
+                        3,
+                        21,
+                        24746,
+                        true,
+                        false,
+                        Optional.of(7679228L),
+                        0,
+                        Optional.of(467339L),
+                        Optional.empty(),
+                        Optional.empty()
+                ),
+                false,
+                Optional.empty(),
+                "5 years",
+                "6 months",
+                actual.data()
+        );
         assertEquals(expected, actual);
     }
 
     @Test
     public void getDailyLevelInfoTest() {
-        var expected = ImmutableGDTimelyInfo.builder()
-                .number(1623)
-                .nextIn(Duration.ofSeconds(27231))
-                .build();
+        final var expected = new GDDailyInfo(1623, Duration.ofSeconds(27231));
         var actual = client.getDailyLevelInfo().block();
         assertEquals(expected, actual);
     }
 
     @Test
     public void getWeeklyDemonInfoTest() {
-        var expected = ImmutableGDTimelyInfo.builder()
-                .number(194)
-                .nextIn(Duration.ofSeconds(459229))
-                .build();
+        final var expected = new GDDailyInfo(194, Duration.ofSeconds(459229));
         var actual = client.getWeeklyDemonInfo().block();
         assertEquals(expected, actual);
     }
 
     @Test
     public void getCommentsForLevelTest() {
-        var expectedFirstComment = ImmutableGDComment.builder()
-                .id(52732574)
-                .author(ImmutableGDUser.builder()
-                        .playerId(43568619)
-                        .accountId(7702228)
-                        .name("iIKappali")
-                        .color1Id(41)
-                        .color2Id(3)
-                        .hasGlowOutline(true)
-                        .role(Role.USER)
-                        .mainIconId(46)
-                        .mainIconType(IconType.CUBE)
-                        .build())
-                .content("i love my life ;)")
-                .likes(44564)
-                .postedAgo("3 years")
-                .percentage(99)
-                .build();
-        var expectedTop10Ids = List.of(52732574L, 7869561L, 53363972L, 52808092L, 22585688L, 34959218L, 27087361L,
+        final var expectedFirstComment = new GDComment(
+                52732574,
+                Optional.of(new GDUser(
+                        43568619,
+                        7702228,
+                        "iIKappali",
+                        41,
+                        3,
+                        true,
+                        Optional.of(46),
+                        Optional.of(IconType.CUBE),
+                        Optional.of(Role.USER)
+                )),
+                "i love my life ;)",
+                44564,
+                "3 years",
+                Optional.of(99),
+                Optional.empty()
+        );
+        final var expectedTop10Ids = List.of(52732574L, 7869561L, 53363972L, 52808092L, 22585688L, 34959218L, 27087361L,
                 39618945L, 61020768L, 51507881L);
-        var actual = client.getCommentsForLevel(10565740, CommentSortMode.MOST_LIKED, 0, 40)
+        final var actual = client.getCommentsForLevel(10565740, CommentSortMode.MOST_LIKED, 0, 40)
                 .take(10)
                 .collectList()
                 .block();
@@ -306,19 +322,19 @@ public final class GDClientTest {
 
     @Test
     public void getPrivateMessagesTest() {
-        var expectedFirstMessage = ImmutableGDPrivateMessage.builder()
-                .id(58947681)
-                .userAccountId(14414152)
-                .userPlayerId(142565671)
-                .subject("hellow")
-                .userName("Andresgiln78")
-                .sentAgo("1 day")
-                .isUnread(true)
-                .isSender(false)
-                .build();
-        var expectedTop10Ids = List.of(58947681L, 58941413L, 58929342L,
+        final var expectedFirstMessage = new GDPrivateMessage(
+                58947681,
+                14414152,
+                142565671,
+                "Andresgiln78",
+                "hellow",
+                true,
+                false,
+                "1 day"
+        );
+        final var expectedTop10Ids = List.of(58947681L, 58941413L, 58929342L,
                 58853706L, 58829707L, 58816845L, 58808850L, 58790947L, 58678031L, 58664382L);
-        var actual = authClient.getPrivateMessages(0).take(10).collectList().block();
+        final var actual = authClient.getPrivateMessages(0).take(10).collectList().block();
         assertNotNull(actual);
         assertEquals(10, actual.size());
         assertEquals(expectedFirstMessage, actual.get(0));
@@ -327,35 +343,38 @@ public final class GDClientTest {
 
     @Test
     public void downloadPrivateMessageTest() {
-        var expected = ImmutableGDPrivateMessageDownload.builder()
-                .id(58947681)
-                .userAccountId(14414152)
-                .userPlayerId(142565671)
-                .subject("hellow")
-                .userName("Andresgiln78")
-                .sentAgo("1 day")
-                .isUnread(true)
-                .isSender(false)
-                .body("hello :)")
-                .build();
+        final var expected = new GDPrivateMessageDownload(
+                new GDPrivateMessage(
+                        58947681,
+                        14414152,
+                        142565671,
+                        "Andresgiln78",
+                        "hellow",
+                        true,
+                        false,
+                        "1 day"
+                ),
+                "hello :)"
+        );
         var actual = authClient.downloadPrivateMessage(58947681).block();
         assertEquals(expected, actual);
     }
 
     @Test
     public void getBlockedUsersTest() {
-        var expectedFirstUser = ImmutableGDUser.builder()
-                .playerId(132275057)
-                .accountId(13652339)
-                .name("AzhirVerifier")
-                .color1Id(12)
-                .color2Id(13)
-                .hasGlowOutline(false)
-                .mainIconId(13)
-                .mainIconType(IconType.SPIDER)
-                .build();
-        var expectedIds = List.of(132275057L, 125097769L, 35167443L, 39574573L, 55186340L, 19919817L);
-        var actual = authClient.getBlockedUsers().collectList().block();
+        final var expectedFirstUser = new GDUser(
+                132275057,
+                13652339,
+                "AzhirVerifier",
+                12,
+                13,
+                false,
+                Optional.of(13),
+                Optional.of(IconType.SPIDER),
+                Optional.empty()
+        );
+        final var expectedIds = List.of(132275057L, 125097769L, 35167443L, 39574573L, 55186340L, 19919817L);
+        final var actual = authClient.getBlockedUsers().collectList().block();
         assertNotNull(actual);
         assertEquals(6, actual.size());
         assertEquals(expectedFirstUser, actual.get(0));

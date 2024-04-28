@@ -6,7 +6,7 @@ package jdash.common;
  * It's done by performing cyclically a XOR operation on the ASCII code of each character between the message and a
  * key.
  * <p>
- * See https://en.wikipedia.org/wiki/XOR_cipher
+ * See <a href="https://en.wikipedia.org/wiki/XOR_cipher">https://en.wikipedia.org/wiki/XOR_cipher</a>
  */
 final class XORCipher {
 

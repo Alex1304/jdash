@@ -3,9 +3,9 @@ package jdash.events.producer;
 import jdash.client.GDClient;
 import jdash.common.LevelBrowseMode;
 import jdash.common.entity.GDLevel;
-import jdash.events.object.ImmutableAwardedAdd;
-import jdash.events.object.ImmutableAwardedRemove;
-import jdash.events.object.ImmutableAwardedUpdate;
+import jdash.events.object.AwardedAdd;
+import jdash.events.object.AwardedRemove;
+import jdash.events.object.AwardedUpdate;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.function.Tuples;
@@ -53,10 +53,10 @@ class AwardedEventProducer implements GDEventProducer {
     @Override
     public Flux<Object> produce(GDClient client) {
         return Mono.zip(
-                client.browseLevels(LevelBrowseMode.AWARDED, null, null, 0)
-                        .collect(Collectors.toUnmodifiableSet()),
-                client.browseLevels(LevelBrowseMode.AWARDED, null, null, 1)
-                        .collect(Collectors.toUnmodifiableSet()))
+                        client.browseLevels(LevelBrowseMode.AWARDED, null, null, 0)
+                                .collect(Collectors.toUnmodifiableSet()),
+                        client.browseLevels(LevelBrowseMode.AWARDED, null, null, 1)
+                                .collect(Collectors.toUnmodifiableSet()))
                 .flatMapMany(function((levels0, levels1) -> {
                     var previous0 = this.previous0;
                     var previous1 = this.previous1;
@@ -68,9 +68,9 @@ class AwardedEventProducer implements GDEventProducer {
                     var allOld = union(previous0, previous1);
                     var allNew = union(levels0, levels1);
                     var added = Flux.fromIterable(subtract(levels0, allOld))
-                            .map(ImmutableAwardedAdd::of);
+                            .map(AwardedAdd::new);
                     var removed = Flux.fromIterable(subtract(previous0, allNew))
-                            .map(ImmutableAwardedRemove::of);
+                            .map(AwardedRemove::new);
                     var updated = Flux.fromIterable(intersection(previous0, allNew))
                             .map(level -> Tuples.of(
                                     previous0.stream()
@@ -88,7 +88,7 @@ class AwardedEventProducer implements GDEventProducer {
                                     GDLevel::featuredScore,
                                     GDLevel::qualityRating
                             )))
-                            .map(function(ImmutableAwardedUpdate::of));
+                            .map(function(AwardedUpdate::new));
                     return Flux.concat(added, removed, updated);
                 }));
     }
@@ -96,13 +96,7 @@ class AwardedEventProducer implements GDEventProducer {
     /**
      * Redefines equals and hashCode on level ID only
      */
-    private static class WrappedLevel {
-
-        private final GDLevel level;
-
-        public WrappedLevel(GDLevel level) {
-            this.level = level;
-        }
+    private record WrappedLevel(GDLevel level) {
 
         @Override
         public boolean equals(Object o) {

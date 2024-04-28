@@ -87,13 +87,13 @@ public final class InternalUtils {
             Map<Integer, String> data = splitToMap(songRD, "~\\|~");
             requireKeys(data, SONG_ID, SONG_TITLE, SONG_ARTIST, SONG_SIZE, SONG_URL);
             long songID = Long.parseLong(data.get(SONG_ID));
-            result.put(songID, ImmutableGDSong.builder()
-                    .id(songID)
-                    .artist(data.get(SONG_ARTIST))
-                    .size(data.get(SONG_SIZE))
-                    .title(data.get(SONG_TITLE))
-                    .downloadUrl(urlDecode(data.get(SONG_URL)))
-                    .build());
+            ;
+            result.put(songID, new GDSong(
+                    songID,
+                    data.get(SONG_TITLE),
+                    data.get(SONG_ARTIST),
+                    Optional.ofNullable(data.get(SONG_SIZE)),
+                    Optional.ofNullable(urlDecode(data.get(SONG_URL)))));
         }
 
         return result;
@@ -104,13 +104,16 @@ public final class InternalUtils {
     }
 
     public static String urlDecode(String str) {
+        if (str.isEmpty()) {
+            return null;
+        }
         return URLDecoder.decode(str, StandardCharsets.UTF_8);
     }
 
     public static byte[] b64DecodeToBytes(String str) {
         byte[] result = null;
         StringBuilder buf = new StringBuilder(str);
-        while (result == null && buf.length() > 0) {
+        while (result == null && !buf.isEmpty()) {
             try {
                 result = Base64.getUrlDecoder().decode(buf.toString());
             } catch (IllegalArgumentException e) {
@@ -146,32 +149,32 @@ public final class InternalUtils {
                 .orElseGet(() -> GDSong.getOfficialSong(Integer.parseInt(data.get(LEVEL_AUDIO_TRACK))));
         var creatorName = structuredCreatorsInfo.get(Long.parseLong(data.get(LEVEL_CREATOR_ID)));
         final var featuredScore = Integer.parseInt(data.get(LEVEL_FEATURED_SCORE));
-        return ImmutableGDLevel.builder()
-                .id(Long.parseLong(data.get(LEVEL_ID)))
-                .name(data.get(LEVEL_NAME))
-                .creatorPlayerId(Long.parseLong(data.get(LEVEL_CREATOR_ID)))
-                .description(b64Decode(data.get(LEVEL_DESCRIPTION)))
-                .votedDifficulty(Difficulty.parse(data.get(LEVEL_DIFFICULTY)))
-                .demonDifficulty(DemonDifficulty.parse(data.get(LEVEL_DEMON_DIFFICULTY)))
-                .rewards(Integer.parseInt(data.get(LEVEL_STARS)))
-                .featuredScore(featuredScore)
-                .qualityRating(QualityRating.parse(data.get(LEVEL_QUALITY_RATING), featuredScore > 0))
-                .downloads(Integer.parseInt(data.get(LEVEL_DOWNLOADS)))
-                .likes(Integer.parseInt(data.get(LEVEL_LIKES)))
-                .length(Length.parse(data.get(LEVEL_LENGTH)))
-                .coinCount(Integer.parseInt(data.get(LEVEL_COIN_COUNT)))
-                .hasCoinsVerified(data.get(LEVEL_COIN_VERIFIED).equals("1"))
-                .levelVersion(Integer.parseInt(data.get(LEVEL_VERSION)))
-                .gameVersion(Integer.parseInt(data.get(LEVEL_GAME_VERSION)))
-                .objectCount(Integer.parseInt(data.get(LEVEL_OBJECT_COUNT)))
-                .isDemon(data.get(LEVEL_IS_DEMON).equals("1"))
-                .isAuto(data.get(LEVEL_IS_AUTO).equals("1"))
-                .originalLevelId(Optional.ofNullable(data.get(LEVEL_ORIGINAL)).map(Long::parseLong).filter(l -> l > 0))
-                .requestedStars(Integer.parseInt(data.get(LEVEL_REQUESTED_STARS)))
-                .creatorName(Optional.ofNullable(creatorName))
-                .song(song)
-                .songId(songId)
-                .build();
+        return new GDLevel(
+                Long.parseLong(data.get(LEVEL_ID)),
+                data.get(LEVEL_NAME),
+                Long.parseLong(data.get(LEVEL_CREATOR_ID)),
+                b64Decode(data.get(LEVEL_DESCRIPTION)),
+                Difficulty.parse(data.get(LEVEL_DIFFICULTY)),
+                DemonDifficulty.parse(data.get(LEVEL_DEMON_DIFFICULTY)),
+                Integer.parseInt(data.get(LEVEL_STARS)),
+                featuredScore,
+                QualityRating.parse(data.get(LEVEL_QUALITY_RATING), featuredScore > 0),
+                Integer.parseInt(data.get(LEVEL_DOWNLOADS)),
+                Integer.parseInt(data.get(LEVEL_LIKES)),
+                Length.parse(data.get(LEVEL_LENGTH)),
+                Integer.parseInt(data.get(LEVEL_COIN_COUNT)),
+                data.get(LEVEL_COIN_VERIFIED).equals("1"),
+                Integer.parseInt(data.get(LEVEL_VERSION)),
+                Integer.parseInt(data.get(LEVEL_GAME_VERSION)),
+                Integer.parseInt(data.get(LEVEL_OBJECT_COUNT)),
+                data.get(LEVEL_IS_DEMON).equals("1"),
+                data.get(LEVEL_IS_AUTO).equals("1"),
+                Optional.ofNullable(data.get(LEVEL_ORIGINAL)).map(Long::parseLong).filter(l -> l > 0),
+                Integer.parseInt(data.get(LEVEL_REQUESTED_STARS)),
+                songId,
+                song,
+                Optional.ofNullable(creatorName)
+        );
     }
 
     public static GDUser buildUser(Map<Integer, String> data) {
@@ -179,75 +182,78 @@ public final class InternalUtils {
             data.put(USER_GLOW_OUTLINE, data.get(USER_GLOW_OUTLINE_2));
         }
         requireKeys(data, USER_PLAYER_ID, USER_NAME, USER_COLOR_1, USER_COLOR_2, USER_GLOW_OUTLINE);
-        return ImmutableGDUser.builder()
-                .playerId(Long.parseLong(data.get(USER_PLAYER_ID)))
-                .accountId(Long.parseLong(data.getOrDefault(USER_ACCOUNT_ID, "0")))
-                .name(data.get(USER_NAME))
-                .color1Id(Integer.parseInt(data.get(USER_COLOR_1)))
-                .color2Id(Integer.parseInt(data.get(USER_COLOR_2)))
-                .hasGlowOutline(!data.get(USER_GLOW_OUTLINE).matches("0?"))
-                .mainIconId(Optional.ofNullable(data.get(USER_ICON)).map(Integer::parseInt))
-                .mainIconType(Optional.ofNullable(data.get(USER_ICON_TYPE)).map(IconType::parse))
-                .role(Optional.ofNullable(data.get(USER_ROLE)).map(Role::parse))
-                .build();
+        return new GDUser(
+                Long.parseLong(data.get(USER_PLAYER_ID)),
+                Long.parseLong(data.getOrDefault(USER_ACCOUNT_ID, "0")),
+                data.get(USER_NAME),
+                Integer.parseInt(data.get(USER_COLOR_1)),
+                Integer.parseInt(data.get(USER_COLOR_2)),
+                !data.get(USER_GLOW_OUTLINE).matches("0?"),
+                Optional.ofNullable(data.get(USER_ICON)).map(Integer::parseInt),
+                Optional.ofNullable(data.get(USER_ICON_TYPE)).map(IconType::parse),
+                Optional.ofNullable(data.get(USER_ROLE)).map(Role::parse)
+        );
     }
 
     public static GDUserStats buildUserStats(Map<Integer, String> data) {
-        requireKeys(data, USER_STARS, USER_SECRET_COINS, USER_USER_COINS, USER_DEMONS,
+        requireKeys(data, USER_STARS, USER_MOONS, USER_SECRET_COINS, USER_USER_COINS, USER_DEMONS,
                 USER_CREATOR_POINTS);
-        return ImmutableGDUserStats.builder()
-                .from(buildUser(data))
-                .stars(Integer.parseInt(data.get(USER_STARS)))
-                .diamonds(Integer.parseInt(data.getOrDefault(USER_DIAMONDS, "0")))
-                .secretCoins(Integer.parseInt(data.get(USER_SECRET_COINS)))
-                .userCoins(Integer.parseInt(data.get(USER_USER_COINS)))
-                .demons(Integer.parseInt(data.get(USER_DEMONS)))
-                .creatorPoints(Integer.parseInt(data.get(USER_CREATOR_POINTS)))
-                .leaderboardRank(Optional.ofNullable(data.get(USER_LEADERBOARD_RANK))
+        return new GDUserStats(
+                buildUser(data),
+                Integer.parseInt(data.get(USER_STARS)),
+                Integer.parseInt(data.get(USER_MOONS)),
+                Integer.parseInt(data.getOrDefault(USER_DIAMONDS, "0")),
+                Integer.parseInt(data.get(USER_SECRET_COINS)),
+                Integer.parseInt(data.get(USER_USER_COINS)),
+                Integer.parseInt(data.get(USER_DEMONS)),
+                Integer.parseInt(data.get(USER_CREATOR_POINTS)),
+                Optional.ofNullable(data.get(USER_LEADERBOARD_RANK))
                         .filter(not(String::isEmpty))
-                        .map(Integer::parseInt))
-                .build();
+                        .map(Integer::parseInt)
+        );
     }
 
     public static GDUserProfile buildUserProfile(Map<Integer, String> data) {
         requireKeys(data, USER_GLOBAL_RANK, USER_ICON_CUBE, USER_ICON_SHIP, USER_ICON_UFO, USER_ICON_BALL,
                 USER_ICON_WAVE, USER_ICON_ROBOT, USER_ICON_SPIDER, USER_YOUTUBE, USER_TWITTER,
                 USER_TWITCH, USER_FRIEND_REQUEST_POLICY, USER_PRIVATE_MESSAGE_POLICY, USER_COMMENT_HISTORY_POLICY);
-        return ImmutableGDUserProfile.builder()
-                .from(buildUserStats(data))
-                .globalRank(Integer.parseInt(data.get(USER_GLOBAL_RANK)))
-                .cubeIconId(Integer.parseInt(data.get(USER_ICON_CUBE)))
-                .shipIconId(Integer.parseInt(data.get(USER_ICON_SHIP)))
-                .ufoIconId(Integer.parseInt(data.get(USER_ICON_UFO)))
-                .ballIconId(Integer.parseInt(data.get(USER_ICON_BALL)))
-                .waveIconId(Integer.parseInt(data.get(USER_ICON_WAVE)))
-                .robotIconId(Integer.parseInt(data.get(USER_ICON_ROBOT)))
-                .spiderIconId(Integer.parseInt(data.get(USER_ICON_SPIDER)))
-                .swingIconId(Integer.parseInt(data.get(USER_ICON_SWING)))
-                .jetpackIconId(Integer.parseInt(data.get(USER_ICON_JETPACK)))
-                .glowColorId(Integer.parseInt(data.get(USER_COLOR_GLOW)))
-                .youtube(data.get(USER_YOUTUBE))
-                .twitter(data.get(USER_TWITTER))
-                .twitch(data.get(USER_TWITCH))
-                .hasFriendRequestsEnabled(data.get(USER_FRIEND_REQUEST_POLICY).equals("0"))
-                .privateMessagePolicy(AccessPolicy.parse(data.get(USER_PRIVATE_MESSAGE_POLICY)))
-                .commentHistoryPolicy(AccessPolicy.parse(data.get(USER_COMMENT_HISTORY_POLICY)))
-                .build();
+        final var stats = buildUserStats(data);
+        return new GDUserProfile(
+                stats.user(),
+                stats,
+                Integer.parseInt(data.get(USER_GLOBAL_RANK)),
+                Integer.parseInt(data.get(USER_ICON_CUBE)),
+                Integer.parseInt(data.get(USER_ICON_SHIP)),
+                Integer.parseInt(data.get(USER_ICON_UFO)),
+                Integer.parseInt(data.get(USER_ICON_BALL)),
+                Integer.parseInt(data.get(USER_ICON_WAVE)),
+                Integer.parseInt(data.get(USER_ICON_ROBOT)),
+                Integer.parseInt(data.get(USER_ICON_SPIDER)),
+                Integer.parseInt(data.get(USER_ICON_SWING)),
+                Integer.parseInt(data.get(USER_ICON_JETPACK)),
+                Integer.parseInt(data.get(USER_COLOR_GLOW)),
+                data.get(USER_YOUTUBE),
+                data.get(USER_TWITTER),
+                data.get(USER_TWITCH),
+                data.get(USER_FRIEND_REQUEST_POLICY).equals("0"),
+                PrivacySetting.parse(data.get(USER_PRIVATE_MESSAGE_POLICY)),
+                PrivacySetting.parse(data.get(USER_COMMENT_HISTORY_POLICY))
+        );
     }
 
     public static GDPrivateMessage buildMessage(Map<Integer, String> data) {
         requireKeys(data, MESSAGE_ID, MESSAGE_USER_ACCOUNT_ID, MESSAGE_USER_NAME, MESSAGE_SUBJECT,
                 MESSAGE_IS_UNREAD, MESSAGE_SENT_AGO, MESSAGE_USER_PLAYER_ID, MESSAGE_IS_SENDER);
-        return ImmutableGDPrivateMessage.builder()
-                .id(Long.parseLong(data.get(MESSAGE_ID)))
-                .userAccountId(Long.parseLong(data.get(MESSAGE_USER_ACCOUNT_ID)))
-                .userPlayerId(Long.parseLong(data.get(MESSAGE_USER_PLAYER_ID)))
-                .userName(data.get(MESSAGE_USER_NAME))
-                .subject(b64Decode(data.get(MESSAGE_SUBJECT)))
-                .isUnread(!data.get(MESSAGE_IS_UNREAD).equals("1"))
-                .sentAgo(data.get(MESSAGE_SENT_AGO))
-                .isSender(data.get(MESSAGE_IS_SENDER).equals("1"))
-                .build();
+        return new GDPrivateMessage(
+                Long.parseLong(data.get(MESSAGE_ID)),
+                Long.parseLong(data.get(MESSAGE_USER_ACCOUNT_ID)),
+                Long.parseLong(data.get(MESSAGE_USER_PLAYER_ID)),
+                data.get(MESSAGE_USER_NAME),
+                b64Decode(data.get(MESSAGE_SUBJECT)),
+                !data.get(MESSAGE_IS_UNREAD).equals("1"),
+                data.get(MESSAGE_IS_SENDER).equals("1"),
+                data.get(MESSAGE_SENT_AGO)
+        );
     }
 
     public static void requireKeys(Map<Integer, String> data, int... keys) {

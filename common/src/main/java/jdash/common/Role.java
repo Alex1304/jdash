@@ -20,7 +20,12 @@ public enum Role {
     /**
      * A user with Elder Moderator rights.
      */
-    ELDER_MODERATOR;
+    ELDER_MODERATOR,
+
+    /**
+     * A user with Leaderboard Moderator rights.
+     */
+    LEADERBOARD_MODERATOR;
 
     /**
      * Convenience method to get a {@link Role} based on the in-game encoding of a role.

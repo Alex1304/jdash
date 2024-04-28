@@ -5,26 +5,28 @@ package jdash.common.internal;
  */
 public final class Indexes {
 
-    /* GD Level data */
+    /* Level indexes (in common with Lists) */
     public static final int LEVEL_ID = 1;
     public static final int LEVEL_NAME = 2;
     public static final int LEVEL_DESCRIPTION = 3;
-    public static final int LEVEL_DATA = 4;
     public static final int LEVEL_VERSION = 5;
+    public static final int LEVEL_DOWNLOADS = 10;
+    public static final int LEVEL_LIKES = 14;
+    public static final int LEVEL_FEATURED_SCORE = 19;
+    public static final int LEVEL_UPLOADED_AGO = 28;
+    public static final int LEVEL_UPDATED_AGO = 29;
+
+    /* Level-specific indexes */
+    public static final int LEVEL_DATA = 4;
     public static final int LEVEL_CREATOR_ID = 6;
     public static final int LEVEL_DIFFICULTY = 9;
-    public static final int LEVEL_DOWNLOADS = 10;
     public static final int LEVEL_AUDIO_TRACK = 12;
     public static final int LEVEL_GAME_VERSION = 13;
-    public static final int LEVEL_LIKES = 14;
     public static final int LEVEL_LENGTH = 15;
     public static final int LEVEL_IS_DEMON = 17;
     public static final int LEVEL_STARS = 18;
-    public static final int LEVEL_FEATURED_SCORE = 19;
     public static final int LEVEL_IS_AUTO = 25;
     public static final int LEVEL_PASS = 27;
-    public static final int LEVEL_UPLOADED_AGO = 28;
-    public static final int LEVEL_UPDATED_AGO = 29;
     public static final int LEVEL_ORIGINAL = 30;
     public static final int LEVEL_SONG_ID = 35;
     public static final int LEVEL_COIN_COUNT = 37;
@@ -34,14 +36,22 @@ public final class Indexes {
     public static final int LEVEL_DEMON_DIFFICULTY = 43;
     public static final int LEVEL_OBJECT_COUNT = 45;
 
-    /* Song data */
+    /* List-specific indexes */
+    public static final int LIST_ICON = 7;
+    public static final int LIST_CREATOR_ID = 49;
+    public static final int LIST_CREATOR_NAME = 50;
+    public static final int LIST_ITEMS = 51;
+    public static final int LIST_DIAMONDS = 55;
+    public static final int LIST_MIN_COMPLETION = 56;
+
+    /* Song indexes */
     public static final int SONG_ID = 1;
     public static final int SONG_TITLE = 2;
     public static final int SONG_ARTIST = 4;
     public static final int SONG_SIZE = 5;
     public static final int SONG_URL = 10;
 
-    /* User data */
+    /* User indexes */
     public static final int USER_NAME = 1;
     public static final int USER_PLAYER_ID = 2;
     public static final int USER_STARS = 3;
@@ -74,10 +84,14 @@ public final class Indexes {
     public static final int USER_ROLE = 49;
     public static final int USER_COMMENT_HISTORY_POLICY = 50;
     public static final int USER_COLOR_GLOW = 51;
+    public static final int USER_MOONS = 52;
     public static final int USER_ICON_SWING = 53;
     public static final int USER_ICON_JETPACK = 54;
+    public static final int USER_COUNTS_DEMONS = 55;
+    public static final int USER_COUNTS_CLASSIC = 56;
+    public static final int USER_COUNTS_PLATFORMER = 57;
 
-    /* Message data */
+    /* Message indexes */
     public static final int MESSAGE_ID = 1;
     public static final int MESSAGE_USER_ACCOUNT_ID = 2;
     public static final int MESSAGE_USER_PLAYER_ID = 3;
@@ -88,7 +102,7 @@ public final class Indexes {
     public static final int MESSAGE_IS_UNREAD = 8;
     public static final int MESSAGE_IS_SENDER = 9;
 
-    /* Comment data */
+    /* Comment indexes */
     public static final int COMMENT_CONTENT = 2;
     public static final int COMMENT_AUTHOR_PLAYER_ID = 3;
     public static final int COMMENT_LIKES = 4;

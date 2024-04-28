@@ -31,7 +31,7 @@ public final class AnimationParser {
                     .flatMap(fields -> Stream.of(
                             groupElements(elements, fields, false),
                             groupElements(elements, fields, true)))
-                    .collect(toUnmodifiableList());
+                    .toList();
         } catch (ConfigurationException e) {
             throw new RuntimeException(e);
         }
@@ -43,6 +43,6 @@ public final class AnimationParser {
                 .filter(el -> Objects.equals(
                         el.getName().split("_")[2],
                         fields.get("texture").split("_")[2]) && el.getName().contains("_glow_") == glow)
-                .collect(toUnmodifiableList()), fields, glow);
+                .toList(), fields, glow);
     }
 }

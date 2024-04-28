@@ -2,7 +2,6 @@ package jdash.client.response;
 
 import jdash.client.exception.ActionFailedException;
 import jdash.common.entity.GDPrivateMessageDownload;
-import jdash.common.entity.ImmutableGDPrivateMessageDownload;
 
 import java.util.function.Function;
 
@@ -14,12 +13,9 @@ class PrivateMessageDownloadResponseDeserializer implements Function<String, GDP
 
     @Override
     public GDPrivateMessageDownload apply(String response) {
-        ActionFailedException.throwIfEquals(response, "-1", "Message not found or not accessible");
+        ActionFailedException.throwIfEquals(response, "-1", "Failed to download message");
         var data = splitToMap(response, ":");
         requireKeys(data, MESSAGE_BODY);
-        return ImmutableGDPrivateMessageDownload.builder()
-                .from(buildMessage(data))
-                .body(decodePrivateMessageBody(data.get(MESSAGE_BODY)))
-                .build();
+        return new GDPrivateMessageDownload(buildMessage(data), decodePrivateMessageBody(data.get(MESSAGE_BODY)));
     }
 }

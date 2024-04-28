@@ -3,7 +3,6 @@ package jdash.client.response;
 import jdash.client.exception.ActionFailedException;
 import jdash.common.RobTopsWeakEncryption;
 import jdash.common.entity.GDLevelDownload;
-import jdash.common.entity.ImmutableGDLevelDownload;
 
 import java.nio.ByteBuffer;
 import java.util.Map;
@@ -17,7 +16,7 @@ class LevelDownloadResponseDeserializer implements Function<String, GDLevelDownl
 
     @Override
     public GDLevelDownload apply(String response) {
-        ActionFailedException.throwIfEquals(response, "-1", "Level not found or not accessible");
+        ActionFailedException.throwIfEquals(response, "-1", "Failed to download level");
         var parts = response.split("#");
         var levelData = parts[0];
         var creatorInfo = parts.length > 3 ? structureCreatorsInfo(parts[3]) : Map.<Long, String>of();
@@ -32,13 +31,13 @@ class LevelDownloadResponseDeserializer implements Function<String, GDLevelDownl
         } else {
             pass = Integer.parseInt(RobTopsWeakEncryption.decodeLevelPasscode(strPass).substring(1));
         }
-        return ImmutableGDLevelDownload.builder()
-                .from(buildLevel(data, creatorInfo, Map.of()))
-                .isCopyable(pass != -1)
-                .copyPasscode(Optional.of(pass).filter(x -> x >= 0))
-                .uploadedAgo(data.get(LEVEL_UPLOADED_AGO))
-                .updatedAgo(data.get(LEVEL_UPDATED_AGO))
-                .data(ByteBuffer.wrap(b64DecodeToBytes(data.get(LEVEL_DATA))))
-                .build();
+        return new GDLevelDownload(
+                buildLevel(data, creatorInfo, Map.of()),
+                pass != -1,
+                Optional.of(pass).filter(x -> x >= 0),
+                data.get(LEVEL_UPLOADED_AGO),
+                data.get(LEVEL_UPDATED_AGO),
+                ByteBuffer.wrap(b64DecodeToBytes(data.get(LEVEL_DATA)))
+        );
     }
 }

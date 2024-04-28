@@ -37,17 +37,12 @@ public enum DemonDifficulty {
      * @return a {@link DemonDifficulty}
      */
     public static DemonDifficulty parse(String str) {
-        switch (str) {
-            case "3":
-                return DemonDifficulty.EASY;
-            case "4":
-                return DemonDifficulty.MEDIUM;
-            case "5":
-                return DemonDifficulty.INSANE;
-            case "6":
-                return DemonDifficulty.EXTREME;
-            default:
-                return DemonDifficulty.HARD;
-        }
+        return switch (str) {
+            case "3" -> DemonDifficulty.EASY;
+            case "4" -> DemonDifficulty.MEDIUM;
+            case "5" -> DemonDifficulty.INSANE;
+            case "6" -> DemonDifficulty.EXTREME;
+            default -> DemonDifficulty.HARD;
+        };
     }
 }

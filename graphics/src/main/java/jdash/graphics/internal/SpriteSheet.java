@@ -47,7 +47,7 @@ public final class SpriteSheet {
                             .map(field -> Map.entry(field[1], plist
                                     .getString("frames." + field[0] + "..png." + field[1], "null")))
                             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))))
-                    .collect(Collectors.toUnmodifiableList());
+                    .toList();
             return new SpriteSheet(image, plist, spriteElements);
         } catch (ConfigurationException e) {
             throw new RuntimeException(e);
