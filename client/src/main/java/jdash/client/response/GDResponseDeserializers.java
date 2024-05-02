@@ -21,12 +21,13 @@ public final class GDResponseDeserializers {
     private static final SongInfoResponseDeserializer SONG_INFO_RESPONSE = new SongInfoResponseDeserializer();
     private static final LevelDownloadResponseDeserializer LEVEL_DOWNLOAD_RESPONSE =
             new LevelDownloadResponseDeserializer();
-    private static final DailyInfoResponseDeserializer TIMELY_INFO_RESPONSE = new DailyInfoResponseDeserializer();
+    private static final DailyInfoResponseDeserializer DAILY_INFO_RESPONSE = new DailyInfoResponseDeserializer();
     private static final CommentsResponseDeserializer COMMENTS_RESPONSE = new CommentsResponseDeserializer();
     private static final PrivateMessagesResponseDeserializer PRIVATE_MESSAGES_RESPONSE =
             new PrivateMessagesResponseDeserializer();
     private static final PrivateMessageDownloadResponseDeserializer PRIVATE_MESSAGE_DOWNLOAD_RESPONSE =
             new PrivateMessageDownloadResponseDeserializer();
+    private static final ListSearchResponseDeserializer LIST_SEARCH_RESPONSE = new ListSearchResponseDeserializer();
 
     private GDResponseDeserializers() {
         throw new AssertionError();
@@ -100,8 +101,8 @@ public final class GDResponseDeserializers {
      *
      * @return a deserializer function
      */
-    public static Function<String, GDDailyInfo> timelyInfoResponse() {
-        return TIMELY_INFO_RESPONSE;
+    public static Function<String, GDDailyInfo> dailyInfoResponse() {
+        return DAILY_INFO_RESPONSE;
     }
 
     /**
@@ -129,5 +130,14 @@ public final class GDResponseDeserializers {
      */
     public static Function<String, GDPrivateMessageDownload> privateMessageDownloadResponse() {
         return PRIVATE_MESSAGE_DOWNLOAD_RESPONSE;
+    }
+
+    /**
+     * A function that can deserialize a list of searched lists.
+     *
+     * @return a deserializer function
+     */
+    public static Function<String, List<GDList>> listSearchResponse() {
+        return LIST_SEARCH_RESPONSE;
     }
 }

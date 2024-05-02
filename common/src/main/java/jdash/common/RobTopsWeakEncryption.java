@@ -103,6 +103,16 @@ public final class RobTopsWeakEncryption {
                 .collect(Collectors.joining())), CHK_XOR_CIPHER);
     }
 
+    /**
+     * Encodes the given password into a string that can be passed as the gjp2 parameter for authenticated requests.
+     *
+     * @param password the password to encode
+     * @return the encoded string
+     */
+    public static String encodeGjp2(String password) {
+        return sha1(password + "mI29fmAnxgTs");
+    }
+
     private static String sha1(String str) {
         try {
             var messageDigest = MessageDigest.getInstance("SHA-1");

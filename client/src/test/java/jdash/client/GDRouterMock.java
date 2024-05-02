@@ -12,11 +12,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 import static jdash.client.request.GDRequests.*;
+import static jdash.common.RobTopsWeakEncryption.encodeGjp2;
 
 public final class GDRouterMock implements GDRouter {
 
-    private static final Map<String, String> AUTH_PARAMS = Map.of("accountID", "1", "gjp",
-            RobTopsWeakEncryption.encodeAccountPassword("test"));
+    private static final Map<String, String> AUTH_PARAMS = Map.of("accountID", "1", "gjp2",
+            encodeGjp2("test"));
 
     private static final Map<GDRequest, String> SAMPLES = Map.ofEntries(
             Map.entry(GDRequest.of(GET_GJ_LEVELS_21)
@@ -31,9 +32,15 @@ public final class GDRouterMock implements GDRouter {
                     .addParameter("page", 0)
                     .addParameter("type", LevelBrowseMode.SEARCH.getType())
                     .addParameter("str", "Bloodbath"), "browseLevels"),
+            Map.entry(GDRequest.of(GET_GJ_LEVEL_LISTS)
+                    .addParameters(commonParams())
+                    .addParameters(LevelSearchFilter.create().toMap())
+                    .addParameter("page", 0)
+                    .addParameter("type", LevelBrowseMode.AWARDED.getType())
+                    .addParameter("str", ""), "browseLists"),
             Map.entry(GDRequest.of(LOGIN_GJ_ACCOUNT)
                     .addParameter("userName", "Alex1304")
-                    .addParameter("password", "F3keP4ssw0rd")
+                    .addParameter("gjp2", encodeGjp2("F3keP4ssw0rd"))
                     .addParameter("udid", "jdash-client")
                     .addParameter("secret", "Wmfv3899gc9"), "login"),
             Map.entry(GDRequest.of(GET_GJ_USER_INFO_20)

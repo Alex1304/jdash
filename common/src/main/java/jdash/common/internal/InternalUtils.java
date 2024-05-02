@@ -6,6 +6,7 @@ import jdash.common.entity.*;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -174,6 +175,29 @@ public final class InternalUtils {
                 songId,
                 song,
                 Optional.ofNullable(creatorName)
+        );
+    }
+
+    public static GDList buildList(Map<Integer, String> data) {
+        requireKeys(data, LEVEL_ID, LEVEL_NAME, LEVEL_DESCRIPTION, LEVEL_VERSION, LEVEL_DOWNLOADS, LEVEL_LIKES,
+                LEVEL_FEATURED_SCORE, LEVEL_UPLOADED_AGO, LEVEL_UPDATED_AGO, LIST_ICON, LIST_CREATOR_ID,
+                LIST_CREATOR_NAME, LIST_ITEMS, LIST_DIAMONDS, LIST_MIN_COMPLETION);
+        return new GDList(
+                Long.parseLong(data.get(LEVEL_ID)),
+                data.get(LEVEL_NAME),
+                b64Decode(data.get(LEVEL_DESCRIPTION)),
+                Integer.parseInt(data.get(LEVEL_VERSION)),
+                Integer.parseInt(data.get(LEVEL_DOWNLOADS)),
+                Integer.parseInt(data.get(LEVEL_LIKES)),
+                Boolean.parseBoolean(data.get(LEVEL_FEATURED_SCORE)),
+                Instant.ofEpochSecond(Long.parseLong(data.get(LEVEL_UPLOADED_AGO))),
+                Instant.ofEpochSecond(Long.parseLong(data.get(LEVEL_UPDATED_AGO))),
+                Integer.parseInt(data.get(LIST_ICON)),
+                Long.parseLong(data.get(LIST_CREATOR_ID)),
+                data.get(LIST_CREATOR_NAME),
+                Arrays.stream(data.get(LIST_ITEMS).split(",")).map(Long::parseLong).toList(),
+                Integer.parseInt(data.get(LIST_DIAMONDS)),
+                Integer.parseInt(data.get(LIST_MIN_COMPLETION))
         );
     }
 

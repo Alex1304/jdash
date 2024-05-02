@@ -2,6 +2,8 @@ package jdash.common;
 
 /**
  * Indicates the category in which to browse levels.
+ * <p>
+ * Although the word "level" is used here, it may also apply to level lists.
  */
 public enum LevelBrowseMode {
 
@@ -46,6 +48,11 @@ public enum LevelBrowseMode {
     MAGIC(7),
 
     /**
+     * Allows to browse levels contained in map packs.
+     */
+    MAP_PACKS(10),
+
+    /**
      * Allows to browse awarded levels.
      */
     AWARDED(11),
@@ -56,9 +63,38 @@ public enum LevelBrowseMode {
     FOLLOWED(12),
 
     /**
-     * Allows to browse levels in the Hall of Fame.
+     * Allows to browse levels uploaded by friends. Requires authentication.
      */
-    HALL_OF_FAME(16);
+    FRIENDS(13),
+
+    /**
+     * Allows to browse most liked levels in Geometry Dash World.
+     */
+    GD_WORLD_MOST_LIKED(15),
+
+    /**
+     * Allows to browse levels in the Hall of Fame.
+     *
+     * @deprecated Hall of Fame has been removed from the game
+     * since update 2.2, although this mode might still exist server-side.
+     */
+    @Deprecated
+    HALL_OF_FAME(16),
+
+    /**
+     * Allows to browse featured levels in Geometry Dash World.
+     */
+    GD_WORLD_FEATURED(17),
+
+    /**
+     * Allows to browse history of past Daily levels.
+     */
+    DAILY_HISTORY(21),
+
+    /**
+     * Allows to browse history of past Weekly demons.
+     */
+    WEEKLY_HISTORY(22);
 
     private final int type;
 

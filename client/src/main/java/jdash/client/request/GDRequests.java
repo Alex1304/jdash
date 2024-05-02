@@ -17,6 +17,7 @@ public final class GDRequests {
     public static final String DOWNLOAD_GJ_LEVEL_22 = "/downloadGJLevel22.php";
     public static final String GET_GJ_COMMENTS_21 = "/getGJComments21.php";
     public static final String GET_GJ_LEVELS_21 = "/getGJLevels21.php";
+    public static final String GET_GJ_LEVEL_LISTS = "/getGJLevelLists.php";
     public static final String RATE_GJ_STARS_211 = "/rateGJStars211.php";
     public static final String RATE_GJ_DEMON_21 = "/rateGJDemon21.php";
     public static final String GET_GJ_SONG_INFO = "/getGJSongInfo.php";
@@ -29,8 +30,8 @@ public final class GDRequests {
     public static final String LOGIN_GJ_ACCOUNT = "/accounts/loginGJAccount.php";
 
     /* Params */
-    public static final String GAME_VERSION = "21";
-    public static final String BINARY_VERSION = "35";
+    public static final String GAME_VERSION = "22";
+    public static final String BINARY_VERSION = "41";
     public static final String SECRET = "Wmfd2893gb7";
 
     private GDRequests() {

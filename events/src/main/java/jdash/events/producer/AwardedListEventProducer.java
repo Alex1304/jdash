@@ -3,9 +3,9 @@ package jdash.events.producer;
 import jdash.client.GDClient;
 import jdash.common.LevelBrowseMode;
 import jdash.common.entity.GDLevel;
-import jdash.events.object.AwardedAdd;
-import jdash.events.object.AwardedRemove;
-import jdash.events.object.AwardedUpdate;
+import jdash.events.object.AwardedLevelAdd;
+import jdash.events.object.AwardedLevelRemove;
+import jdash.events.object.AwardedLevelUpdate;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.function.Tuples;
@@ -20,7 +20,7 @@ import java.util.stream.Stream;
 import static reactor.function.TupleUtils.function;
 import static reactor.function.TupleUtils.predicate;
 
-class AwardedEventProducer implements GDEventProducer {
+class AwardedListEventProducer implements GDEventProducer {
 
     private Set<GDLevel> previous0;
     private Set<GDLevel> previous1;
@@ -68,9 +68,9 @@ class AwardedEventProducer implements GDEventProducer {
                     var allOld = union(previous0, previous1);
                     var allNew = union(levels0, levels1);
                     var added = Flux.fromIterable(subtract(levels0, allOld))
-                            .map(AwardedAdd::new);
+                            .map(AwardedLevelAdd::new);
                     var removed = Flux.fromIterable(subtract(previous0, allNew))
-                            .map(AwardedRemove::new);
+                            .map(AwardedLevelRemove::new);
                     var updated = Flux.fromIterable(intersection(previous0, allNew))
                             .map(level -> Tuples.of(
                                     previous0.stream()
@@ -88,7 +88,7 @@ class AwardedEventProducer implements GDEventProducer {
                                     GDLevel::featuredScore,
                                     GDLevel::qualityRating
                             )))
-                            .map(function(AwardedUpdate::new));
+                            .map(function(AwardedLevelUpdate::new));
                     return Flux.concat(added, removed, updated);
                 }));
     }

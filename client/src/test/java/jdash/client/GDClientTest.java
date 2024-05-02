@@ -1,15 +1,11 @@
 package jdash.client;
 
-import jdash.client.cache.GDCache;
 import jdash.client.exception.GDClientException;
-import jdash.client.request.GDRouter;
-import jdash.client.request.RequestLimiter;
 import jdash.common.*;
 import jdash.common.entity.*;
 import jdash.common.internal.InternalUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import reactor.core.publisher.Flux;
 
 import java.time.Duration;
 import java.util.List;
@@ -24,22 +20,6 @@ public final class GDClientTest {
     private GDRouterMock router;
     private GDClient client;
     private GDClient authClient;
-
-    /* Not part of unit tests, this is only to test the real router implementation */
-    public static void main(String[] args) {
-        var client = GDClient.create()
-                .withRouter(GDRouter.builder()
-                        .setRequestLimiter(RequestLimiter.of(1, Duration.ofSeconds(1)))
-                        .setRequestTimeout(Duration.ofSeconds(3))
-                        .setBaseUrl("https://gdps.alex1304.com/database")
-                        .build())
-                .withCache(GDCache.caffeine(caffeine -> caffeine.expireAfterAccess(Duration.ofMinutes(10))));
-        Flux.range(0, 6)
-                .flatMap(__ -> client.findLevelById(32)
-                        .doOnNext(next -> System.out.println(Thread.currentThread().getName()))
-                        .doOnNext(System.out::println))
-                .blockLast();
-    }
 
     @BeforeEach
     public void setUp() {
@@ -135,6 +115,16 @@ public final class GDClientTest {
                 38601659L, 19274064L, 10978435L);
         var actual = client.browseLevels(LevelBrowseMode.SEARCH, "Bloodbath", null, 0)
                 .map(GDLevel::id)
+                .collectList()
+                .block();
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void browseListsTest() {
+        var expected = List.of(242270L, 98021L, 278569L, 52207L, 230832L, 279460L, 178665L, 48649L, 310214L, 231005L);
+        var actual = client.browseLists(LevelBrowseMode.AWARDED, null, null, 0)
+                .map(GDList::id)
                 .collectList()
                 .block();
         assertEquals(expected, actual);

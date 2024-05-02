@@ -10,9 +10,9 @@ import jdash.common.Length;
 import jdash.common.QualityRating;
 import jdash.common.entity.GDDailyInfo;
 import jdash.common.entity.GDLevel;
-import jdash.events.object.AwardedAdd;
-import jdash.events.object.AwardedRemove;
-import jdash.events.object.AwardedUpdate;
+import jdash.events.object.AwardedLevelAdd;
+import jdash.events.object.AwardedLevelRemove;
+import jdash.events.object.AwardedLevelUpdate;
 import jdash.events.object.DailyLevelChange;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,8 +29,8 @@ public class GDEventProducerTest {
 
     private EventProducerTestCache cache;
     private GDClient client;
-    private AwardedEventProducer awardedProducer;
-    private DailyEventProducer timelyProducer;
+    private AwardedLevelEventProducer awardedProducer;
+    private DailyEventProducer dailyProducer;
 
     private static GDLevel createLevel(long id, int stars) {
         return new GDLevel(
@@ -61,7 +61,7 @@ public class GDEventProducerTest {
         );
     }
 
-    private static GDDailyInfo createTimelyInfo(long number) {
+    private static GDDailyInfo createDailyInfo(long number) {
         return new GDDailyInfo(number, Duration.ofSeconds(1));
     }
 
@@ -69,8 +69,8 @@ public class GDEventProducerTest {
     public void setUp() {
         cache = new EventProducerTestCache();
         client = GDClient.create().withCache(cache);
-        awardedProducer = new AwardedEventProducer();
-        timelyProducer = new DailyEventProducer();
+        awardedProducer = new AwardedLevelEventProducer();
+        dailyProducer = new DailyEventProducer();
     }
 
     @Test
@@ -78,14 +78,14 @@ public class GDEventProducerTest {
         var eventsA = awardedProducer.produce(client).collectList().block();
         assertNotNull(eventsA);
         assertTrue(eventsA.isEmpty()); // First iteration should yield nothing
-        var eventsB = timelyProducer.produce(client).collectList().block();
+        var eventsB = dailyProducer.produce(client).collectList().block();
         assertNotNull(eventsB);
         assertTrue(eventsB.isEmpty()); // First iteration should yield nothing
 
         var eventsA2 = awardedProducer.produce(client).collectList().block();
         assertNotNull(eventsA2);
         assertTrue(eventsA2.isEmpty()); // No modification detected
-        var eventsB2 = timelyProducer.produce(client).collectList().block();
+        var eventsB2 = dailyProducer.produce(client).collectList().block();
         assertNotNull(eventsB2);
         assertTrue(eventsB2.isEmpty()); // No modification detected
     }
@@ -115,7 +115,7 @@ public class GDEventProducerTest {
 
         var events2 = awardedProducer.produce(client).collectList().block();
         assertNotNull(events2);
-        assertEquals(List.of(new AwardedAdd(added)), events2);
+        assertEquals(List.of(new AwardedLevelAdd(added)), events2);
     }
 
     @Test
@@ -143,7 +143,7 @@ public class GDEventProducerTest {
 
         var events2 = awardedProducer.produce(client).collectList().block();
         assertNotNull(events2);
-        assertEquals(List.of(new AwardedRemove(removed)), events2);
+        assertEquals(List.of(new AwardedLevelRemove(removed)), events2);
     }
 
     @Test
@@ -165,7 +165,7 @@ public class GDEventProducerTest {
 
         var events2 = awardedProducer.produce(client).collectList().block();
         assertNotNull(events2);
-        assertEquals(List.of(new AwardedUpdate(before, after)), events2);
+        assertEquals(List.of(new AwardedLevelUpdate(before, after)), events2);
     }
 
     @Test
@@ -200,29 +200,29 @@ public class GDEventProducerTest {
         var events2 = awardedProducer.produce(client).collect(Collectors.toUnmodifiableSet()).block();
         assertNotNull(events2);
         assertEquals(Set.of(
-                new AwardedAdd(added1),
-                new AwardedAdd(added2),
-                new AwardedRemove(removed1),
-                new AwardedRemove(removed2),
-                new AwardedRemove(removed3),
-                new AwardedUpdate(before, after)), events2);
+                new AwardedLevelAdd(added1),
+                new AwardedLevelAdd(added2),
+                new AwardedLevelRemove(removed1),
+                new AwardedLevelRemove(removed2),
+                new AwardedLevelRemove(removed3),
+                new AwardedLevelUpdate(before, after)), events2);
     }
 
     @Test
     public void produceTimelyChangeTest() {
-        var events = timelyProducer.produce(client).collectList().block();
+        var events = dailyProducer.produce(client).collectList().block();
         assertNotNull(events);
         assertTrue(events.isEmpty()); // First iteration should yield nothing
 
-        // Simulate timely change
-        var oldDaily = createTimelyInfo(1);
-        var oldWeekly = createTimelyInfo(10);
-        var newDaily = createTimelyInfo(2);
-        var newWeekly = createTimelyInfo(11);
+        // Simulate daily change
+        var oldDaily = createDailyInfo(1);
+        var oldWeekly = createDailyInfo(10);
+        var newDaily = createDailyInfo(2);
+        var newWeekly = createDailyInfo(11);
         cache.daily = newDaily;
         cache.weekly = newWeekly;
 
-        var events2 = timelyProducer.produce(client).collect(Collectors.toUnmodifiableSet()).block();
+        var events2 = dailyProducer.produce(client).collect(Collectors.toUnmodifiableSet()).block();
         assertNotNull(events2);
         assertEquals(events2, Set.of(
                 new DailyLevelChange(oldDaily, newDaily, false),
@@ -246,8 +246,8 @@ public class GDEventProducerTest {
                 createLevel(9, 10),
                 createLevel(10, 10)
         );
-        GDDailyInfo daily = createTimelyInfo(1);
-        GDDailyInfo weekly = createTimelyInfo(10);
+        GDDailyInfo daily = createDailyInfo(1);
+        GDDailyInfo weekly = createDailyInfo(10);
 
         @Override
         public Optional<Object> retrieve(GDRequest request) {

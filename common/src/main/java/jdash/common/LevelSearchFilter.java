@@ -7,6 +7,8 @@ import java.util.stream.Collectors;
 
 /**
  * Allows to define search filters for levels. This class is immutable.
+ * <p>
+ * Although the word "level" is used here, it may also apply to level lists.
  */
 public final class LevelSearchFilter {
 
