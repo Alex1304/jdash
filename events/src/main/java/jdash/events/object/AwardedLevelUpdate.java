@@ -8,4 +8,4 @@ import jdash.common.entity.GDLevel;
  * @param oldData The data of the level before the update.
  * @param newData The data of the level after the update.
  */
-public record AwardedUpdate(GDLevel oldData, GDLevel newData) {}
+public record AwardedLevelUpdate(GDLevel oldData, GDLevel newData) {}

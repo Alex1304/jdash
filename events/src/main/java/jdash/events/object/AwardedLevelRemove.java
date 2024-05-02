@@ -7,4 +7,4 @@ import jdash.common.entity.GDLevel;
  *
  * @param removedLevel The data of the level that was removed.
  */
-public record AwardedRemove(GDLevel removedLevel) {}
+public record AwardedLevelRemove(GDLevel removedLevel) {}

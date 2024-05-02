@@ -7,4 +7,4 @@ import jdash.common.entity.GDLevel;
  *
  * @param addedLevel The data of the level that was added.
  */
-public record AwardedAdd(GDLevel addedLevel) {}
+public record AwardedLevelAdd(GDLevel addedLevel) {}

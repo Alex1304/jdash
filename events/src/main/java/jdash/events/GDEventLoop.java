@@ -31,11 +31,11 @@ public class GDEventLoop {
 
     /**
      * The default set of event producers to use in the loop, which includes {@link GDEventProducer#awardedLevels()} and
-     * {@link GDEventProducer#timelyLevels()}.
+     * {@link GDEventProducer#dailyLevels()}.
      */
     public static final Set<GDEventProducer> DEFAULT_PRODUCERS = Set.of(
             GDEventProducer.awardedLevels(),
-            GDEventProducer.timelyLevels()
+            GDEventProducer.dailyLevels()
     );
 
     private static final Logger LOGGER = Loggers.getLogger(GDEventLoop.class);

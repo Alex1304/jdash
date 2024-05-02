@@ -30,9 +30,10 @@ import static reactor.function.TupleUtils.function;
  * the request parameters are invalid, if the data is unavailable, or permission to perform some action is denied. In
  * all cases, the cause of the failure can be accessed using {@link GDClientException#getCause()}.
  * <p>
- * Some methods require the client to be authenticated. It can be done by calling {@link #withAuthentication(long, long,
- * String)} or {@link #login(String, String)}. Any attempt to use a method that requires authentication without being
- * authenticated will immediately throw {@link IllegalStateException} at assembly time.
+ * Some methods require the client to be authenticated. It can be done by calling
+ * {@link #withAuthentication(long, long, String)} or {@link #login(String, String)}. Any attempt to use a method that
+ * requires authentication without being authenticated will immediately throw {@link IllegalStateException} at assembly
+ * time.
  */
 public final class GDClient {
 
@@ -52,9 +53,9 @@ public final class GDClient {
     }
 
     /**
-     * Creates a new {@link GDClient} with the {@link GDRouter#defaultRouter() default router}, a {@link
-     * GDCache#disabled() disabled cache}, a {@link UUID#randomUUID() random UUID}, an empty set of followed account IDs
-     * and without authentication. To customize it further, chain one or more
+     * Creates a new {@link GDClient} with the {@link GDRouter#defaultRouter() default router}, a
+     * {@link GDCache#disabled() disabled cache}, a {@link UUID#randomUUID() random UUID}, an empty set of followed
+     * account IDs and without authentication. To customize it further, chain one or more
      * <code>with*</code> methods after this call.
      *
      * @return a new {@link GDClient}
@@ -79,7 +80,7 @@ public final class GDClient {
 
     private Map<String, String> authParams() {
         Objects.requireNonNull(auth);
-        return Map.of("accountID", "" + auth.accountId, "gjp", auth.gjp);
+        return Map.of("accountID", "" + auth.accountId, "gjp2", auth.gjp2());
     }
 
     /**
@@ -153,15 +154,15 @@ public final class GDClient {
      */
     public GDClient withAuthentication(long playerId, long accountId, String password) {
         Objects.requireNonNull(password);
-        return new GDClient(router, cache, uniqueDeviceId, new AuthenticationInfo(playerId, accountId, null,
+        return new GDClient(router, cache, uniqueDeviceId, new AuthenticationInfo(playerId, accountId, Optional.empty(),
                 password),
                 followedAccountIds);
     }
 
     /**
      * Creates a new {@link GDClient} derived from this one, but with the specified collection of followed account IDs.
-     * It will be used when browsing levels with {@link LevelBrowseMode#FOLLOWED} via {@link
-     * #browseLevels(LevelBrowseMode, String, LevelSearchFilter, int)}.
+     * It will be used when browsing levels with {@link LevelBrowseMode#FOLLOWED} via
+     * {@link #browseLevels(LevelBrowseMode, String, LevelSearchFilter, int)}.
      * <p>
      * This method makes a defensive copy of the given collection to guarantee the immutability of the resulting
      * client.
@@ -236,15 +237,15 @@ public final class GDClient {
      *
      * @param username the username of the GD account
      * @param password the password of the GD account
-     * @return a Mono emitting a new {@link GDClient} capable of executing requests requiring authentication. A {@link
-     * GDClientException} will be emitted if an error occurs
+     * @return a Mono emitting a new {@link GDClient} capable of executing requests requiring authentication. A
+     * {@link GDClientException} will be emitted if an error occurs
      */
     public Mono<GDClient> login(String username, String password) {
         Objects.requireNonNull(username);
         Objects.requireNonNull(password);
         return Mono.defer(() -> GDRequest.of(LOGIN_GJ_ACCOUNT)
                 .addParameter("userName", username)
-                .addParameter("password", password)
+                .addParameter("gjp2", encodeGjp2(password))
                 .addParameter("udid", "jdash-client")
                 .addParameter("secret", "Wmfv3899gc9") // Overrides the default one
                 .execute(cache, router)
@@ -285,9 +286,9 @@ public final class GDClient {
      * Browses levels in Geometry Dash.
      *
      * @param mode   the browsing mode, which can impact how levels are sorted, or how the query is interpreted
-     * @param query  if mode is {@link LevelBrowseMode#SEARCH}, represents the search query. If mode is {@link
-     *               LevelBrowseMode#BY_USER}, represents the player ID of the user. If mode is any other mode, it will
-     *               be ignored and can be set to <code>null</code>.
+     * @param query  if mode is {@link LevelBrowseMode#SEARCH}, represents the search query. If mode is
+     *               {@link LevelBrowseMode#BY_USER}, represents the player ID of the user. If mode is any other mode,
+     *               it will be ignored and can be set to <code>null</code>.
      * @param filter the search filter to apply. Can be <code>null</code> to disable filtering
      * @param page   the page to load, the first one being 0
      * @return a Flux emitting all {@link GDLevel}s found on the selected page. A {@link GDClientException} will be
@@ -295,9 +296,35 @@ public final class GDClient {
      */
     public Flux<GDLevel> browseLevels(LevelBrowseMode mode, @Nullable String query, @Nullable LevelSearchFilter filter,
                                       int page) {
+        return browse(mode, query, filter, page, false).cast(GDLevel.class);
+    }
+
+    /**
+     * Browses lists in Geometry Dash.  It works very similarly to
+     * {@link #browseLevels(LevelBrowseMode, String, LevelSearchFilter, int)}, with the only difference that only
+     * a subset of the {@link LevelSearchFilter} attributes will actually have any effect.
+     *
+     * @param mode   the browsing mode, which can impact how levels are sorted, or how the query is interpreted
+     * @param query  if mode is {@link LevelBrowseMode#SEARCH}, represents the search query. If mode is
+     *               {@link LevelBrowseMode#BY_USER}, represents the player ID of the user. If mode is any other mode,
+     *               it will be ignored and can be set to <code>null</code>.
+     * @param filter the search filter to apply. Can be <code>null</code> to disable filtering. Some filters that are
+     *               not applicable to lists, such as completed levels, lengths or two player may not have any effect
+     * @param page   the page to load, the first one being 0
+     * @return a Flux emitting all {@link GDList}s found on the selected page. A {@link GDClientException} will be
+     * emitted if an error occurs.
+     */
+    public Flux<GDList> browseLists(LevelBrowseMode mode, @Nullable String query, @Nullable LevelSearchFilter filter,
+                                    int page) {
+        return browse(mode, query, filter, page, true).cast(GDList.class);
+    }
+
+    private Flux<Record> browse(LevelBrowseMode mode, @Nullable String query,
+                                        @Nullable LevelSearchFilter filter,
+                             int page, boolean isList) {
         Objects.requireNonNull(mode);
         return Flux.defer(() -> {
-            var request = GDRequest.of(GET_GJ_LEVELS_21)
+            var request = GDRequest.of(isList ? GET_GJ_LEVEL_LISTS : GET_GJ_LEVELS_21)
                     .addParameters(commonParams())
                     .addParameters(Objects.requireNonNullElse(filter, LevelSearchFilter.create()).toMap())
                     .addParameter("page", page)
@@ -308,9 +335,15 @@ public final class GDClient {
                         .map(String::valueOf)
                         .collect(Collectors.joining(",")));
             }
-            return request.execute(cache, router)
-                    .deserialize(levelSearchResponse())
-                    .flatMapMany(Flux::fromIterable);
+            if (isList) {
+                return request.execute(cache, router)
+                        .deserialize(listSearchResponse())
+                        .flatMapMany(Flux::fromIterable);
+            } else {
+                return request.execute(cache, router)
+                        .deserialize(levelSearchResponse())
+                        .flatMapMany(Flux::fromIterable);
+            }
         });
     }
 
@@ -361,7 +394,7 @@ public final class GDClient {
                 .addParameters(commonParams())
                 .addParameter("weekly", weekly)
                 .execute(cache, router)
-                .deserialize(timelyInfoResponse()));
+                .deserialize(dailyInfoResponse()));
     }
 
     /**
@@ -463,8 +496,8 @@ public final class GDClient {
      *
      * @param type  the type of leaderboard to get (top players, top creators...)
      * @param count the number of users to get
-     * @return a Flux emitting the {@link GDUserStats} corresponding to leaderboard entries, sorted by rank. A {@link
-     * GDClientException} will be emitted if an error occurs.
+     * @return a Flux emitting the {@link GDUserStats} corresponding to leaderboard entries, sorted by rank. A
+     * {@link GDClientException} will be emitted if an error occurs.
      * @throws IllegalStateException if {@link LeaderboardType#FRIENDS} is selected and the client is not
      *                               authenticated.
      */
@@ -567,6 +600,7 @@ public final class GDClient {
         requireAuthentication();
         return Mono.defer(() -> {
             var rs = randomString(10);
+            Objects.requireNonNull(auth);
             return GDRequest.of(RATE_GJ_STARS_211)
                     .addParameters(authParams())
                     .addParameters(commonParams())
@@ -676,59 +710,26 @@ public final class GDClient {
                 .transform(GDClient::validatePositiveInteger));
     }
 
-    public static class AuthenticationInfo {
-
-        private final long playerId;
-        private final long accountId;
-        private final String username;
-        private final String password;
-        private final String gjp;
-
-        private AuthenticationInfo(long playerId, long accountId, @Nullable String username, String password) {
-            this.playerId = playerId;
-            this.accountId = accountId;
-            this.username = username;
-            this.password = password;
-            this.gjp = encodeAccountPassword(password);
-        }
+    /**
+     * Contains information to authenticate a user for requests.
+     *
+     * @param playerId  The player ID of this authenticated client.
+     * @param accountId The account ID of this authenticated client.
+     * @param username  The username of this authenticated client. This information is only available if the
+     *                  authentication happened via {@link #login(String, String)}, it won't be available if done via
+     *                  {@link #withAuthentication(long, long, String)}.
+     * @param password  The password of this authenticated client. Be careful when calling this method as the value
+     *                  returned is sensitive data.
+     */
+    public record AuthenticationInfo(long playerId, long accountId, Optional<String> username, String password) {
 
         /**
-         * Gets the player ID of this authenticated client.
+         * Gets the gjp2 view of the stored password.
          *
-         * @return the player ID
+         * @return the gjp2 string
          */
-        public long getPlayerId() {
-            return playerId;
-        }
-
-        /**
-         * Gets the account ID of this authenticated client.
-         *
-         * @return the account ID
-         */
-        public long getAccountId() {
-            return accountId;
-        }
-
-        /**
-         * Gets the username of this authenticated client. This information is only available if the authentication
-         * happened via {@link #login(String, String)}, it won't be available if done via {@link
-         * #withAuthentication(long, long, String)}.
-         *
-         * @return the username, if present
-         */
-        public Optional<String> getUsername() {
-            return Optional.ofNullable(username);
-        }
-
-        /**
-         * Gets the password of this authenticated client. Be careful when calling this method as the value returned is
-         * sensitive data.
-         *
-         * @return the account password
-         */
-        public String getPassword() {
-            return password;
+        public String gjp2() {
+            return encodeGjp2(password);
         }
     }
 }
