@@ -107,9 +107,9 @@ public interface GDRouter {
          * @return a new {@link GDRouter}
          */
         public GDRouter build() {
-            var limiter = Objects.requireNonNullElse(this.limiter, RequestLimiter.none());
-            var baseUrl = Objects.requireNonNullElse(this.baseUrl, GDRequests.BASE_URL);
-            var scheduler = Objects.requireNonNullElse(this.scheduler, Schedulers.boundedElastic());
+            final var limiter = Objects.requireNonNullElse(this.limiter, RequestLimiter.none());
+            final var baseUrl = Objects.requireNonNullElse(this.baseUrl, GDRequests.BASE_URL);
+            final var scheduler = Objects.requireNonNullElse(this.scheduler, Schedulers.boundedElastic());
             return new GDRouterImpl(limiter, timeout, baseUrl, scheduler);
         }
     }

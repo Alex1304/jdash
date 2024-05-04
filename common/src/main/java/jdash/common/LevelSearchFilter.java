@@ -167,7 +167,7 @@ public final class LevelSearchFilter {
      * @return a map
      */
     public Map<String, String> toMap() {
-        var params = new HashMap<String, String>();
+        final var params = new HashMap<String, String>();
         if (!difficulties.isEmpty()) {
             params.put("diff", difficulties.stream()
                     .map(d -> "" + d.getValue())

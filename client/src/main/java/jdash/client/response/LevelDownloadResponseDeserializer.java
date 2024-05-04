@@ -17,13 +17,13 @@ class LevelDownloadResponseDeserializer implements Function<String, GDLevelDownl
     @Override
     public GDLevelDownload apply(String response) {
         ActionFailedException.throwIfEquals(response, "-1", "Failed to download level");
-        var parts = response.split("#");
-        var levelData = parts[0];
-        var creatorInfo = parts.length > 3 ? structureCreatorsInfo(parts[3]) : Map.<Long, String>of();
-        var data = splitToMap(levelData, ":");
+        final var parts = response.split("#");
+        final var levelData = parts[0];
+        final var creatorInfo = parts.length > 3 ? structureCreatorsInfo(parts[3]) : Map.<Long, String>of();
+        final var data = splitToMap(levelData, ":");
         requireKeys(data, LEVEL_PASS, LEVEL_SONG_ID, LEVEL_UPLOADED_AGO, LEVEL_UPDATED_AGO, LEVEL_DATA);
         int pass;
-        var strPass = data.get(LEVEL_PASS);
+        final var strPass = data.get(LEVEL_PASS);
         if (strPass.equals("Aw==")) {
             pass = -2; // free to copy
         } else if (strPass.length() < 5) {

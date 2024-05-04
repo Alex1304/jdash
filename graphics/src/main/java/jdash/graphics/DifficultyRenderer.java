@@ -10,7 +10,6 @@ import jdash.graphics.internal.SpriteSheet;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Objects;
 
@@ -28,32 +27,6 @@ import java.util.Objects;
  * instance of this class.
  */
 public final class DifficultyRenderer {
-
-    private static final Map<Difficulty, String> DIFFICULTY_ASSET_NAMES = Map.ofEntries(
-            Map.entry(Difficulty.NA, "difficulty_00_btn_001"),
-            Map.entry(Difficulty.AUTO, "difficulty_auto_btn_001"),
-            Map.entry(Difficulty.EASY, "difficulty_01_btn_001"),
-            Map.entry(Difficulty.NORMAL, "difficulty_02_btn_001"),
-            Map.entry(Difficulty.HARD, "difficulty_03_btn_001"),
-            Map.entry(Difficulty.HARDER, "difficulty_04_btn_001"),
-            Map.entry(Difficulty.INSANE, "difficulty_05_btn_001"),
-            Map.entry(Difficulty.DEMON, "difficulty_06_btn_001")
-    );
-
-    private static final Map<DemonDifficulty, String> DEMON_DIFFICULTY_ASSET_NAMES = Map.ofEntries(
-            Map.entry(DemonDifficulty.EASY, "difficulty_07_btn2_001"),
-            Map.entry(DemonDifficulty.MEDIUM, "difficulty_08_btn2_001"),
-            Map.entry(DemonDifficulty.HARD, "difficulty_06_btn2_001"),
-            Map.entry(DemonDifficulty.INSANE, "difficulty_09_btn2_001"),
-            Map.entry(DemonDifficulty.EXTREME, "difficulty_10_btn2_001")
-    );
-
-    private static final Map<QualityRating, String> QUALITY_RATING_ASSET_NAMES = Map.ofEntries(
-            Map.entry(QualityRating.FEATURED, "GJ_featuredCoin_001"),
-            Map.entry(QualityRating.EPIC, "GJ_epicCoin_001"),
-            Map.entry(QualityRating.LEGENDARY, "GJ_epicCoin2_001"),
-            Map.entry(QualityRating.MYTHIC, "GJ_epicCoin3_001")
-    );
 
     private static final SpriteSheet SPRITE_SHEET = SpriteSheet.parse("/GJ_GameSheet03-uhd.png",
             "/GJ_GameSheet03-uhd.plist");
@@ -85,17 +58,6 @@ public final class DifficultyRenderer {
     private final QualityRating qualityRating;
     private final int rate;
     private final RewardType rewardType;
-
-    private enum RewardType {
-        NONE(null),
-        STARS("star"),
-        MOONS("moon"),
-        DIAMONDS("diamond");
-
-        private final String assetName;
-
-        RewardType(String assetName) {this.assetName = assetName;}
-    }
 
     private DifficultyRenderer(Difficulty difficulty, DemonDifficulty demonDifficulty, QualityRating qualityRating,
                                int rate, RewardType rewardType) {
@@ -216,11 +178,11 @@ public final class DifficultyRenderer {
      */
     public BufferedImage render() {
         if (difficulty != null) {
-            return render(DIFFICULTY_ASSET_NAMES.get(difficulty), rate,
-                    QUALITY_RATING_ASSET_NAMES.get(qualityRating), rewardType.assetName, false);
+            return render(difficultyAssetName(difficulty), rate, qualityRatingAssetName(qualityRating),
+                    rewardType.assetName, false);
         } else if (demonDifficulty != null) {
-            return render(DEMON_DIFFICULTY_ASSET_NAMES.get(demonDifficulty), rate,
-                    QUALITY_RATING_ASSET_NAMES.get(qualityRating), rewardType.assetName, true);
+            return render(demonDifficultyAssetName(demonDifficulty), rate, qualityRatingAssetName(qualityRating),
+                    rewardType.assetName, true);
         }
         throw new AssertionError();
     }
@@ -282,5 +244,52 @@ public final class DifficultyRenderer {
         g.setColor(originalColor);
         g.setStroke(originalStroke);
         g.setTransform(originalTransform);
+    }
+
+
+    private static String difficultyAssetName(Difficulty difficulty) {
+        return switch (difficulty) {
+            case NA -> "difficulty_00_btn_001";
+            case AUTO -> "difficulty_auto_btn_001";
+            case EASY -> "difficulty_01_btn_001";
+            case NORMAL -> "difficulty_02_btn_001";
+            case HARD -> "difficulty_03_btn_001";
+            case HARDER -> "difficulty_04_btn_001";
+            case INSANE -> "difficulty_05_btn_001";
+            case DEMON -> "difficulty_06_btn_001";
+        };
+    }
+
+    private static String demonDifficultyAssetName(DemonDifficulty demonDifficulty) {
+        return switch (demonDifficulty) {
+            case EASY -> "difficulty_07_btn2_001";
+            case MEDIUM -> "difficulty_08_btn2_001";
+            case HARD -> "difficulty_06_btn2_001";
+            case INSANE -> "difficulty_09_btn2_001";
+            case EXTREME -> "difficulty_10_btn2_001";
+        };
+    }
+
+    private static String qualityRatingAssetName(QualityRating qualityRating) {
+        return switch (qualityRating) {
+            case FEATURED -> "GJ_featuredCoin_001";
+            case EPIC -> "GJ_epicCoin_001";
+            case LEGENDARY -> "GJ_epicCoin2_001";
+            case MYTHIC -> "GJ_epicCoin3_001";
+            case NONE -> "";
+        };
+    }
+
+    private enum RewardType {
+        NONE(null),
+        STARS("star"),
+        MOONS("moon"),
+        DIAMONDS("diamond");
+
+        private final String assetName;
+
+        RewardType(String assetName) {
+            this.assetName = assetName;
+        }
     }
 }

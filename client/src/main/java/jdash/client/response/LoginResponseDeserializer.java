@@ -12,7 +12,7 @@ class LoginResponseDeserializer implements Function<String, Tuple2<Long, Long>> 
     public Tuple2<Long, Long> apply(String response) {
         ActionFailedException.throwIfEquals(response, "-1", "Login failed");
         ActionFailedException.throwIfEquals(response, "-12", "Account suspended");
-        var values = response.split(",");
+        final var values = response.split(",");
         return Tuples.of(Long.parseLong(values[0]), Long.parseLong(values[1]));
     }
 }

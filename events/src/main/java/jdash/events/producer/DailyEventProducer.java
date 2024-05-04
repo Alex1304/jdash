@@ -13,17 +13,17 @@ class DailyEventProducer implements GDEventProducer {
 
     @Override
     public Flux<Object> produce(GDClient client) {
-        var daily = client.getDailyLevelInfo()
+        final var daily = client.getDailyLevelInfo()
                 .flatMap(info -> {
-                    var previousDaily = this.previousDaily;
+                    final var previousDaily = this.previousDaily;
                     this.previousDaily = info;
                     return Mono.justOrEmpty(previousDaily)
                             .filter(p -> p.number() < info.number())
                             .map(p -> new DailyLevelChange(p, info, false));
                 });
-        var weekly = client.getWeeklyDemonInfo()
+        final var weekly = client.getWeeklyDemonInfo()
                 .flatMap(info -> {
-                    var previousWeekly = this.previousWeekly;
+                    final var previousWeekly = this.previousWeekly;
                     this.previousWeekly = info;
                     return Mono.justOrEmpty(previousWeekly)
                             .filter(p -> p.number() < info.number())
