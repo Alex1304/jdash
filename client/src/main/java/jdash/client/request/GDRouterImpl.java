@@ -51,11 +51,11 @@ class GDRouterImpl extends BaseSubscriber<RequestWithCallback> implements GDRout
 
     @Override
     public Mono<String> send(GDRequest request) {
-        var callback = Sinks.<String>one();
-        var requestWithCallback = new RequestWithCallback(request, callback);
+        final var callback = Sinks.<String>one();
+        final var requestWithCallback = new RequestWithCallback(request, callback);
         final var result = requestQueue.tryEmitNext(requestWithCallback);
         if (result.isSuccess()) {
-            var mono = callback.asMono().publishOn(scheduler);
+            final var mono = callback.asMono().publishOn(scheduler);
             if (timeout != null) {
                 return mono.timeout(timeout);
             }
@@ -72,8 +72,8 @@ class GDRouterImpl extends BaseSubscriber<RequestWithCallback> implements GDRout
     @Override
     protected void hookOnNext(RequestWithCallback value) {
         limiter.fire();
-        var request = value.request();
-        var callback = value.callback();
+        final var request = value.request();
+        final var callback = value.callback();
         final var requestId = UUID.randomUUID().toString();
         httpClient.doAfterRequest((httpClientRequest, connection) -> LOGGER
                         .debug("[requestId: {}] Request sent: {}", requestId, request))
@@ -92,7 +92,7 @@ class GDRouterImpl extends BaseSubscriber<RequestWithCallback> implements GDRout
                                 retrySignal.totalRetries(), 10, request, retrySignal.failure())))
                 .onErrorMap(IOException.class, e -> Exceptions.retryExhausted("Giving up after 10 I/O failures", e))
                 .doFinally(signalType -> {
-                    var remaining = limiter.remaining();
+                    final var remaining = limiter.remaining();
                     if (remaining.remainingPermits() > 0) {
                         request(1);
                     } else {

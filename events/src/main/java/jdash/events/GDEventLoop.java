@@ -30,11 +30,12 @@ public class GDEventLoop {
     public static final Duration DEFAULT_INTERVAL = Duration.ofMinutes(1);
 
     /**
-     * The default set of event producers to use in the loop, which includes {@link GDEventProducer#awardedLevels()} and
-     * {@link GDEventProducer#dailyLevels()}.
+     * The default set of event producers to use in the loop, which includes {@link GDEventProducer#awardedLevels()},
+     * {@link GDEventProducer#awardedLists()} and {@link GDEventProducer#dailyLevels()}.
      */
     public static final Set<GDEventProducer> DEFAULT_PRODUCERS = Set.of(
             GDEventProducer.awardedLevels(),
+            GDEventProducer.awardedLists(),
             GDEventProducer.dailyLevels()
     );
 
@@ -103,7 +104,7 @@ public class GDEventLoop {
         }
 
         /**
-         * Sets the event producers to use. By default it uses {@link #DEFAULT_PRODUCERS}, but can be overridden here.
+         * Sets the event producers to use. By default, it uses {@link #DEFAULT_PRODUCERS}, but can be overridden here.
          *
          * @param eventProducers the event producers, or <code>null</code> to use default
          * @return this builder
@@ -114,7 +115,7 @@ public class GDEventLoop {
         }
 
         /**
-         * Sets the interval between two iterations of the loop. By default it uses {@link #DEFAULT_INTERVAL}, but can
+         * Sets the interval between two iterations of the loop. By default, it uses {@link #DEFAULT_INTERVAL}, but can
          * be overridden here.
          *
          * @param interval the interval, or <code>null</code> to use default
@@ -126,8 +127,8 @@ public class GDEventLoop {
         }
 
         /**
-         * Sets a scheduler that will determine which thread the events will be emitted on. By default, runs on {@link
-         * Schedulers#boundedElastic()} ()} in order to allow for blocking calls.
+         * Sets a scheduler that will determine which thread the events will be emitted on. By default, runs on
+         * {@link Schedulers#boundedElastic()} ()} in order to allow for blocking calls.
          *
          * @param scheduler a scheduler, or <code>null</code> to use default
          * @return this builder
@@ -144,11 +145,11 @@ public class GDEventLoop {
          * @return a new {@link GDEventLoop}
          */
         public GDEventLoop buildAndStart() {
-            var eventProducers = Objects.requireNonNullElse(this.eventProducers, DEFAULT_PRODUCERS);
-            var interval = Objects.requireNonNullElse(this.interval, DEFAULT_INTERVAL);
-            var eventEmitter = Sinks.many().multicast().onBackpressureBuffer();
-            var scheduler = Objects.requireNonNullElse(this.scheduler, Schedulers.boundedElastic());
-            var disposable = Flux.interval(interval)
+            final var eventProducers = Objects.requireNonNullElse(this.eventProducers, DEFAULT_PRODUCERS);
+            final var interval = Objects.requireNonNullElse(this.interval, DEFAULT_INTERVAL);
+            final var eventEmitter = Sinks.many().multicast().onBackpressureBuffer();
+            final var scheduler = Objects.requireNonNullElse(this.scheduler, Schedulers.boundedElastic());
+            final var disposable = Flux.interval(interval)
                     .flatMapIterable(__ -> eventProducers)
                     .flatMap(producer -> producer.produce(client)
                             .onErrorResume(e -> Mono.fromRunnable(
@@ -156,15 +157,11 @@ public class GDEventLoop {
                     .subscribe(object -> {
                         for (; ; ) {
                             Sinks.EmitResult result;
-                            switch (result = eventEmitter.tryEmitNext(object)) {
-                                case FAIL_NON_SERIALIZED:
-                                    Thread.onSpinWait();
-                                    continue;
-                                case FAIL_TERMINATED:
-                                case FAIL_CANCELLED:
-                                case FAIL_ZERO_SUBSCRIBER:
-                                case FAIL_OVERFLOW:
-                                    LOGGER.warn("Event dropped because of {}: {}", result, object);
+                            if ((result = eventEmitter.tryEmitNext(object)) == Sinks.EmitResult.FAIL_NON_SERIALIZED) {
+                                Thread.onSpinWait();
+                                continue;
+                            } else if (result != Sinks.EmitResult.OK) {
+                                LOGGER.warn("Event dropped because of {}: {}", result, object);
                             }
                             return;
                         }

@@ -93,7 +93,7 @@ public final class GDRouterMock implements GDRouter {
     @Override
     public Mono<String> send(GDRequest request) {
         requestCount++;
-        var sample = SAMPLES.get(request);
+        final var sample = SAMPLES.get(request);
         if (sample == null) {
             return Mono.error(new RuntimeException("No mockup found for request " + request));
         }

@@ -14,7 +14,7 @@ class PrivateMessageDownloadResponseDeserializer implements Function<String, GDP
     @Override
     public GDPrivateMessageDownload apply(String response) {
         ActionFailedException.throwIfEquals(response, "-1", "Failed to download message");
-        var data = splitToMap(response, ":");
+        final var data = splitToMap(response, ":");
         requireKeys(data, MESSAGE_BODY);
         return new GDPrivateMessageDownload(buildMessage(data), decodePrivateMessageBody(data.get(MESSAGE_BODY)));
     }

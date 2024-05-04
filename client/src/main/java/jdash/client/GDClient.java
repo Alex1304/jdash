@@ -324,7 +324,7 @@ public final class GDClient {
                              int page, boolean isList) {
         Objects.requireNonNull(mode);
         return Flux.defer(() -> {
-            var request = GDRequest.of(isList ? GET_GJ_LEVEL_LISTS : GET_GJ_LEVELS_21)
+            final var request = GDRequest.of(isList ? GET_GJ_LEVEL_LISTS : GET_GJ_LEVELS_21)
                     .addParameters(commonParams())
                     .addParameters(Objects.requireNonNullElse(filter, LevelSearchFilter.create()).toMap())
                     .addParameter("page", page)
@@ -507,7 +507,7 @@ public final class GDClient {
             requireAuthentication();
         }
         return Flux.defer(() -> {
-            var request = GDRequest.of(GET_GJ_SCORES_20);
+            final var request = GDRequest.of(GET_GJ_SCORES_20);
             if (type == LeaderboardType.FRIENDS) {
                 request.addParameters(authParams());
             }
@@ -599,7 +599,7 @@ public final class GDClient {
     public Mono<Void> voteLevelStars(long levelId, int stars) {
         requireAuthentication();
         return Mono.defer(() -> {
-            var rs = randomString(10);
+            final var rs = randomString(10);
             Objects.requireNonNull(auth);
             return GDRequest.of(RATE_GJ_STARS_211)
                     .addParameters(authParams())

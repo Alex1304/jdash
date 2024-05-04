@@ -15,10 +15,10 @@ class PrivateMessagesResponseDeserializer implements Function<String, List<GDPri
     @Override
     public List<GDPrivateMessage> apply(String response) {
         ActionFailedException.throwIfEquals(response, "-1", "Failed to load messages");
-        var list = new ArrayList<GDPrivateMessage>();
-        var messages = response.split("#")[0].split("\\|");
+        final var list = new ArrayList<GDPrivateMessage>();
+        final var messages = response.split("#")[0].split("\\|");
         for (var message : messages) {
-            var data = splitToMap(message, ":");
+            final var data = splitToMap(message, ":");
             list.add(buildMessage(data));
         }
         return list;

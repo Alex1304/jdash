@@ -8,6 +8,8 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.*;
+import java.util.function.BiPredicate;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -133,7 +135,7 @@ public final class InternalUtils {
     }
 
     public static <T> T parseIndex(String str, T[] array) {
-        var value = Integer.parseInt(str);
+        final var value = Integer.parseInt(str);
         return array[value >= array.length ? 0 : value];
     }
 
@@ -144,11 +146,11 @@ public final class InternalUtils {
                 LEVEL_LIKES, LEVEL_LENGTH, LEVEL_COIN_COUNT, LEVEL_COIN_VERIFIED, LEVEL_VERSION, LEVEL_GAME_VERSION,
                 LEVEL_OBJECT_COUNT, LEVEL_IS_DEMON, LEVEL_IS_AUTO, LEVEL_ORIGINAL, LEVEL_REQUESTED_STARS,
                 LEVEL_SONG_ID, LEVEL_AUDIO_TRACK);
-        var songId = Optional.ofNullable(data.get(LEVEL_SONG_ID)).map(Long::parseLong).filter(l -> l > 0);
+        final var songId = Optional.ofNullable(data.get(LEVEL_SONG_ID)).map(Long::parseLong).filter(l -> l > 0);
         @SuppressWarnings("SimplifyOptionalCallChains") // IntelliJ bug
-        var song = songId.map(id -> Optional.ofNullable(structuredSongsInfo.get(id)))
+        final var song = songId.map(id -> Optional.ofNullable(structuredSongsInfo.get(id)))
                 .orElseGet(() -> GDSong.getOfficialSong(Integer.parseInt(data.get(LEVEL_AUDIO_TRACK))));
-        var creatorName = structuredCreatorsInfo.get(Long.parseLong(data.get(LEVEL_CREATOR_ID)));
+        final var creatorName = structuredCreatorsInfo.get(Long.parseLong(data.get(LEVEL_CREATOR_ID)));
         final var featuredScore = Integer.parseInt(data.get(LEVEL_FEATURED_SCORE));
         return new GDLevel(
                 Long.parseLong(data.get(LEVEL_ID)),
@@ -289,9 +291,15 @@ public final class InternalUtils {
     }
 
     public static String randomString(int size) {
-        var rand = new Random();
+        final var rand = new Random();
         return IntStream.range(0, size)
                 .mapToObj(i -> "" + CHAR_TABLE.charAt(rand.nextInt(CHAR_TABLE.length())))
                 .collect(Collectors.joining());
+    }
+
+    @SafeVarargs
+    public static <T> BiPredicate<T, T> haveDifferentFields(Function<T, ?>... fieldGetters) {
+        return (el1, el2) -> Arrays.stream(fieldGetters)
+                .anyMatch(fieldGetter -> !fieldGetter.apply(el1).equals(fieldGetter.apply(el2)));
     }
 }

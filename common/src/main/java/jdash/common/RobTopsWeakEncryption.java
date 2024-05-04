@@ -115,9 +115,9 @@ public final class RobTopsWeakEncryption {
 
     private static String sha1(String str) {
         try {
-            var messageDigest = MessageDigest.getInstance("SHA-1");
+            final var messageDigest = MessageDigest.getInstance("SHA-1");
             messageDigest.update(StandardCharsets.UTF_8.encode(str));
-            var digest = messageDigest.digest();
+            final var digest = messageDigest.digest();
             return IntStream.range(0, digest.length)
                     .mapToObj(i -> String.format("%02x", 0xff & digest[i]))
                     .collect(Collectors.joining());

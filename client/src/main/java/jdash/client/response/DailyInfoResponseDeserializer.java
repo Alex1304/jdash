@@ -13,8 +13,8 @@ class DailyInfoResponseDeserializer implements Function<String, GDDailyInfo> {
         if (!response.matches("\\d+\\|\\d+")) {
             throw new ActionFailedException(response, "Failed to load daily level info");
         }
-        var tokens = response.split("\\|");
-        var number = Long.parseLong(tokens[0]) % 100_000;
+        final var tokens = response.split("\\|");
+        final var number = Long.parseLong(tokens[0]) % 100_000;
         return new GDDailyInfo(number, Duration.ofSeconds(Long.parseLong(tokens[1])));
     }
 }

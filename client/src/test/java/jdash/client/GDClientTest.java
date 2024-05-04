@@ -35,16 +35,16 @@ public final class GDClientTest {
     public void cacheTest() {
         assertTrue(cache.getMap().isEmpty()); // Ensure the cache is empty at first
 
-        var response = client.findLevelById(10565740).block(); // Make a request
+        final var response = client.findLevelById(10565740).block(); // Make a request
         assertNotNull(response);
         assertEquals(1, router.getRequestCount()); // Check that it hit the router
         assertEquals(1, cache.getMap().size()); // Check that the response was added to cache
 
         // Check the object added to cache is the same as the returned response
-        var cached = cache.getMap().values().stream().findAny().orElseThrow();
+        final var cached = cache.getMap().values().stream().findAny().orElseThrow();
         assertEquals(List.of(response), cached);
 
-        var response2 = client.findLevelById(10565740).block(); // Make the same request again
+        final var response2 = client.findLevelById(10565740).block(); // Make the same request again
         assertEquals(1, router.getRequestCount()); // Check that it didn't hit the router (requestCount didn't
         // increment). It means it properly hit the cache.
         assertEquals(response2, response); // Check the new response is consistent with the first one
@@ -64,7 +64,7 @@ public final class GDClientTest {
     @Test
     public void loginTest() {
         assertFalse(client.isAuthenticated());
-        var newClient = client.login("Alex1304", "F3keP4ssw0rd").block();
+        final var newClient = client.login("Alex1304", "F3keP4ssw0rd").block();
         assertNotNull(newClient);
         assertTrue(newClient.isAuthenticated());
         assertThrows(GDClientException.class, client.login("Alex1304", "WrongPassword")::block);
@@ -111,9 +111,9 @@ public final class GDClientTest {
 
     @Test
     public void browseLevelsTest() {
-        var expected = List.of(10565740L, 10792915L, 21761387L, 13615973L, 10578973L, 35717743L, 11797073L,
+        final var expected = List.of(10565740L, 10792915L, 21761387L, 13615973L, 10578973L, 35717743L, 11797073L,
                 38601659L, 19274064L, 10978435L);
-        var actual = client.browseLevels(LevelBrowseMode.SEARCH, "Bloodbath", null, 0)
+        final var actual = client.browseLevels(LevelBrowseMode.SEARCH, "Bloodbath", null, 0)
                 .map(GDLevel::id)
                 .collectList()
                 .block();
@@ -122,8 +122,8 @@ public final class GDClientTest {
 
     @Test
     public void browseListsTest() {
-        var expected = List.of(242270L, 98021L, 278569L, 52207L, 230832L, 279460L, 178665L, 48649L, 310214L, 231005L);
-        var actual = client.browseLists(LevelBrowseMode.AWARDED, null, null, 0)
+        final var expected = List.of(242270L, 98021L, 278569L, 52207L, 230832L, 279460L, 178665L, 48649L, 310214L, 231005L);
+        final var actual = client.browseLists(LevelBrowseMode.AWARDED, null, null, 0)
                 .map(GDList::id)
                 .collectList()
                 .block();
@@ -264,14 +264,14 @@ public final class GDClientTest {
     @Test
     public void getDailyLevelInfoTest() {
         final var expected = new GDDailyInfo(1623, Duration.ofSeconds(27231));
-        var actual = client.getDailyLevelInfo().block();
+        final var actual = client.getDailyLevelInfo().block();
         assertEquals(expected, actual);
     }
 
     @Test
     public void getWeeklyDemonInfoTest() {
         final var expected = new GDDailyInfo(194, Duration.ofSeconds(459229));
-        var actual = client.getWeeklyDemonInfo().block();
+        final var actual = client.getWeeklyDemonInfo().block();
         assertEquals(expected, actual);
     }
 
@@ -346,7 +346,7 @@ public final class GDClientTest {
                 ),
                 "hello :)"
         );
-        var actual = authClient.downloadPrivateMessage(58947681).block();
+        final var actual = authClient.downloadPrivateMessage(58947681).block();
         assertEquals(expected, actual);
     }
 
@@ -373,7 +373,7 @@ public final class GDClientTest {
 
     @Test
     public void getLeaderboardTest() {
-        var actual = client.getLeaderboard(LeaderboardType.RELATIVE, 50).collectList().block();
+        final var actual = client.getLeaderboard(LeaderboardType.RELATIVE, 50).collectList().block();
         assertNotNull(actual);
         assertFalse(actual.get(0).leaderboardRank().isEmpty());
         assertEquals(12537, actual.get(0).leaderboardRank().orElseThrow());

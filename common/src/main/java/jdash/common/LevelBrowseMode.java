@@ -48,6 +48,11 @@ public enum LevelBrowseMode {
     MAGIC(7),
 
     /**
+     * Allows to browse levels sent by moderators.
+     */
+    SENT(8),
+
+    /**
      * Allows to browse levels contained in map packs.
      */
     MAP_PACKS(10),

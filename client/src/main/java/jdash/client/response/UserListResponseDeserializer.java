@@ -15,8 +15,8 @@ class UserListResponseDeserializer implements Function<String, List<GDUser>> {
     @Override
     public List<GDUser> apply(String response) {
         ActionFailedException.throwIfEquals(response, "-1", "Failed to load user(s)");
-        var list = new ArrayList<GDUser>();
-        var users = response.split("\\|");
+        final var list = new ArrayList<GDUser>();
+        final var users = response.split("\\|");
         for (String user : users) {
             list.add(buildUser(splitToMap(user, ":")));
         }
