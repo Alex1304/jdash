@@ -90,7 +90,6 @@ public final class InternalUtils {
             Map<Integer, String> data = splitToMap(songRD, "~\\|~");
             requireKeys(data, SONG_ID, SONG_TITLE, SONG_ARTIST, SONG_SIZE, SONG_URL);
             long songID = Long.parseLong(data.get(SONG_ID));
-            ;
             result.put(songID, new GDSong(
                     songID,
                     data.get(SONG_TITLE),
@@ -241,8 +240,9 @@ public final class InternalUtils {
 
     public static GDUserProfile buildUserProfile(Map<Integer, String> data) {
         requireKeys(data, USER_GLOBAL_RANK, USER_ICON_CUBE, USER_ICON_SHIP, USER_ICON_UFO, USER_ICON_BALL,
-                USER_ICON_WAVE, USER_ICON_ROBOT, USER_ICON_SPIDER, USER_YOUTUBE, USER_TWITTER,
-                USER_TWITCH, USER_FRIEND_REQUEST_POLICY, USER_PRIVATE_MESSAGE_POLICY, USER_COMMENT_HISTORY_POLICY);
+                USER_ICON_WAVE, USER_ICON_ROBOT, USER_ICON_SPIDER, USER_ICON_SWING, USER_ICON_JETPACK,
+                USER_COLOR_GLOW, USER_YOUTUBE, USER_TWITTER, USER_TWITCH, USER_FRIEND_REQUEST_SETTING,
+                USER_PRIVATE_MESSAGE_SETTING, USER_COMMENT_HISTORY_SETTING);
         final var stats = buildUserStats(data);
         return new GDUserProfile(
                 stats.user(),
@@ -261,10 +261,54 @@ public final class InternalUtils {
                 data.get(USER_YOUTUBE),
                 data.get(USER_TWITTER),
                 data.get(USER_TWITCH),
-                data.get(USER_FRIEND_REQUEST_POLICY).equals("0"),
-                PrivacySetting.parse(data.get(USER_PRIVATE_MESSAGE_POLICY)),
-                PrivacySetting.parse(data.get(USER_COMMENT_HISTORY_POLICY))
+                data.get(USER_FRIEND_REQUEST_SETTING).equals("0"),
+                PrivacySetting.parse(data.get(USER_PRIVATE_MESSAGE_SETTING)),
+                PrivacySetting.parse(data.get(USER_COMMENT_HISTORY_SETTING)),
+                toIntList(data.get(USER_COUNTS_CLASSIC), 8)
+                        .map(values -> new GDUserProfile.CompletedClassicLevels(
+                                values.get(0),
+                                values.get(1),
+                                values.get(2),
+                                values.get(3),
+                                values.get(4),
+                                values.get(5),
+                                values.get(6),
+                                values.get(7)
+                        )),
+                toIntList(data.get(USER_COUNTS_PLATFORMER), 7)
+                        .map(values -> new GDUserProfile.CompletedPlatformerLevels(
+                                values.get(0),
+                                values.get(1),
+                                values.get(2),
+                                values.get(3),
+                                values.get(4),
+                                values.get(5),
+                                values.get(6)
+                        )),
+                toIntList(data.get(USER_COUNTS_DEMONS), 12)
+                        .map(values -> new GDUserProfile.CompletedDemons(
+                                values.get(0),
+                                values.get(1),
+                                values.get(2),
+                                values.get(3),
+                                values.get(4),
+                                values.get(5),
+                                values.get(6),
+                                values.get(7),
+                                values.get(8),
+                                values.get(9),
+                                values.get(10),
+                                values.get(11)
+                        ))
         );
+    }
+
+    private static Optional<List<Integer>> toIntList(String str, int minSize) {
+        if (str == null || str.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(Arrays.stream(str.split(",")).map(Integer::parseInt).toList())
+                .filter(values -> values.size() >= minSize);
     }
 
     public static GDPrivateMessage buildMessage(Map<Integer, String> data) {

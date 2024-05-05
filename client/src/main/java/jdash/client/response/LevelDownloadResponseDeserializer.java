@@ -5,6 +5,7 @@ import jdash.common.RobTopsWeakEncryption;
 import jdash.common.entity.GDLevelDownload;
 
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
@@ -21,7 +22,8 @@ class LevelDownloadResponseDeserializer implements Function<String, GDLevelDownl
         final var levelData = parts[0];
         final var creatorInfo = parts.length > 3 ? structureCreatorsInfo(parts[3]) : Map.<Long, String>of();
         final var data = splitToMap(levelData, ":");
-        requireKeys(data, LEVEL_PASS, LEVEL_SONG_ID, LEVEL_UPLOADED_AGO, LEVEL_UPDATED_AGO, LEVEL_DATA);
+        requireKeys(data, LEVEL_PASS, LEVEL_SONG_ID, LEVEL_UPLOADED_AGO, LEVEL_UPDATED_AGO, LEVEL_LDM_AVAILABLE,
+                LEVEL_DATA);
         int pass;
         final var strPass = data.get(LEVEL_PASS);
         if (strPass.equals("Aw==")) {
@@ -37,6 +39,15 @@ class LevelDownloadResponseDeserializer implements Function<String, GDLevelDownl
                 Optional.of(pass).filter(x -> x >= 0),
                 data.get(LEVEL_UPLOADED_AGO),
                 data.get(LEVEL_UPDATED_AGO),
+                Boolean.parseBoolean(data.get(LEVEL_LDM_AVAILABLE)),
+                Optional.ofNullable(data.get(LEVEL_SONG_IDS)).stream()
+                        .flatMap(str -> Arrays.stream(str.split(",")))
+                        .map(Long::parseLong)
+                        .toList(),
+                Optional.ofNullable(data.get(LEVEL_SFX_IDS)).stream()
+                        .flatMap(str -> Arrays.stream(str.split(",")))
+                        .map(Long::parseLong)
+                        .toList(),
                 ByteBuffer.wrap(b64DecodeToBytes(data.get(LEVEL_DATA)))
         );
     }

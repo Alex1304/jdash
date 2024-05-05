@@ -32,9 +32,12 @@ public final class Indexes {
     public static final int LEVEL_COIN_COUNT = 37;
     public static final int LEVEL_COIN_VERIFIED = 38;
     public static final int LEVEL_REQUESTED_STARS = 39;
+    public static final int LEVEL_LDM_AVAILABLE = 40;
     public static final int LEVEL_QUALITY_RATING = 42;
     public static final int LEVEL_DEMON_DIFFICULTY = 43;
     public static final int LEVEL_OBJECT_COUNT = 45;
+    public static final int LEVEL_SONG_IDS = 52;
+    public static final int LEVEL_SFX_IDS = 53;
 
     /* List-specific indexes */
     public static final int LIST_ICON = 7;
@@ -66,8 +69,8 @@ public final class Indexes {
     public static final int USER_GLOW_OUTLINE = 15;
     public static final int USER_ACCOUNT_ID = 16;
     public static final int USER_USER_COINS = 17;
-    public static final int USER_PRIVATE_MESSAGE_POLICY = 18;
-    public static final int USER_FRIEND_REQUEST_POLICY = 19;
+    public static final int USER_PRIVATE_MESSAGE_SETTING = 18;
+    public static final int USER_FRIEND_REQUEST_SETTING = 19;
     public static final int USER_YOUTUBE = 20;
     public static final int USER_ICON_CUBE = 21;
     public static final int USER_ICON_SHIP = 22;
@@ -82,7 +85,7 @@ public final class Indexes {
     public static final int USER_TWITCH = 45;
     public static final int USER_DIAMONDS = 46;
     public static final int USER_ROLE = 49;
-    public static final int USER_COMMENT_HISTORY_POLICY = 50;
+    public static final int USER_COMMENT_HISTORY_SETTING = 50;
     public static final int USER_COLOR_GLOW = 51;
     public static final int USER_MOONS = 52;
     public static final int USER_ICON_SWING = 53;

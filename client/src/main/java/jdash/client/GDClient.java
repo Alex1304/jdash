@@ -161,8 +161,8 @@ public final class GDClient {
 
     /**
      * Creates a new {@link GDClient} derived from this one, but with the specified collection of followed account IDs.
-     * It will be used when browsing levels with {@link LevelBrowseMode#FOLLOWED} via
-     * {@link #browseLevels(LevelBrowseMode, String, LevelSearchFilter, int)}.
+     * It will be used when browsing levels with {@link LevelSearchMode#FOLLOWED} via
+     * {@link #searchLevels(LevelSearchMode, String, LevelSearchFilter, int)}.
      * <p>
      * This method makes a defensive copy of the given collection to guarantee the immutability of the resulting
      * client.
@@ -246,7 +246,7 @@ public final class GDClient {
         return Mono.defer(() -> GDRequest.of(LOGIN_GJ_ACCOUNT)
                 .addParameter("userName", username)
                 .addParameter("gjp2", encodeGjp2(password))
-                .addParameter("udid", "jdash-client")
+                .addParameter("udid", uniqueDeviceId)
                 .addParameter("secret", "Wmfv3899gc9") // Overrides the default one
                 .execute(cache, router)
                 .deserialize(loginResponse())
@@ -256,7 +256,7 @@ public final class GDClient {
     /**
      * Finds a level by its ID. It is a shorthand for:
      * <pre>
-     *     browseLevels(LevelBrowseMode.SEARCH, "" + levelId, null, 0).next()
+     *     searchLevels(LevelSearchMode.SEARCH, "" + levelId, null, 0).next()
      * </pre>
      *
      * @param levelId the level ID
@@ -264,13 +264,13 @@ public final class GDClient {
      * emitted if an error occurs.
      */
     public Mono<GDLevel> findLevelById(long levelId) {
-        return browseLevels(LevelBrowseMode.SEARCH, "" + levelId, null, 0).next();
+        return searchLevels(LevelSearchMode.SEARCH, "" + levelId, null, 0).next();
     }
 
     /**
-     * Browses levels by a specific user. It is a shorthand for:
+     * Finds levels by a specific user. It is a shorthand for:
      * <pre>
-     *     browseLevels(LevelBrowseMode.BY_USER, "" + playerId, null, page)
+     *     searchLevels(LevelSearchMode.BY_USER, "" + playerId, null, page)
      * </pre>
      *
      * @param playerId the player ID of the user
@@ -278,35 +278,35 @@ public final class GDClient {
      * @return a Flux emitting all {@link GDLevel}s found on the selected page. A {@link GDClientException} will be
      * emitted if an error occurs.
      */
-    public Flux<GDLevel> browseLevelsByUser(long playerId, int page) {
-        return browseLevels(LevelBrowseMode.BY_USER, "" + playerId, null, page);
+    public Flux<GDLevel> findLevelsByUser(long playerId, int page) {
+        return searchLevels(LevelSearchMode.BY_USER, "" + playerId, null, page);
     }
 
     /**
-     * Browses levels in Geometry Dash.
+     * Searches for levels in Geometry Dash.
      *
      * @param mode   the browsing mode, which can impact how levels are sorted, or how the query is interpreted
-     * @param query  if mode is {@link LevelBrowseMode#SEARCH}, represents the search query. If mode is
-     *               {@link LevelBrowseMode#BY_USER}, represents the player ID of the user. If mode is any other mode,
+     * @param query  if mode is {@link LevelSearchMode#SEARCH}, represents the search query. If mode is
+     *               {@link LevelSearchMode#BY_USER}, represents the player ID of the user. If mode is any other mode,
      *               it will be ignored and can be set to <code>null</code>.
      * @param filter the search filter to apply. Can be <code>null</code> to disable filtering
      * @param page   the page to load, the first one being 0
      * @return a Flux emitting all {@link GDLevel}s found on the selected page. A {@link GDClientException} will be
      * emitted if an error occurs.
      */
-    public Flux<GDLevel> browseLevels(LevelBrowseMode mode, @Nullable String query, @Nullable LevelSearchFilter filter,
+    public Flux<GDLevel> searchLevels(LevelSearchMode mode, @Nullable String query, @Nullable LevelSearchFilter filter,
                                       int page) {
-        return browse(mode, query, filter, page, false).cast(GDLevel.class);
+        return search(mode, query, filter, page, false).cast(GDLevel.class);
     }
 
     /**
-     * Browses lists in Geometry Dash.  It works very similarly to
-     * {@link #browseLevels(LevelBrowseMode, String, LevelSearchFilter, int)}, with the only difference that only
-     * a subset of the {@link LevelSearchFilter} attributes will actually have any effect.
+     * Searches for lists in Geometry Dash.  It works very similarly to
+     * {@link #searchLevels(LevelSearchMode, String, LevelSearchFilter, int)}, with the only difference that only a
+     * subset of the {@link LevelSearchFilter} attributes will actually have any effect.
      *
      * @param mode   the browsing mode, which can impact how levels are sorted, or how the query is interpreted
-     * @param query  if mode is {@link LevelBrowseMode#SEARCH}, represents the search query. If mode is
-     *               {@link LevelBrowseMode#BY_USER}, represents the player ID of the user. If mode is any other mode,
+     * @param query  if mode is {@link LevelSearchMode#SEARCH}, represents the search query. If mode is
+     *               {@link LevelSearchMode#BY_USER}, represents the player ID of the user. If mode is any other mode,
      *               it will be ignored and can be set to <code>null</code>.
      * @param filter the search filter to apply. Can be <code>null</code> to disable filtering. Some filters that are
      *               not applicable to lists, such as completed levels, lengths or two player may not have any effect
@@ -314,14 +314,13 @@ public final class GDClient {
      * @return a Flux emitting all {@link GDList}s found on the selected page. A {@link GDClientException} will be
      * emitted if an error occurs.
      */
-    public Flux<GDList> browseLists(LevelBrowseMode mode, @Nullable String query, @Nullable LevelSearchFilter filter,
+    public Flux<GDList> searchLists(LevelSearchMode mode, @Nullable String query, @Nullable LevelSearchFilter filter,
                                     int page) {
-        return browse(mode, query, filter, page, true).cast(GDList.class);
+        return search(mode, query, filter, page, true).cast(GDList.class);
     }
 
-    private Flux<Record> browse(LevelBrowseMode mode, @Nullable String query,
-                                        @Nullable LevelSearchFilter filter,
-                             int page, boolean isList) {
+    private Flux<Record> search(LevelSearchMode mode, @Nullable String query, @Nullable LevelSearchFilter filter,
+                                int page, boolean isList) {
         Objects.requireNonNull(mode);
         return Flux.defer(() -> {
             final var request = GDRequest.of(isList ? GET_GJ_LEVEL_LISTS : GET_GJ_LEVELS_21)
@@ -330,7 +329,7 @@ public final class GDClient {
                     .addParameter("page", page)
                     .addParameter("type", mode.getType())
                     .addParameter("str", Objects.requireNonNullElse(query, ""));
-            if (mode == LevelBrowseMode.FOLLOWED) {
+            if (mode == LevelSearchMode.FOLLOWED) {
                 request.addParameter("followed", followedAccountIds.stream()
                         .map(String::valueOf)
                         .collect(Collectors.joining(",")));
@@ -345,6 +344,21 @@ public final class GDClient {
                         .flatMapMany(Flux::fromIterable);
             }
         });
+    }
+
+    /**
+     * Finds all levels in a list. The result is usually not paginated, as such it may return more than 10 levels at
+     * once. It is a shorthand for:
+     * <pre>
+     *     searchLevels(LevelSearchMode.LIST_CONTENT, "" + listId, null, 0)
+     * </pre>
+     *
+     * @param listId the ID of the list
+     * @return a Flux emitting all {@link GDLevel}s found in the list. A {@link GDClientException} will be emitted if an
+     * error occurs.
+     */
+    public Flux<GDLevel> findLevelsInList(long listId) {
+        return searchLevels(LevelSearchMode.LIST_CONTENT, "" + listId, null, 0);
     }
 
     /**

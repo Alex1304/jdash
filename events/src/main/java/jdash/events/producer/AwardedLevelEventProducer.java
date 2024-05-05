@@ -1,7 +1,7 @@
 package jdash.events.producer;
 
 import jdash.client.GDClient;
-import jdash.common.LevelBrowseMode;
+import jdash.common.LevelSearchMode;
 import jdash.common.entity.GDLevel;
 import jdash.events.object.AwardedLevelAdd;
 import jdash.events.object.AwardedLevelRemove;
@@ -20,9 +20,9 @@ class AwardedLevelEventProducer extends AwardedEventProducer<GDLevel> {
     @Override
     Mono<Tuple2<Set<GDLevel>, Set<GDLevel>>> fetchFirstTwoPages(GDClient client) {
         return Mono.zip(
-                client.browseLevels(LevelBrowseMode.AWARDED, null, null, 0)
+                client.searchLevels(LevelSearchMode.AWARDED, null, null, 0)
                         .collect(Collectors.toUnmodifiableSet()),
-                client.browseLevels(LevelBrowseMode.AWARDED, null, null, 1)
+                client.searchLevels(LevelSearchMode.AWARDED, null, null, 1)
                         .collect(Collectors.toUnmodifiableSet()));
     }
 

@@ -21,11 +21,18 @@ public final class GDClientTest {
     private GDClient client;
     private GDClient authClient;
 
+    /* Not part of unit tests, this is only to test the real router implementation */
+    public static void main(String[] args) {
+        final var client = GDClient.create();
+        System.out.println(client.downloadLevel(104043964).block());
+    }
+
     @BeforeEach
     public void setUp() {
         cache = new GDCacheMock();
         router = new GDRouterMock();
         client = GDClient.create()
+                .withUniqueDeviceId("jdash-client")
                 .withCache(cache)
                 .withRouter(router);
         authClient = client.withAuthentication(1, 1, "test");
@@ -110,10 +117,10 @@ public final class GDClientTest {
     }
 
     @Test
-    public void browseLevelsTest() {
+    public void searchLevelsTest() {
         final var expected = List.of(10565740L, 10792915L, 21761387L, 13615973L, 10578973L, 35717743L, 11797073L,
                 38601659L, 19274064L, 10978435L);
-        final var actual = client.browseLevels(LevelBrowseMode.SEARCH, "Bloodbath", null, 0)
+        final var actual = client.searchLevels(LevelSearchMode.SEARCH, "Bloodbath", null, 0)
                 .map(GDLevel::id)
                 .collectList()
                 .block();
@@ -121,9 +128,10 @@ public final class GDClientTest {
     }
 
     @Test
-    public void browseListsTest() {
-        final var expected = List.of(242270L, 98021L, 278569L, 52207L, 230832L, 279460L, 178665L, 48649L, 310214L, 231005L);
-        final var actual = client.browseLists(LevelBrowseMode.AWARDED, null, null, 0)
+    public void searchListsTest() {
+        final var expected = List.of(242270L, 98021L, 278569L, 52207L, 230832L, 279460L, 178665L, 48649L, 310214L,
+                231005L);
+        final var actual = client.searchLists(LevelSearchMode.AWARDED, null, null, 0)
                 .map(GDList::id)
                 .collectList()
                 .block();
@@ -172,7 +180,40 @@ public final class GDClientTest {
                 "gd_alex1304",
                 true,
                 PrivacySetting.ALL,
-                PrivacySetting.ALL
+                PrivacySetting.ALL,
+                Optional.of(new GDUserProfile.CompletedClassicLevels(
+                        151,
+                        106,
+                        197,
+                        364,
+                        129,
+                        23,
+                        275,
+                        14
+                )),
+                Optional.of(new GDUserProfile.CompletedPlatformerLevels(
+                        1,
+                        1,
+                        5,
+                        6,
+                        2,
+                        0,
+                        0
+                )),
+                Optional.of(new GDUserProfile.CompletedDemons(
+                        20,
+                        4,
+                        4,
+                        1,
+                        1,
+                        0,
+                        1,
+                        0,
+                        0,
+                        0,
+                        14,
+                        0
+                ))
         );
         final var actual = client.getUserProfile(98006).block();
         assertEquals(expected, actual);
@@ -256,6 +297,9 @@ public final class GDClientTest {
                 Optional.empty(),
                 "5 years",
                 "6 months",
+                false,
+                List.of(),
+                List.of(),
                 actual.data()
         );
         assertEquals(expected, actual);
