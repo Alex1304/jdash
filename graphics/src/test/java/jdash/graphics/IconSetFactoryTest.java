@@ -57,7 +57,10 @@ public final class IconSetFactoryTest {
                 "gd_alex1304",
                 true,
                 PrivacySetting.ALL,
-                PrivacySetting.ALL
+                PrivacySetting.ALL,
+                Optional.empty(),
+                Optional.empty(),
+                Optional.empty()
         );
 
         final var factory = IconSetFactory.forUser(expected);

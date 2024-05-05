@@ -24,20 +24,20 @@ public final class GDRouterMock implements GDRouter {
                     .addParameters(commonParams())
                     .addParameters(LevelSearchFilter.create().toMap())
                     .addParameter("page", 0)
-                    .addParameter("type", LevelBrowseMode.SEARCH.getType())
+                    .addParameter("type", LevelSearchMode.SEARCH.getType())
                     .addParameter("str", 10565740), "findLevelById"),
             Map.entry(GDRequest.of(GET_GJ_LEVELS_21)
                     .addParameters(commonParams())
                     .addParameters(LevelSearchFilter.create().toMap())
                     .addParameter("page", 0)
-                    .addParameter("type", LevelBrowseMode.SEARCH.getType())
-                    .addParameter("str", "Bloodbath"), "browseLevels"),
+                    .addParameter("type", LevelSearchMode.SEARCH.getType())
+                    .addParameter("str", "Bloodbath"), "searchLevels"),
             Map.entry(GDRequest.of(GET_GJ_LEVEL_LISTS)
                     .addParameters(commonParams())
                     .addParameters(LevelSearchFilter.create().toMap())
                     .addParameter("page", 0)
-                    .addParameter("type", LevelBrowseMode.AWARDED.getType())
-                    .addParameter("str", ""), "browseLists"),
+                    .addParameter("type", LevelSearchMode.AWARDED.getType())
+                    .addParameter("str", ""), "searchLists"),
             Map.entry(GDRequest.of(LOGIN_GJ_ACCOUNT)
                     .addParameter("userName", "Alex1304")
                     .addParameter("gjp2", encodeGjp2("F3keP4ssw0rd"))
