@@ -83,16 +83,28 @@ Here we are building a loop that only produces events related to awarded levels;
 Use `eventLoop.on(type)` to subscribe to the event flux:
 
 ```java
-eventLoop.on(AwardedAdd.class)
+eventLoop.on(AwardedLevelAdd.class)
         .subscribe(event -> System.out.println("New level rated: "
                 + event.addedLevel().name()));
 
-eventLoop.on(AwardedRemove.class)
+eventLoop.on(AwardedLevelRemove.class)
         .subscribe(event -> System.out.println("Level unrated: "
                 + event.removedLevel().name()));
 
-eventLoop.on(AwardedUpdate.class)
+eventLoop.on(AwardedLevelUpdate.class)
         .subscribe(event -> System.out.println("Level rating changed. Before: "
+                + event.oldData() + " - After: " + event.newData()));
+
+eventLoop.on(AwardedListAdd.class)
+        .subscribe(event -> System.out.println("New list rated: "
+                + event.addedList().name()));
+
+eventLoop.on(AwardedListRemove.class)
+        .subscribe(event -> System.out.println("List unrated: "
+                + event.removedList().name()));
+
+eventLoop.on(AwardedListUpdate.class)
+        .subscribe(event -> System.out.println("List rating changed. Before: "
                 + event.oldData() + " - After: " + event.newData()));
 
 eventLoop.on(DailyLevelChange.class)

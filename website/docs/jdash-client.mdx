@@ -160,7 +160,7 @@ GDClient client = GDClient.create().withCache(cache);
 It is possible to disable the cache for specific requests. For example if you want to be sure to get the latest Daily level info and not something potentially outdated from cache:
 
 ```java
-GDTimelyInfo info = client.withCacheDisabled().getDailyLevelInfo().block();
+GDDailyInfo info = client.withCacheDisabled().getDailyLevelInfo().block();
 ```
 
 ### Authentication

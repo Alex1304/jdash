@@ -28,14 +28,8 @@ module.exports = {
             copyright: `Copyright © ${new Date().getFullYear()} Alexandre Miranda (Alex1304). Built with Docusaurus.`,
         },
         prism: {
-            theme: require('prism-react-renderer/themes/vsDark'),
+            theme: require('prism-react-renderer').themes.vsDark,
             additionalLanguages: ['java', 'groovy', 'properties']
-        },
-        googleAnalytics: {
-            trackingID: 'G-KZS4FVPEGD'
-        },
-        gtag: {
-            trackingID: 'G-KZS4FVPEGD'
         }
     },
     presets: [
@@ -49,12 +43,12 @@ module.exports = {
                     editUrl:
                     'https://github.com/Alex1304/jdash/edit/master/website/',
                 },
-                /*blog: {
-                    showReadingTime: true,
-                    // Please change this to your repo.
-                    editUrl:
-                    'https://github.com/facebook/docusaurus/edit/master/website/blog/',
-                },*/
+                googleAnalytics: {
+                    trackingID: 'G-KZS4FVPEGD'
+                },
+                gtag: {
+                    trackingID: 'G-KZS4FVPEGD'
+                },
                 theme: {
                     customCss: require.resolve('./src/css/custom.css'),
                 },

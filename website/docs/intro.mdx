@@ -1,15 +1,15 @@
-# JDash
+---
+title: Introduction
+slug: /
+---
 
-![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/Alex1304/jdash?sort=semver)
-[![Maven Central](https://img.shields.io/maven-central/v/com.alex1304.jdash/jdash.svg?label=Maven%20Central)](https://central.sonatype.com/namespace/com.alex1304.jdash)
-![License](https://img.shields.io/github/license/Alex1304/jdash)
-[![javadoc](https://javadoc.io/badge2/com.alex1304.jdash/jdash-client/javadoc.svg)](https://javadoc.io/doc/com.alex1304.jdash/jdash-client)
+## What is JDash?
 
-A reactive Geometry Dash API wrapper for Java.
+JDash is a fast, reactive and un-opinionated Geometry Dash API wrapper for Java. This library aims at providing Java developers tools to deal with game data in the highest standards of quality and developer experience.
 
 ## Overview
 
-JDash is a multi-module library **requiring [JDK 17](https://adoptium.net) or above since version 5.0**. There are currently 4 modules.
+JDash is a multi-module library **requiring [JDK 17](https://adoptium.net) or above since version 5.0.0**. There are currently 4 modules.
 
 ### JDash Client module
 
@@ -75,7 +75,7 @@ ColorSelection color = new ColorSelection(12, 9, OptionalInt.of(9));
 BufferedImage output = renderer.render(color);
 ```
 
-![icon](website/docs/assets/spider-15.png)
+![icon](./assets/spider-15.png)
 
 #### Example 2: Generate the full icon set of a `GDUserProfile`
 
@@ -86,7 +86,7 @@ IconSetFactory factory = IconSetFactory.forUser(user);
 BufferedImage output = factory.createIconSet();
 ```
 
-![icon](website/docs/assets/iconSet.png)
+![icon](./assets/iconSet.png)
 
 #### Example 3: Generate an arbitrary difficulty icon
 
@@ -97,7 +97,7 @@ BufferedImage image = DifficultyRenderer.create(DemonDifficulty.EASY)
         .render();
 ```
 
-![icon](website/docs/assets/demon-easy-10-stars-legendary.png)
+![icon](./assets/demon-easy-10-stars-legendary.png)
 
 #### Example 4: Generate the difficulty icon of a `GDLevel`
 
@@ -106,7 +106,7 @@ GDClient client = GDClient.create();
 GDLevel level = client.findLevelById(10565740).block();
 BufferedImage image = DifficultyRenderer.forLevel(level).render();
 ```
-![icon](website/docs/assets/level.png)
+![icon](./assets/level.png)
 
 
 Maven dependency:
@@ -133,28 +133,4 @@ Contains utility classes and data types to encode the different entities of Geom
 </dependency>
 ```
 
-## Documentation
-
-The full documentation is available at: https://jdash.alex1304.com
-
-Javadoc:
-* For the common module: https://javadoc.io/doc/com.alex1304.jdash/jdash-common
-* For the client module: https://javadoc.io/doc/com.alex1304.jdash/jdash-client
-* For the events module: https://javadoc.io/doc/com.alex1304.jdash/jdash-events
-* For the graphics module: https://javadoc.io/doc/com.alex1304.jdash/jdash-graphics
-
-## License
-
-This project is licensed under the MIT licence.
-
-## Contribute
-
-Have a feature to suggest or a bug to report ? Issues and pull requests are more than welcome! Make sure to follow the template and share your ideas.
-
-## Contact
-
-E-mail: mirandaa1304@gmail.com
-
-Discord: Alex1304#9704
-
-Twitter: @gd_alex1304
+Read the next guides to have more in-depth understanding on each of the modules described above.
