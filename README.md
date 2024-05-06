@@ -1,7 +1,7 @@
 # JDash
 
 ![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/Alex1304/jdash?sort=semver)
-[![Maven Central](https://img.shields.io/maven-central/v/com.alex1304.jdash/jdash.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.alex1304.jdash%22%20AND%20a:%22jdash%22)
+[![Maven Central](https://img.shields.io/maven-central/v/com.alex1304.jdash/jdash.svg?label=Maven%20Central)](https://central.sonatype.com/namespace/com.alex1304.jdash)
 ![License](https://img.shields.io/github/license/Alex1304/jdash)
 [![javadoc](https://javadoc.io/badge2/com.alex1304.jdash/jdash-client/javadoc.svg)](https://javadoc.io/doc/com.alex1304.jdash/jdash-client)
 
@@ -9,21 +9,7 @@ A reactive Geometry Dash API wrapper for Java.
 
 ## Overview
 
-JDash is a multi-module library **requiring [JDK 11](https://adoptopenjdk.net/?variant=openjdk11&jvmVariant=hotspot) or above since version 4.0**. There are currently 4 modules.
-
-### JDash Common module
-
-Contains utility classes and data types to encode the different entities of Geometry Dash (levels, users...) required by all other modules.
-
-Maven dependency (**if you are already using one of the other modules, you don't need to add this dependency as other modules transitively depend on it**):
-
-```xml
-<dependency>
-    <groupId>com.alex1304.jdash</groupId>
-    <artifactId>jdash-common</artifactId>
-    <version>${version}</version> <!-- replace with latest version -->
-</dependency>
-```
+JDash is a multi-module library **requiring [JDK 17](https://adoptopenjdk.net/?variant=openjdk11&jvmVariant=hotspot) or above since version 5.0**. There are currently 4 modules.
 
 ### JDash Client module
 
@@ -52,7 +38,7 @@ Maven dependency:
 
 ### JDash Events module
 
-Provides an event loop that can be subscribed to in order to detect when new levels get rated and when the Daily level or Weekly demon changes.
+Provides an event loop that can be subscribed to in order to periodically send requests with a `GDClient` and emit events when changes are detected on the server. It comes with default implementations that can detect when new levels or lists get rated, and when the Daily level or Weekly demon changes. You may also implement your own events with the `GDEventProducer` interface.
 
 ```java
 GDClient client = GDClient.create();
@@ -79,25 +65,49 @@ Maven dependency:
 
 ### JDash Graphics module
 
-Allows to generate icon images from game assets.
+Allows to generate player icons and level difficulty icons from game assets.
+
+#### Example 1: Generate an arbitrary player icon
 
 ```java
-// Get the user profile from the client or construct it manually
-GDUserProfile user = ...;
-// Will load game assets to memory. You should only need 1 instance in your application.
-SpriteFactory spriteFactory = SpriteFactory.create();
-// Create an icon set for the given user
-GDUserIconSet iconSet = GDUserIconSet.create(user, spriteFactory);
-// Generates the icon for the desired type, in this example the ball icon
-BufferedImage icon = iconSet.generateIcon(IconType.BALL);
-// Do anything with it, for example save it in tmp directory
-String fileName = System.getProperty("java.io.tmpdir") + File.separator + "icon.png";
-ImageIO.write(icon, "png", new File(fileName));
+IconRenderer renderer = IconRenderer.load(IconType.SPIDER, 15);
+ColorSelection color = new ColorSelection(12, 9, OptionalInt.of(9));
+BufferedImage output = renderer.render(color);
 ```
 
-Result:
+![icon](graphics/src/test/resources/tests/spider-15.png)
 
-![icon](https://i.imgur.com/jZZdkRu.png)
+#### Example 2: Generate the full icon set of a `GDUserProfile`
+
+```java
+GDClient client = GDClient.create();
+GDUserProfile user = client.getUserProfile(98006).block();
+IconSetFactory factory = IconSetFactory.forUser(user);
+BufferedImage output = factory.createIconSet();
+```
+
+![icon](graphics/src/test/resources/tests/iconSet.png)
+
+#### Example 3: Generate an arbitrary difficulty icon
+
+```java
+BufferedImage image = DifficultyRenderer.create(DemonDifficulty.EASY)
+        .withMoons(10)
+        .withQualityRating(QualityRating.LEGENDARY)
+        .render();
+```
+
+![icon](graphics/src/test/resources/tests/demon-easy-10-stars-legendary.png)
+
+#### Example 4: Generate the difficulty icon of a `GDLevel`
+
+```java
+GDClient client = GDClient.create();
+GDLevel level = client.findLevelById(10565740).block();
+BufferedImage image = DifficultyRenderer.forLevel(level).render();
+```
+![icon](graphics/src/test/resources/tests/level.png)
+
 
 Maven dependency:
 
@@ -105,6 +115,20 @@ Maven dependency:
 <dependency>
     <groupId>com.alex1304.jdash</groupId>
     <artifactId>jdash-graphics</artifactId>
+    <version>${version}</version> <!-- replace with latest version -->
+</dependency>
+```
+
+### JDash Common module
+
+Contains utility classes and data types to encode the different entities of Geometry Dash (levels, users...) required by all other modules.
+
+**If you are already using one of the other modules, you don't need to add this dependency as other modules transitively require it.**
+
+```xml
+<dependency>
+    <groupId>com.alex1304.jdash</groupId>
+    <artifactId>jdash-common</artifactId>
     <version>${version}</version> <!-- replace with latest version -->
 </dependency>
 ```
