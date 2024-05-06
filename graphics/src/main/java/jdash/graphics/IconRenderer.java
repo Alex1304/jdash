@@ -8,8 +8,8 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 import static jdash.graphics.internal.GraphicsUtils.renderLayers;
 import static jdash.graphics.internal.GraphicsUtils.trim;
@@ -19,6 +19,9 @@ import static jdash.graphics.internal.GraphicsUtils.trim;
  */
 public final class IconRenderer {
 
+    /**
+     * An unmodifiable map storing colors by colorId.
+     */
     public static final Map<Integer, Color> COLORS = loadColors();
 
     private final List<? extends Renderable> elements;
@@ -46,7 +49,7 @@ public final class IconRenderer {
                 final var colorValue = objectMapper.treeToValue(element, PlayerColor.class);
                 colorMap.put(Integer.parseInt(name), colorValue.toColor());
             }
-            return colorMap;
+            return Collections.unmodifiableMap(colorMap);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
@@ -62,9 +65,9 @@ public final class IconRenderer {
      */
     public static IconRenderer load(IconType type, int id) {
         Objects.requireNonNull(type);
-        final var iconId = IconIdentifier.of(type, id);
+        final var path = String.format("/icons/%s_%02d-uhd.", type.getInternalName(), id);
         try {
-            final var parser = SpriteSheet.parse(iconId.toSpriteResourceName(), iconId.toPlistResourceName());
+            final var parser = SpriteSheet.parse(path + "png", path + "plist");
             List<? extends Renderable> elements;
             if (type == IconType.ROBOT) {
                 elements = new ArrayList<>(AnimationParser.parseFrames("/Robot_AnimDesc.plist",
