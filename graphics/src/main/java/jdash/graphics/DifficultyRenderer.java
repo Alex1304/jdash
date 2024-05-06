@@ -41,6 +41,8 @@ public final class DifficultyRenderer {
      */
     public static final int HEIGHT = 350;
 
+    private static boolean antialiasingEnabled = true;
+
     static {
         try (final var ttf = DifficultyRenderer.class.getResourceAsStream("/pusab.ttf")) {
             if (ttf == null) {
@@ -66,6 +68,29 @@ public final class DifficultyRenderer {
         this.qualityRating = qualityRating;
         this.rate = rate;
         this.rewardType = rewardType;
+    }
+
+    /**
+     * Global setting to enable or disable antialiasing. It is enabled by default and allows for better image quality,
+     * however it is recommended to disable it in tests environments in order to guarantee consistency across
+     * platforms.
+     * <p>
+     * It is strongly recommended to call this method only once at the start of your Java program. This method is NOT
+     * thread-safe.
+     *
+     * @param enabled whether to enable antialiasing.
+     */
+    public static void enableAntialiasing(boolean enabled) {
+        antialiasingEnabled = enabled;
+    }
+
+    /**
+     * Returns whether antialiasing is enabled.
+     *
+     * @return a boolean
+     */
+    public static boolean isAntialiasingEnabled() {
+        return antialiasingEnabled;
     }
 
     /**
@@ -204,8 +229,10 @@ public final class DifficultyRenderer {
         Objects.requireNonNull(difficultyElement);
         final var image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
         final var g = image.createGraphics();
-        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+        if (antialiasingEnabled) {
+            g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+        }
         g.translate(0, (showRate ? -25 : 0) + (twoLines ? -15 : 0));
         if (qualityElement != null) {
             g.drawImage(qualityElement.render(SPRITE_SHEET.getImage()),

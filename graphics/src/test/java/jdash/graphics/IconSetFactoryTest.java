@@ -5,15 +5,20 @@ import jdash.common.Role;
 import jdash.common.entity.GDUser;
 import jdash.common.entity.GDUserProfile;
 import jdash.common.entity.GDUserStats;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.Optional;
 
-import static jdash.graphics.test.ImageTestUtils.assertImageEquals;
-import static jdash.graphics.test.ImageTestUtils.loadTestImage;
+import static jdash.graphics.test.ImageTestUtils.*;
 
 public final class IconSetFactoryTest {
+
+    @BeforeAll
+    public static void beforeAll() {
+        IconRenderer.enableAntialiasing(false);
+    }
 
     @Test
     public void shouldGenerateIconSetForAlex1304() throws IOException {
@@ -65,6 +70,7 @@ public final class IconSetFactoryTest {
 
         final var factory = IconSetFactory.forUser(expected);
         final var output = factory.createIconSet();
+        // writeToTempDir(output, "tests/iconSet.png");
         assertImageEquals(loadTestImage("/tests/iconSet.png"), output);
     }
 }

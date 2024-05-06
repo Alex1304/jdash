@@ -24,6 +24,8 @@ public final class IconRenderer {
      */
     public static final Map<Integer, Color> COLORS = loadColors();
 
+    private static boolean antialiasingEnabled = true;
+
     private final List<? extends Renderable> elements;
     private final BufferedImage spriteSheet;
 
@@ -53,6 +55,29 @@ public final class IconRenderer {
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
+    }
+
+    /**
+     * Global setting to enable or disable antialiasing. It is enabled by default and allows for better image quality,
+     * however it is recommended to disable it in tests environments in order to guarantee consistency across
+     * platforms.
+     * <p>
+     * It is strongly recommended to call this method only once at the start of your Java program. This method is NOT
+     * thread-safe.
+     *
+     * @param enabled whether to enable antialiasing.
+     */
+    public static void enableAntialiasing(boolean enabled) {
+        antialiasingEnabled = enabled;
+    }
+
+    /**
+     * Returns whether antialiasing is enabled.
+     *
+     * @return a boolean
+     */
+    public static boolean isAntialiasingEnabled() {
+        return antialiasingEnabled;
     }
 
     /**

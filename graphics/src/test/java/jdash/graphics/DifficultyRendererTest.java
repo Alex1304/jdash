@@ -7,19 +7,26 @@ import jdash.common.QualityRating;
 import jdash.common.entity.GDLevel;
 import jdash.common.entity.GDSong;
 import jdash.common.internal.InternalUtils;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.Optional;
 
-import static jdash.graphics.test.ImageTestUtils.assertImageEquals;
-import static jdash.graphics.test.ImageTestUtils.loadTestImage;
+import static jdash.graphics.test.ImageTestUtils.*;
 
 public final class DifficultyRendererTest {
+
+    @BeforeAll
+    public static void beforeAll() {
+        DifficultyRenderer.enableAntialiasing(false);
+    }
 
     @Test
     public void shouldRenderNA() throws IOException {
         final var image = DifficultyRenderer.create(Difficulty.NA).render();
+        // writeToTempDir(image, "tests/na.png");
         assertImageEquals(loadTestImage("/tests/na.png"), image);
     }
 
@@ -28,6 +35,7 @@ public final class DifficultyRendererTest {
         final var image = DifficultyRenderer.create(Difficulty.HARD)
                 .withStars(5)
                 .render();
+        // writeToTempDir(image, "tests/hard-5-stars.png");
         assertImageEquals(loadTestImage("/tests/hard-5-stars.png"), image);
     }
 
@@ -37,6 +45,7 @@ public final class DifficultyRendererTest {
                 .withStars(7)
                 .withQualityRating(QualityRating.FEATURED)
                 .render();
+        // writeToTempDir(image, "tests/harder-7-stars-featured.png");
         assertImageEquals(loadTestImage("/tests/harder-7-stars-featured.png"), image);
     }
 
@@ -46,6 +55,7 @@ public final class DifficultyRendererTest {
                 .withMoons(8)
                 .withQualityRating(QualityRating.EPIC)
                 .render();
+        // writeToTempDir(image, "tests/insane-8-moons-epic.png");
         assertImageEquals(loadTestImage("/tests/insane-8-moons-epic.png"), image);
     }
 
@@ -55,6 +65,7 @@ public final class DifficultyRendererTest {
                 .withMoons(10)
                 .withQualityRating(QualityRating.LEGENDARY)
                 .render();
+        // writeToTempDir(image, "tests/demon-easy-10-stars-legendary.png");
         assertImageEquals(loadTestImage("/tests/demon-easy-10-stars-legendary.png"), image);
     }
 
@@ -64,6 +75,7 @@ public final class DifficultyRendererTest {
                 .withStars(1)
                 .withQualityRating(QualityRating.MYTHIC)
                 .render();
+        // writeToTempDir(image, "tests/auto-1-star-mythic.png");
         assertImageEquals(loadTestImage("/tests/auto-1-star-mythic.png"), image);
     }
 
@@ -74,6 +86,7 @@ public final class DifficultyRendererTest {
                 .withQualityRating(QualityRating.MYTHIC)
                 .withoutStarsOrMoons()
                 .render();
+        // writeToTempDir(image, "tests/demon-extreme-mythic.png");
         assertImageEquals(loadTestImage("/tests/demon-extreme-mythic.png"), image);
     }
 
@@ -82,6 +95,7 @@ public final class DifficultyRendererTest {
         final var image = DifficultyRenderer.create(DemonDifficulty.EASY)
                 .withDiamonds(10)
                 .render();
+        // writeToTempDir(image, "tests/demon-medium-10-diamonds.png");
         assertImageEquals(loadTestImage("/tests/demon-medium-10-diamonds.png"), image);
     }
 
@@ -91,6 +105,7 @@ public final class DifficultyRendererTest {
                 .withDiamonds(-99)
                 .withQualityRating(QualityRating.MYTHIC)
                 .render();
+        // writeToTempDir(image, "tests/na--99-diamonds-mythic.png");
         assertImageEquals(loadTestImage("/tests/na--99-diamonds-mythic.png"), image);
     }
 
@@ -130,6 +145,7 @@ public final class DifficultyRendererTest {
                 Optional.of("Riot")
         );
         final var image = DifficultyRenderer.forLevel(level).render();
+        // writeToTempDir(image, "tests/level.png");
         assertImageEquals(loadTestImage("/tests/level.png"), image);
     }
 }

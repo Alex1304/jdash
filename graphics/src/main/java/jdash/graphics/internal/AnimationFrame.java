@@ -1,5 +1,6 @@
 package jdash.graphics.internal;
 
+import jdash.graphics.IconRenderer;
 import org.apache.commons.lang3.StringUtils;
 
 import java.awt.*;
@@ -23,7 +24,8 @@ public final class AnimationFrame implements Renderable {
     private final int zValue;
     private final boolean isGlow;
 
-    private AnimationFrame(List<? extends Renderable> elements, Point2D.Double position, Point2D.Double scale, double rotation,
+    private AnimationFrame(List<? extends Renderable> elements, Point2D.Double position, Point2D.Double scale,
+                           double rotation,
                            int zValue, boolean isGlow) {
         this.elements = elements;
         this.position = position;
@@ -71,8 +73,10 @@ public final class AnimationFrame implements Renderable {
         }
         final var result = new BufferedImage(ICON_WIDTH, ICON_HEIGHT, BufferedImage.TYPE_INT_ARGB);
         final var g = result.createGraphics();
-        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+        if (IconRenderer.isAntialiasingEnabled()) {
+            g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+        }
         final var halfW = ICON_WIDTH / 2.0;
         final var halfH = ICON_HEIGHT / 2.0;
         g.translate(position.x * 4.0, -position.y * 4.0);
