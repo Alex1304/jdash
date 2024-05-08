@@ -46,6 +46,7 @@ import java.util.Optional;
  * @param creatorName      The name of the creator of this level. This information is not always provided. The creator's
  *                         player ID will always be present via {@link #creatorPlayerId()} so you can fetch creator info
  *                         separately later on if needed.
+ * @param creatorAccountId The account ID of the creator of the level.
  */
 public record GDLevel(
         long id,
@@ -71,7 +72,8 @@ public record GDLevel(
         int requestedStars,
         Optional<Long> songId,
         Optional<GDSong> song,
-        Optional<String> creatorName
+        Optional<String> creatorName,
+        Optional<Long> creatorAccountId
 ) {
     /**
      * The actual difficulty of the level as shown in-game. It is computed based on the results of

@@ -110,7 +110,8 @@ public final class GDClientTest {
                         Optional.of("9.56"),
                         Optional.ofNullable(InternalUtils.urlDecode("http%3A%2F%2Faudio.ngfiles" +
                                 ".com%2F467000%2F467339_At_the_Speed_of_Light_FINA.mp3")))),
-                Optional.of("Riot")
+                Optional.of("Riot"),
+                Optional.of(37415L)
         );
         final var actual = client.findLevelById(10565740).block();
         assertEquals(expected, actual);
@@ -290,6 +291,7 @@ public final class GDClientTest {
                         Optional.of(7679228L),
                         0,
                         Optional.of(467339L),
+                        Optional.empty(),
                         Optional.empty(),
                         Optional.empty()
                 ),

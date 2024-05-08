@@ -45,8 +45,7 @@ class GDRouterImpl extends BaseSubscriber<RequestWithCallback> implements GDRout
         requestQueue.asFlux().subscribe(this);
         nextRequestScheduler.asFlux()
                 .flatMap(Mono::delay)
-                .then(Mono.fromRunnable(() -> request(1)))
-                .subscribe();
+                .subscribe(next -> request(1));
     }
 
     @Override
@@ -96,7 +95,8 @@ class GDRouterImpl extends BaseSubscriber<RequestWithCallback> implements GDRout
                     if (remaining.remainingPermits() > 0) {
                         request(1);
                     } else {
-                        nextRequestScheduler.emitNext(remaining.timeLeftBeforeNextPermit(), FAIL_FAST);
+                        nextRequestScheduler.emitNext(remaining.timeLeftBeforeNextPermit(),
+                                (result, emission) -> emission == Sinks.EmitResult.FAIL_NON_SERIALIZED);
                     }
                 })
                 .subscribe(response -> {

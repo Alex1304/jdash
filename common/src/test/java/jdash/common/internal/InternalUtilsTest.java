@@ -22,10 +22,15 @@ public final class InternalUtilsTest {
         assertEquals(Map.of(), structureCreatorsInfo("123:abc:123:abc"), "extra part");
 
         // Valid cases
-        assertEquals(Map.of(123L, "abc"), structureCreatorsInfo("123:abc:789"), "regular case");
-        assertEquals(Map.of(123L, "a b c"), structureCreatorsInfo("123:a b c:123"), "contains whitespaces");
-        assertEquals(Map.of(123L, "  "), structureCreatorsInfo("123:  :123"), "only whitespaces");
-        assertEquals(Map.of(123L, "a!b&c"), structureCreatorsInfo("123:a!b&c:123"), "contains symbols");
-        assertEquals(Map.of(123L, "456"), structureCreatorsInfo("123:456:789"), "only numbers");
+        assertEquals(Map.of(123L, new GDCreatorInfo("abc", 789)),
+                structureCreatorsInfo("123:abc:789"), "regular case");
+        assertEquals(Map.of(123L, new GDCreatorInfo("a b c", 123)),
+                structureCreatorsInfo("123:a b c:123"), "contains " + "whitespaces");
+        assertEquals(Map.of(123L, new GDCreatorInfo("  ", 123)),
+                structureCreatorsInfo("123:  :123"), "only whitespaces");
+        assertEquals(Map.of(123L, new GDCreatorInfo("a!b&c", 123)),
+                structureCreatorsInfo("123:a!b&c:123"), "contains symbols");
+        assertEquals(Map.of(123L, new GDCreatorInfo("456", 789)),
+                structureCreatorsInfo("123:456:789"), "only numbers");
     }
 }

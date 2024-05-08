@@ -58,16 +58,17 @@ public final class InternalUtils {
      * @param creatorsInfoRD the String representing the creators
      * @return a Map of Long, String
      */
-    public static Map<Long, String> structureCreatorsInfo(String creatorsInfoRD) {
+    public static Map<Long, GDCreatorInfo> structureCreatorsInfo(String creatorsInfoRD) {
         if (!creatorsInfoRD.matches("\\d+:[^:|]+:\\d+(\\|\\d+:[^:|]+:\\d+)*")) {
             return Collections.emptyMap();
         }
 
         String[] arrayCreatorsRD = creatorsInfoRD.split("\\|");
-        Map<Long, String> structuredCreatorsInfo = new HashMap<>();
+        Map<Long, GDCreatorInfo> structuredCreatorsInfo = new HashMap<>();
 
         for (String creatorRD : arrayCreatorsRD) {
-            structuredCreatorsInfo.put(Long.parseLong(creatorRD.split(":")[0]), creatorRD.split(":")[1]);
+            structuredCreatorsInfo.put(Long.parseLong(creatorRD.split(":")[0]),
+                    new GDCreatorInfo(creatorRD.split(":")[1], Long.parseLong(creatorRD.split(":")[2])));
         }
 
         return structuredCreatorsInfo;
@@ -138,7 +139,7 @@ public final class InternalUtils {
         return array[value >= array.length ? 0 : value];
     }
 
-    public static GDLevel buildLevel(Map<Integer, String> data, Map<Long, String> structuredCreatorsInfo,
+    public static GDLevel buildLevel(Map<Integer, String> data, Map<Long, GDCreatorInfo> structuredCreatorsInfo,
                                      Map<Long, GDSong> structuredSongsInfo) {
         requireKeys(data, LEVEL_ID, LEVEL_NAME, LEVEL_CREATOR_ID, LEVEL_DESCRIPTION, LEVEL_DIFFICULTY,
                 LEVEL_DEMON_DIFFICULTY, LEVEL_STARS, LEVEL_FEATURED_SCORE, LEVEL_QUALITY_RATING, LEVEL_DOWNLOADS,
@@ -149,7 +150,7 @@ public final class InternalUtils {
         @SuppressWarnings("SimplifyOptionalCallChains") // IntelliJ bug
         final var song = songId.map(id -> Optional.ofNullable(structuredSongsInfo.get(id)))
                 .orElseGet(() -> GDSong.getOfficialSong(Integer.parseInt(data.get(LEVEL_AUDIO_TRACK))));
-        final var creatorName = structuredCreatorsInfo.get(Long.parseLong(data.get(LEVEL_CREATOR_ID)));
+        final var creatorInfo = structuredCreatorsInfo.get(Long.parseLong(data.get(LEVEL_CREATOR_ID)));
         final var featuredScore = Integer.parseInt(data.get(LEVEL_FEATURED_SCORE));
         return new GDLevel(
                 Long.parseLong(data.get(LEVEL_ID)),
@@ -175,7 +176,8 @@ public final class InternalUtils {
                 Integer.parseInt(data.get(LEVEL_REQUESTED_STARS)),
                 songId,
                 song,
-                Optional.ofNullable(creatorName)
+                Optional.ofNullable(creatorInfo).map(GDCreatorInfo::name),
+                Optional.ofNullable(creatorInfo).map(GDCreatorInfo::accountId)
         );
     }
 
