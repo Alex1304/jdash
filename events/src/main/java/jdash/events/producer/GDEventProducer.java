@@ -13,7 +13,19 @@ import reactor.core.publisher.Flux;
 public interface GDEventProducer {
 
     /**
-     * An event producer that requests the first page of the Awarded levels category on each iteration in order to
+     * Creates a {@link GDEventProducer} that periodically sends requests returning pages of results, and emits events
+     * based on the comparison of these pages between each call.
+     *
+     * @param pagesComparator an implementation of {@link PagesComparator} that specifies how to fetch the pages and how
+     *                        to emit events based on the detected changes.
+     * @return a new {@link GDEventProducer}
+     */
+    static GDEventProducer comparingPages(PagesComparator<?> pagesComparator) {
+        return new ComparingPagesEventProducer<>(pagesComparator);
+    }
+
+    /**
+     * An event producer that requests the first pages of the Awarded levels category on each iteration in order to
      * detect changes. It may emit:
      * <ul>
      *     <li>{@link AwardedLevelAdd} when it detects that a level was added to the Awarded category</li>
@@ -25,12 +37,12 @@ public interface GDEventProducer {
      * @return a {@link GDEventProducer}
      */
     static GDEventProducer awardedLevels() {
-        return new AwardedLevelEventProducer();
+        return new ComparingPagesEventProducer<>(new AwardedLevelPagesComparator());
     }
 
     /**
-     * An event producer that requests the first page of the Awarded lists category on each iteration in order to detect
-     * changes. It may emit:
+     * An event producer that requests the first pages of the Awarded lists category on each iteration in order to
+     * detect changes. It may emit:
      * <ul>
      *     <li>{@link AwardedListAdd} when it detects that a list was added to the Awarded category</li>
      *     <li>{@link AwardedListRemove} when it detects that a list was removed from the Awarded category</li>
@@ -41,7 +53,7 @@ public interface GDEventProducer {
      * @return a {@link GDEventProducer}
      */
     static GDEventProducer awardedLists() {
-        return new AwardedListEventProducer();
+        return new ComparingPagesEventProducer<>(new AwardedListPagesComparator());
     }
 
     /**

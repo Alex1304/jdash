@@ -7,7 +7,8 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.util.OptionalInt;
 
-import static jdash.graphics.test.ImageTestUtils.*;
+import static jdash.graphics.test.ImageTestUtils.assertImageEquals;
+import static jdash.graphics.test.ImageTestUtils.loadTestImage;
 
 public final class IconRendererTest {
 

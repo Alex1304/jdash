@@ -3,7 +3,10 @@ package jdash.client;
 
 import jdash.client.request.GDRequest;
 import jdash.client.request.GDRouter;
-import jdash.common.*;
+import jdash.common.CommentSortMode;
+import jdash.common.LeaderboardType;
+import jdash.common.LevelSearchFilter;
+import jdash.common.LevelSearchMode;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
