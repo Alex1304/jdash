@@ -3,6 +3,7 @@ package jdash.client.response;
 import jdash.client.exception.ActionFailedException;
 import jdash.common.entity.GDLevel;
 import jdash.common.entity.GDSong;
+import jdash.common.internal.GDCreatorInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +22,7 @@ class LevelSearchResponseDeserializer implements Function<String, List<GDLevel>>
         String levels = split1[0];
         String creators = split1[1];
         String songs = split1[2];
-        Map<Long, String> structuredCreatorsInfo = structureCreatorsInfo(creators);
+        Map<Long, GDCreatorInfo> structuredCreatorsInfo = structureCreatorsInfo(creators);
         Map<Long, GDSong> structuredSongsInfo = structureSongsInfo(songs);
         String[] levelArray = levels.split("\\|");
         for (String l : levelArray) {

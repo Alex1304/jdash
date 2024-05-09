@@ -36,6 +36,8 @@ public final class Indexes {
     public static final int LEVEL_QUALITY_RATING = 42;
     public static final int LEVEL_DEMON_DIFFICULTY = 43;
     public static final int LEVEL_OBJECT_COUNT = 45;
+    public static final int LEVEL_EDITOR_TIME = 46;
+    public static final int LEVEL_EDITOR_TIME_COPIES = 47;
     public static final int LEVEL_SONG_IDS = 52;
     public static final int LEVEL_SFX_IDS = 53;
 

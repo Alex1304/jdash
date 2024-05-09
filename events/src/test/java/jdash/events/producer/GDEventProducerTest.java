@@ -28,9 +28,9 @@ public class GDEventProducerTest {
 
     private EventProducerTestCache cache;
     private GDClient client;
-    private AwardedLevelEventProducer awardedLevelProducer;
-    private AwardedListEventProducer awardedListProducer;
-    private DailyEventProducer dailyProducer;
+    private GDEventProducer awardedLevelProducer;
+    private GDEventProducer awardedListProducer;
+    private GDEventProducer dailyProducer;
 
     private static GDLevel createLevel(long id, int stars) {
         return new GDLevel(
@@ -55,6 +55,7 @@ public class GDEventProducerTest {
                 false,
                 Optional.empty(),
                 0,
+                Optional.empty(),
                 Optional.empty(),
                 Optional.empty(),
                 Optional.empty()
@@ -89,9 +90,9 @@ public class GDEventProducerTest {
     public void setUp() {
         cache = new EventProducerTestCache();
         client = GDClient.create().withCache(cache);
-        awardedLevelProducer = new AwardedLevelEventProducer();
-        awardedListProducer = new AwardedListEventProducer();
-        dailyProducer = new DailyEventProducer();
+        awardedLevelProducer = GDEventProducer.awardedLevels();
+        awardedListProducer = GDEventProducer.awardedLists();
+        dailyProducer = GDEventProducer.dailyLevels();
         
         final var eventsA = awardedLevelProducer.produce(client).collectList().block();
         assertNotNull(eventsA);

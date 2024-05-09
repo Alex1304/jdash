@@ -9,7 +9,7 @@
     <artifactId>jdash-graphics</artifactId>
 
     <name>JDash Graphics</name>
-    <description>Utilities to generate user icons from original game assets</description>
+    <description>Utilities to generate images from original Geometry Dash assets</description>
     <build>
         <plugins>
             <plugin>

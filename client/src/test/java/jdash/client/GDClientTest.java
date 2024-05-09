@@ -302,7 +302,9 @@ public final class GDClientTest {
                 false,
                 List.of(),
                 List.of(),
-                actual.data()
+                actual.data(),
+                Optional.of(Duration.ofSeconds(582)),
+                Optional.of(Duration.ZERO)
         );
         assertEquals(expected, actual);
     }

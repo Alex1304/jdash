@@ -80,7 +80,7 @@ public record GDSong(
      * @return a boolean
      */
     public boolean isFromNewgrounds() {
-        return downloadUrl.isPresent();
+        return !OFFICIAL_SONGS.containsKey((int) id) && id < 10_000_000;
     }
 
     /**
@@ -89,6 +89,6 @@ public record GDSong(
      * @return a boolean
      */
     public boolean isFromMusicLibrary() {
-        return !isOfficial() && !isFromNewgrounds();
+        return !OFFICIAL_SONGS.containsKey((int) id) && id >= 10_000_000;
     }
 }
