@@ -42,7 +42,7 @@ class LevelDownloadResponseDeserializer implements Function<String, GDLevelDownl
                 Optional.of(pass).filter(x -> x >= 0),
                 data.get(LEVEL_UPLOADED_AGO),
                 data.get(LEVEL_UPDATED_AGO),
-                Boolean.parseBoolean(data.get(LEVEL_LDM_AVAILABLE)),
+                data.get(LEVEL_LDM_AVAILABLE).equals("1"),
                 Optional.ofNullable(data.get(LEVEL_SONG_IDS)).stream()
                         .flatMap(str -> Arrays.stream(str.split(",")))
                         .map(Long::parseLong)

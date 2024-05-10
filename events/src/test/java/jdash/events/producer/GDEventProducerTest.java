@@ -58,7 +58,9 @@ public class GDEventProducerTest {
                 Optional.empty(),
                 Optional.empty(),
                 Optional.empty(),
-                Optional.empty()
+                Optional.empty(),
+                false,
+                false
         );
     }
 

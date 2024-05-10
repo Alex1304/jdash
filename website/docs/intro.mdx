@@ -44,7 +44,7 @@ Provides an event loop that can be subscribed to in order to periodically send r
 GDClient client = GDClient.create();
 GDEventLoop eventLoop = GDEventLoop.startWithDefaults(client);
 
-eventLoop.on(AwardedAdd.class)
+eventLoop.on(AwardedLevelAdd.class)
         .subscribe(event -> System.out.println("New level rated: "
                 + event.addedLevel().name()));
 

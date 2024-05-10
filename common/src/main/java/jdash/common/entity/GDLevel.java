@@ -47,6 +47,8 @@ import java.util.Optional;
  *                         player ID will always be present via {@link #creatorPlayerId()} so you can fetch creator info
  *                         separately later on if needed.
  * @param creatorAccountId The account ID of the creator of the level.
+ * @param isTwoPlayer      Whether this level has two-player mode enabled
+ * @param isGauntlet       Whether this level has been retrieved from a gauntlet
  */
 public record GDLevel(
         long id,
@@ -73,7 +75,9 @@ public record GDLevel(
         Optional<Long> songId,
         Optional<GDSong> song,
         Optional<String> creatorName,
-        Optional<Long> creatorAccountId
+        Optional<Long> creatorAccountId,
+        boolean isTwoPlayer,
+        boolean isGauntlet
 ) {
     /**
      * The actual difficulty of the level as shown in-game. It is computed based on the results of

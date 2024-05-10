@@ -143,7 +143,9 @@ public final class DifficultyRendererTest {
                         Optional.ofNullable(InternalUtils.urlDecode("http%3A%2F%2Faudio.ngfiles" +
                                 ".com%2F467000%2F467339_At_the_Speed_of_Light_FINA.mp3")))),
                 Optional.of("Riot"),
-                Optional.of(37415L)
+                Optional.of(37415L),
+                false,
+                false
         );
         final var image = DifficultyRenderer.forLevel(level).render();
         // writeToTempDir(image, "tests/level.png");

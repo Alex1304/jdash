@@ -28,6 +28,7 @@ public final class Indexes {
     public static final int LEVEL_IS_AUTO = 25;
     public static final int LEVEL_PASS = 27;
     public static final int LEVEL_ORIGINAL = 30;
+    public static final int LEVEL_TWO_PLAYER = 31;
     public static final int LEVEL_SONG_ID = 35;
     public static final int LEVEL_COIN_COUNT = 37;
     public static final int LEVEL_COIN_VERIFIED = 38;
@@ -35,6 +36,7 @@ public final class Indexes {
     public static final int LEVEL_LDM_AVAILABLE = 40;
     public static final int LEVEL_QUALITY_RATING = 42;
     public static final int LEVEL_DEMON_DIFFICULTY = 43;
+    public static final int LEVEL_IS_GAUNTLET = 44;
     public static final int LEVEL_OBJECT_COUNT = 45;
     public static final int LEVEL_EDITOR_TIME = 46;
     public static final int LEVEL_EDITOR_TIME_COPIES = 47;

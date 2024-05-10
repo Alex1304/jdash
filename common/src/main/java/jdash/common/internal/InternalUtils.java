@@ -144,7 +144,7 @@ public final class InternalUtils {
                 LEVEL_DEMON_DIFFICULTY, LEVEL_STARS, LEVEL_FEATURED_SCORE, LEVEL_QUALITY_RATING, LEVEL_DOWNLOADS,
                 LEVEL_LIKES, LEVEL_LENGTH, LEVEL_COIN_COUNT, LEVEL_COIN_VERIFIED, LEVEL_VERSION, LEVEL_GAME_VERSION,
                 LEVEL_OBJECT_COUNT, LEVEL_IS_DEMON, LEVEL_IS_AUTO, LEVEL_ORIGINAL, LEVEL_REQUESTED_STARS,
-                LEVEL_SONG_ID, LEVEL_AUDIO_TRACK);
+                LEVEL_SONG_ID, LEVEL_AUDIO_TRACK, LEVEL_TWO_PLAYER);
         final var songId = Optional.ofNullable(data.get(LEVEL_SONG_ID)).map(Long::parseLong).filter(l -> l > 0);
         @SuppressWarnings("SimplifyOptionalCallChains") // IntelliJ bug
         final var song = songId.map(id -> Optional.ofNullable(structuredSongsInfo.get(id)))
@@ -176,7 +176,9 @@ public final class InternalUtils {
                 songId,
                 song,
                 Optional.ofNullable(creatorInfo).map(GDCreatorInfo::name),
-                Optional.ofNullable(creatorInfo).map(GDCreatorInfo::accountId)
+                Optional.ofNullable(creatorInfo).map(GDCreatorInfo::accountId),
+                data.get(LEVEL_TWO_PLAYER).equals("1"),
+                Objects.equals(data.get(LEVEL_IS_GAUNTLET), "1")
         );
     }
 
