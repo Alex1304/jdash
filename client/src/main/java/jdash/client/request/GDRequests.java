@@ -8,7 +8,7 @@ import java.util.Map;
 public final class GDRequests {
 
     /* Routes */
-    public static final String BASE_URL = "http://www.boomlings.com/database";
+    public static final String BASE_URL = "https://www.boomlings.com/database";
     public static final String GET_GJ_USER_INFO_20 = "/getGJUserInfo20.php";
     public static final String GET_GJ_USERS_20 = "/getGJUsers20.php";
     public static final String GET_GJ_USER_LIST_20 = "/getGJUserList20.php";
@@ -31,7 +31,7 @@ public final class GDRequests {
 
     /* Params */
     public static final String GAME_VERSION = "22";
-    public static final String BINARY_VERSION = "41";
+    public static final String BINARY_VERSION = "42";
     public static final String SECRET = "Wmfd2893gb7";
 
     private GDRequests() {

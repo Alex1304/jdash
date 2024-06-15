@@ -135,13 +135,7 @@ public final class DifficultyRendererTest {
                 Optional.of(7679228L),
                 0,
                 Optional.of(467339L),
-                Optional.of(new GDSong(
-                        467339,
-                        "At the Speed of Light",
-                        "Dimrain47",
-                        Optional.of("9.56"),
-                        Optional.ofNullable(InternalUtils.urlDecode("http%3A%2F%2Faudio.ngfiles" +
-                                ".com%2F467000%2F467339_At_the_Speed_of_Light_FINA.mp3")))),
+                Optional.empty(),
                 Optional.of("Riot"),
                 Optional.of(37415L),
                 false,

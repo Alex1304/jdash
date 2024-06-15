@@ -54,9 +54,15 @@ public final class Indexes {
     /* Song indexes */
     public static final int SONG_ID = 1;
     public static final int SONG_TITLE = 2;
+    public static final int SONG_ARTIST_ID = 3;
     public static final int SONG_ARTIST = 4;
     public static final int SONG_SIZE = 5;
+    public static final int SONG_YOUTUBE_ARTIST = 7;
+    public static final int SONG_NG_SCOUTED = 8;
+    public static final int SONG_PRIORITY_ID = 9;
     public static final int SONG_URL = 10;
+    public static final int SONG_PROVIDER_ID = 11;
+    public static final int SONG_OTHER_ARTIST_IDS = 12;
 
     /* User indexes */
     public static final int USER_NAME = 1;
