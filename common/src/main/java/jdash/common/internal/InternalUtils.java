@@ -93,9 +93,15 @@ public final class InternalUtils {
             result.put(songID, new GDSong(
                     songID,
                     data.get(SONG_TITLE),
+                    Long.parseLong(data.get(SONG_ARTIST_ID)),
                     data.get(SONG_ARTIST),
                     Optional.ofNullable(data.get(SONG_SIZE)),
-                    Optional.ofNullable(urlDecode(data.get(SONG_URL)))));
+                    Optional.ofNullable(data.get(SONG_YOUTUBE_ARTIST)),
+                    Objects.equals(data.get(SONG_NG_SCOUTED), "1"),
+                    Optional.ofNullable(urlDecode(data.get(SONG_URL))),
+                    MusicLibraryProvider.parse(data.get(SONG_PROVIDER_ID)),
+                    toList(data.get(SONG_OTHER_ARTIST_IDS), 0, Long::parseLong).orElse(List.of())
+            ));
         }
 
         return result;
@@ -307,10 +313,14 @@ public final class InternalUtils {
     }
 
     private static Optional<List<Integer>> toIntList(String str, int minSize) {
+        return toList(str, minSize, Integer::parseInt);
+    }
+
+    private static <T> Optional<List<T>> toList(String str, int minSize, Function<String, T> parser) {
         if (str == null || str.isEmpty()) {
             return Optional.empty();
         }
-        return Optional.of(Arrays.stream(str.split(",")).map(Integer::parseInt).toList())
+        return Optional.of(Arrays.stream(str.split(",")).map(parser).toList())
                 .filter(values -> values.size() >= minSize);
     }
 

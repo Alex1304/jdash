@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static jdash.common.internal.InternalUtils.urlDecode;
 import static org.junit.jupiter.api.Assertions.*;
 
 public final class GDClientTest {
@@ -24,7 +25,7 @@ public final class GDClientTest {
     /* Not part of unit tests, this is only to test the real router implementation */
     public static void main(String[] args) {
         final var client = GDClient.create();
-        System.out.println(client.downloadLevel(104043964).block());
+        System.out.println(client.getSongInfo(10007009).block());
     }
 
     @BeforeEach
@@ -103,13 +104,14 @@ public final class GDClientTest {
                 Optional.of(7679228L),
                 0,
                 Optional.of(467339L),
-                Optional.of(new GDSong(
+                Optional.of(GDSong.fromNewgrounds(
                         467339,
                         "At the Speed of Light",
+                        52,
                         "Dimrain47",
-                        Optional.of("9.56"),
-                        Optional.ofNullable(InternalUtils.urlDecode("http%3A%2F%2Faudio.ngfiles" +
-                                ".com%2F467000%2F467339_At_the_Speed_of_Light_FINA.mp3")))),
+                        "9.56",
+                        true,
+                        urlDecode("http%3A%2F%2Faudio.ngfiles.com%2F467000%2F467339_At_the_Speed_of_Light_FINA.mp3"))),
                 Optional.of("Riot"),
                 Optional.of(37415L),
                 false,
@@ -251,14 +253,14 @@ public final class GDClientTest {
 
     @Test
     public void getSongInfoTest() {
-        final var expected = new GDSong(
+        final var expected = GDSong.fromNewgrounds(
                 844899,
                 "~:Space soup:~",
+                28916,
                 "lchavasse",
-                Optional.of("8.79"),
-                Optional.ofNullable(InternalUtils.urlDecode("https%3A%2F%2Faudio.ngfiles" +
-                        ".com%2F844000%2F844899_Space-soup" +
-                        ".mp3%3Ff1548488779"))
+                "8.79",
+                false,
+                urlDecode("https%3A%2F%2Faudio.ngfiles.com%2F844000%2F844899_Space-soup.mp3%3Ff1548488779")
         );
         final var actual = client.getSongInfo(844899).block();
         assertEquals(expected, actual);
