@@ -100,7 +100,7 @@ public final class InternalUtils {
                     Objects.equals(data.get(SONG_NG_SCOUTED), "1"),
                     Optional.ofNullable(urlDecode(data.get(SONG_URL))).filter(not(String::isEmpty)),
                     MusicLibraryProvider.parse(data.get(SONG_PROVIDER_ID)),
-                    toList(data.get(SONG_OTHER_ARTIST_IDS), 0, Long::parseLong).orElse(List.of())
+                    toList(data.get(SONG_OTHER_ARTIST_IDS), 0, Long::parseLong, "\\.").orElse(List.of())
             ));
         }
 
@@ -313,14 +313,14 @@ public final class InternalUtils {
     }
 
     private static Optional<List<Integer>> toIntList(String str, int minSize) {
-        return toList(str, minSize, Integer::parseInt);
+        return toList(str, minSize, Integer::parseInt, ",");
     }
 
-    private static <T> Optional<List<T>> toList(String str, int minSize, Function<String, T> parser) {
+    private static <T> Optional<List<T>> toList(String str, int minSize, Function<String, T> parser, String sep) {
         if (str == null || str.isEmpty()) {
             return Optional.empty();
         }
-        return Optional.of(Arrays.stream(str.split(",")).map(parser).toList())
+        return Optional.of(Arrays.stream(str.split(sep)).map(parser).toList())
                 .filter(values -> values.size() >= minSize);
     }
 

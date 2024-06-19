@@ -25,7 +25,7 @@ public final class GDClientTest {
     /* Not part of unit tests, this is only to test the real router implementation */
     public static void main(String[] args) {
         final var client = GDClient.create();
-        System.out.println(client.getSongInfo(10007009).block());
+        System.out.println(client.getSongInfo(10010067).block());
     }
 
     @BeforeEach
