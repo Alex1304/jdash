@@ -10,7 +10,7 @@ class DailyInfoResponseDeserializer implements Function<String, GDDailyInfo> {
 
     @Override
     public GDDailyInfo apply(String response) {
-        if (!response.matches("\\d+\\|\\d+")) {
+        if (!response.matches("\\d+\\|\\d+(|.*)*")) {
             throw new ActionFailedException(response, "Failed to load daily level info");
         }
         final var tokens = response.split("\\|");

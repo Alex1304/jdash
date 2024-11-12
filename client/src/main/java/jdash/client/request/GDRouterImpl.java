@@ -37,6 +37,7 @@ class GDRouterImpl extends BaseSubscriber<RequestWithCallback> implements GDRout
                 .headers(h -> {
                     h.add("Content-Type", "application/x-www-form-urlencoded");
                     h.add("User-Agent", "");
+                    h.add("Cookie", "gd=1;");
                 });
         if (baseUrl.startsWith("https://")) {
             httpClient = httpClient.secure();

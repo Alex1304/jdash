@@ -1,5 +1,6 @@
 package jdash.common;
 
+import jdash.common.internal.InternalUtils;
 import org.junit.jupiter.api.Test;
 
 import static jdash.common.RobTopsWeakEncryption.*;
@@ -39,8 +40,12 @@ public final class RobTopsWeakEncryptionTest {
 
     @Test
     public void encodeChkTest() {
+        System.out.println(new XORCipher("59482").cipher(InternalUtils.b64Decode("BgkBCgYNCAEIAgUJ")));
+
         assertEquals("BFxRDAIFDlZeV1cKAAFVBwoADANRXQoKAAZbAAkAVA9UCwBTCgpeCQ==",
-                encodeChk(69101896, 2, "0ej5u5v6Nl", 98006, "00000000-24d6-c259-ffff-ffffddb46189", 4063664,
-                        "ysg6pUrtjn0J"));
+                encodeChk(69101896, 2, "0ej5u5v6Nl", 98006,
+                        "00000000-24d6-c259-ffff" + "-ffffddb46189", 4063664, "ysg6pUrtjn0J"));
     }
+
+
 }

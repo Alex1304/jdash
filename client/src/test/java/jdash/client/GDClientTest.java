@@ -25,7 +25,7 @@ public final class GDClientTest {
     /* Not part of unit tests, this is only to test the real router implementation */
     public static void main(String[] args) {
         final var client = GDClient.create();
-        System.out.println(client.getSongInfo(10010067).block());
+        System.out.println(client.getEventLevelInfo().block());
     }
 
     @BeforeEach
@@ -326,6 +326,13 @@ public final class GDClientTest {
     public void getWeeklyDemonInfoTest() {
         final var expected = new GDDailyInfo(194, Duration.ofSeconds(459229));
         final var actual = client.getWeeklyDemonInfo().block();
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void getEventLevelTest() {
+        final var expected = new GDDailyInfo(1, Duration.ofSeconds(10));
+        final var actual = client.getEventLevelInfo(SecretRewardChkGenerator.fixed("ALEX1", "123456")).block();
         assertEquals(expected, actual);
     }
 

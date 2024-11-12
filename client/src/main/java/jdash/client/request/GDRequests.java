@@ -31,7 +31,7 @@ public final class GDRequests {
 
     /* Params */
     public static final String GAME_VERSION = "22";
-    public static final String BINARY_VERSION = "42";
+    public static final String BINARY_VERSION = "45";
     public static final String SECRET = "Wmfd2893gb7";
 
     private GDRequests() {

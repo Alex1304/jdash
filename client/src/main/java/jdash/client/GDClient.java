@@ -403,12 +403,29 @@ public final class GDClient {
         return downloadLevel(-2);
     }
 
-    private Mono<GDDailyInfo> getTimelyInfo(int weekly) {
-        return Mono.defer(() -> GDRequest.of(GET_GJ_DAILY_LEVEL)
-                .addParameters(commonParams())
-                .addParameter("weekly", weekly)
-                .execute(cache, router)
-                .deserialize(dailyInfoResponse()));
+    /**
+     * Downloads full data of the current Event level. It is a shorthand for:
+     * <pre>
+     *     downloadLevel(-3)
+     * </pre>
+     *
+     * @return a Mono emitting the {@link GDLevelDownload} corresponding to the level. A {@link GDClientException} will
+     * be emitted if an error occurs.
+     */
+    public Mono<GDLevelDownload> downloadEventLevel() {
+        return downloadLevel(-3);
+    }
+
+    private Mono<GDDailyInfo> getDailyInfo(int type, @Nullable SecretRewardChkGenerator chkGenerator) {
+        return Mono.defer(() -> {
+            final var request = GDRequest.of(GET_GJ_DAILY_LEVEL)
+                    .addParameters(commonParams())
+                    .addParameter("type", type);
+            if (chkGenerator != null) {
+                request.addParameter("chk", chkGenerator.get());
+            }
+            return request.execute(cache, router).deserialize(dailyInfoResponse());
+        });
     }
 
     /**
@@ -418,7 +435,7 @@ public final class GDClient {
      * if an error occurs.
      */
     public Mono<GDDailyInfo> getDailyLevelInfo() {
-        return getTimelyInfo(0);
+        return getDailyInfo(0, null);
     }
 
     /**
@@ -428,7 +445,29 @@ public final class GDClient {
      * if an error occurs.
      */
     public Mono<GDDailyInfo> getWeeklyDemonInfo() {
-        return getTimelyInfo(1);
+        return getDailyInfo(1, null);
+    }
+
+    /**
+     * Requests information on the current Event level, such as its number or the time left before the next one. Rewards
+     * CHK is generated at random.
+     *
+     * @return a Mono emitting the {@link GDDailyInfo} of the Event level. A {@link GDClientException} will be emitted
+     * if an error occurs.
+     */
+    public Mono<GDDailyInfo> getEventLevelInfo() {
+        return getDailyInfo(2, SecretRewardChkGenerator.random());
+    }
+
+    /**
+     * Requests information on the current Event level, such as its number or the time left before the next one.
+     *
+     * @param chkGenerator customize the way CHK is generated
+     * @return a Mono emitting the {@link GDDailyInfo} of the Event level. A {@link GDClientException} will be emitted
+     * if an error occurs.
+     */
+    public Mono<GDDailyInfo> getEventLevelInfo(SecretRewardChkGenerator chkGenerator) {
+        return getDailyInfo(2, Objects.requireNonNull(chkGenerator));
     }
 
     /**

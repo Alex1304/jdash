@@ -67,6 +67,16 @@ public interface GDEventProducer {
     }
 
     /**
+     * An event producer that requests information on the current Event level on each iteration in
+     * order to detect when the Event level changes.
+     *
+     * @return a {@link GDEventProducer}
+     */
+    static GDEventProducer eventLevels() {
+        return new EventLevelProducer();
+    }
+
+    /**
      * Emits zero, one or more events by making requests using the given {@link GDClient}. The results of those requests
      * can be processed and memorized between two calls of this method in order to generate relevant events, for example
      * to detect changes between the results of two identical requests.

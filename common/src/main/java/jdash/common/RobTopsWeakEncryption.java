@@ -4,30 +4,31 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static jdash.common.internal.InternalUtils.b64Decode;
-import static jdash.common.internal.InternalUtils.b64Encode;
+import static jdash.common.internal.InternalUtils.*;
 
 /**
  * Provides methods to encode and decode some data such as private message body, level passcodes and account passwords.
  */
 public final class RobTopsWeakEncryption {
 
-    private static final XORCipher GD_MESSAGE_BODY_XOR_CIPHER = new XORCipher("14251");
-    private static final XORCipher LEVEL_PASSCODE_XOR_CIPHER = new XORCipher("26364");
-    private static final XORCipher ACCOUNT_PASSWORD_XOR_CIPHER = new XORCipher("37526");
-    private static final XORCipher CHK_XOR_CIPHER = new XORCipher("58281");
+    static final XORCipher GD_MESSAGE_BODY_XOR_CIPHER = new XORCipher("14251");
+    static final XORCipher LEVEL_PASSCODE_XOR_CIPHER = new XORCipher("26364");
+    static final XORCipher ACCOUNT_PASSWORD_XOR_CIPHER = new XORCipher("37526");
+    static final XORCipher CHK_XOR_CIPHER = new XORCipher("58281");
+    static final XORCipher CHK_REWARDS_XOR_CIPHER = new XORCipher("59182");
 
     private RobTopsWeakEncryption() {
     }
 
-    private static String decode(String str, XORCipher algorithm) {
+    static String decode(String str, XORCipher algorithm) {
         return algorithm.cipher(b64Decode(str));
     }
 
-    private static String encode(String str, XORCipher algorithm) {
+    static String encode(String str, XORCipher algorithm) {
         return b64Encode(algorithm.cipher(str));
     }
 
@@ -101,6 +102,15 @@ public final class RobTopsWeakEncryption {
         return encode(sha1(Arrays.stream(params)
                 .map(String::valueOf)
                 .collect(Collectors.joining())), CHK_XOR_CIPHER);
+    }
+
+    /**
+     * Generates a valid CHK to get secret rewards (chests or Event level rewards).
+     *
+     * @return the encoded string
+     */
+    public static String generateSecretRewardChk() {
+        return randomString(5) + encode("" + (new Random().nextInt(900000) + 100000), CHK_REWARDS_XOR_CIPHER);
     }
 
     /**

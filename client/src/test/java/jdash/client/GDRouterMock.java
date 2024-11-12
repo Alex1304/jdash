@@ -61,10 +61,14 @@ public final class GDRouterMock implements GDRouter {
                     .addParameter("levelID", 10565740), "downloadLevel"),
             Map.entry(GDRequest.of(GET_GJ_DAILY_LEVEL)
                     .addParameters(commonParams())
-                    .addParameter("weekly", 0), "getDailyLevelInfo"),
+                    .addParameter("type", 0), "getDailyLevelInfo"),
             Map.entry(GDRequest.of(GET_GJ_DAILY_LEVEL)
                     .addParameters(commonParams())
-                    .addParameter("weekly", 1), "getWeeklyDemonInfo"),
+                    .addParameter("type", 1), "getWeeklyDemonInfo"),
+            Map.entry(GDRequest.of(GET_GJ_DAILY_LEVEL)
+                    .addParameters(commonParams())
+                    .addParameter("type", 2)
+                    .addParameter("chk", "ALEX1BAsCDAcD"), "getEventLevelInfo"),
             Map.entry(GDRequest.of(GET_GJ_COMMENTS_21)
                     .addParameters(commonParams())
                     .addParameter("levelID", 10565740)

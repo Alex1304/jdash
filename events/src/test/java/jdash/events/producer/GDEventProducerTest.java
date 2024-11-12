@@ -31,6 +31,7 @@ public class GDEventProducerTest {
     private GDEventProducer awardedLevelProducer;
     private GDEventProducer awardedListProducer;
     private GDEventProducer dailyProducer;
+    private GDEventProducer eventLevelProducer;
 
     private static GDLevel createLevel(long id, int stars) {
         return new GDLevel(
@@ -95,6 +96,7 @@ public class GDEventProducerTest {
         awardedLevelProducer = GDEventProducer.awardedLevels();
         awardedListProducer = GDEventProducer.awardedLists();
         dailyProducer = GDEventProducer.dailyLevels();
+        eventLevelProducer = GDEventProducer.eventLevels();
         
         final var eventsA = awardedLevelProducer.produce(client).collectList().block();
         assertNotNull(eventsA);
@@ -105,6 +107,9 @@ public class GDEventProducerTest {
         final var eventsC = awardedListProducer.produce(client).collectList().block();
         assertNotNull(eventsC);
         assertTrue(eventsC.isEmpty()); // First iteration should yield nothing
+        final var eventsD = eventLevelProducer.produce(client).collectList().block();
+        assertNotNull(eventsD);
+        assertTrue(eventsD.isEmpty()); // First iteration should yield nothing
     }
 
     @Test
@@ -318,6 +323,19 @@ public class GDEventProducerTest {
         ));
     }
 
+    @Test
+    public void produceEventChangeTest() {
+        final var oldEvent = createDailyInfo(100);
+        final var newEvent = createDailyInfo(101);
+        cache.event = newEvent;
+
+        final var events2 = eventLevelProducer.produce(client).collect(Collectors.toUnmodifiableSet()).block();
+        assertNotNull(events2);
+        assertEquals(events2, Set.of(
+                new EventLevelChange(oldEvent, newEvent)
+        ));
+    }
+
     private static class EventProducerTestCache implements GDCache {
 
         List<GDLevel> levels0 = List.of(
@@ -350,6 +368,7 @@ public class GDEventProducerTest {
         );
         GDDailyInfo daily = createDailyInfo(1);
         GDDailyInfo weekly = createDailyInfo(10);
+        GDDailyInfo event = createDailyInfo(100);
 
         @Override
         public Optional<Object> retrieve(GDRequest request) {
@@ -366,10 +385,11 @@ public class GDEventProducerTest {
                             case "1" -> lists1;
                             default -> null;
                         });
-                case GDRequests.GET_GJ_DAILY_LEVEL -> Optional.ofNullable(request.getParams().get("weekly"))
+                case GDRequests.GET_GJ_DAILY_LEVEL -> Optional.ofNullable(request.getParams().get("type"))
                         .map(value -> switch (value) {
                             case "0" -> daily;
                             case "1" -> weekly;
+                            case "2" -> event;
                             default -> null;
                         });
 
