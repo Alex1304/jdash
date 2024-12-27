@@ -125,6 +125,11 @@ public final class Indexes {
     public static final int COMMENT_AUTHOR_ROLE = 11;
     public static final int COMMENT_COLOR = 12;
 
+    /* Leaderboard indexes */
+    // Depending on the leaderboard, this can either be the level percentage or the platformer time in milliseconds
+    public static final int ENTRY_PROGRESS = 3;
+    public static final int ENTRY_PUBLISHED_AGO = 42;
+
     private Indexes() {
     }
 }

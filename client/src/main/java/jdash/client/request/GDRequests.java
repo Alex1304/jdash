@@ -28,6 +28,8 @@ public final class GDRequests {
     public static final String BLOCK_GJ_USER_20 = "/blockGJUser20.php";
     public static final String UNBLOCK_GJ_USER_20 = "/unblockGJUser20.php";
     public static final String LOGIN_GJ_ACCOUNT = "/accounts/loginGJAccount.php";
+    public static final String GET_LEVEL_LEADERBOARD = "/getGJLevelScores211.php";
+    public static final String GET_PLATFORMER_LEADERBOARD = "/getGJLevelScoresPlat.php";
 
     /* Params */
     public static final String GAME_VERSION = "22";

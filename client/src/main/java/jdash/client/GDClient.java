@@ -576,6 +576,52 @@ public final class GDClient {
     }
 
     /**
+     * Requests the leaderboard of the specified level. This method require proper authentication to work.
+     *
+     * @param levelId the ID of the level to get the leaderboard for. This should be a standard level (not a platformer one)
+     * @param type    the type of leaderboard to get (all players, friends,...)
+     * @return a Flux emitting the {@link GDLeaderboardEntry} corresponding to leaderboard entries, sorted by rank. A
+     * {@link GDClientException} will be emitted if an error occurs.
+     * @throws IllegalStateException if an unauthenticated client is used
+     * @see #getPlatformerLevelLeaderboard(long, LevelLeaderboardType)
+     */
+    public Flux<GDLeaderboardEntry> getLevelLeaderboard(long levelId, LevelLeaderboardType type) {
+        Objects.requireNonNull(type);
+        requireAuthentication();
+        return Flux.defer(() -> GDRequest.of(GET_LEVEL_LEADERBOARD)
+                .addParameters(authParams())
+                .addParameters(commonParams())
+                .addParameter("levelID", levelId)
+                .addParameter("type", type.getTypeId())
+                .execute(cache, router)
+                .deserialize(leaderboardResponse())
+                .flatMapMany(Flux::fromIterable));
+    }
+
+    /**
+     * Requests the leaderboard of the specified platformer level. This method require proper authentication to work.
+     *
+     * @param levelId the ID of the level to get the leaderboard for. This should be a platformer level (not a standard one)
+     * @param type    the type of leaderboard to get (all players, friends,...)
+     * @return a Flux emitting the {@link GDLeaderboardEntry} corresponding to leaderboard entries, sorted by rank. A
+     * {@link GDClientException} will be emitted if an error occurs.
+     * @throws IllegalStateException if an unauthenticated client is used
+     * @see #getLevelLeaderboard(long, LevelLeaderboardType)
+     */
+    public Flux<GDPlatformerLeaderboardEntry> getPlatformerLevelLeaderboard(long levelId, LevelLeaderboardType type) {
+        Objects.requireNonNull(type);
+        requireAuthentication();
+        return Flux.defer(() -> GDRequest.of(GET_PLATFORMER_LEADERBOARD)
+                .addParameters(authParams())
+                .addParameters(commonParams())
+                .addParameter("levelID", levelId)
+                .addParameter("type", type.getTypeId())
+                .execute(cache, router)
+                .deserialize(platformerLeaderboardResponse())
+                .flatMapMany(Flux::fromIterable));
+    }
+
+    /**
      * Retrieves all private messages of the account this client is logged on. This method requires this client to be
      * authenticated.
      *

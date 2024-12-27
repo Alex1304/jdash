@@ -28,6 +28,9 @@ public final class GDResponseDeserializers {
     private static final PrivateMessageDownloadResponseDeserializer PRIVATE_MESSAGE_DOWNLOAD_RESPONSE =
             new PrivateMessageDownloadResponseDeserializer();
     private static final ListSearchResponseDeserializer LIST_SEARCH_RESPONSE = new ListSearchResponseDeserializer();
+    private static final LeaderboardResponseDeserializer LEADERBOARD_RESPONSE = new LeaderboardResponseDeserializer();
+    private static final PlatformerLeaderboardResponseDeserializer PLATFORMER_LEADERBOARD_RESPONSE =
+            new PlatformerLeaderboardResponseDeserializer();
 
     private GDResponseDeserializers() {
         throw new AssertionError();
@@ -139,5 +142,23 @@ public final class GDResponseDeserializers {
      */
     public static Function<String, List<GDList>> listSearchResponse() {
         return LIST_SEARCH_RESPONSE;
+    }
+
+    /**
+     * A function that can deserialize the content of a single entry inside a level leaderboard.
+     *
+     * @return a deserializer function
+     */
+    public static Function<String, List<GDLeaderboardEntry>> leaderboardResponse() {
+        return LEADERBOARD_RESPONSE;
+    }
+
+    /**
+     * A function that can deserialize the content of a single entry inside a platformer level leaderboard.
+     *
+     * @return a deserializer function
+     */
+    public static Function<String, List<GDPlatformerLeaderboardEntry>> platformerLeaderboardResponse() {
+        return PLATFORMER_LEADERBOARD_RESPONSE;
     }
 }
