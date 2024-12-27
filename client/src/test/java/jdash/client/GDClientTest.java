@@ -3,7 +3,6 @@ package jdash.client;
 import jdash.client.exception.GDClientException;
 import jdash.common.*;
 import jdash.common.entity.*;
-import jdash.common.internal.InternalUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -438,5 +437,31 @@ public final class GDClientTest {
         assertNotNull(actual);
         assertFalse(actual.get(0).leaderboardRank().isEmpty());
         assertEquals(12537, actual.get(0).leaderboardRank().orElseThrow());
+    }
+
+    @Test
+    public void getLevelLeaderboardTest() {
+        final List<GDLeaderboardEntry> leaderboard = authClient.getLevelLeaderboard(7933030, LevelLeaderboardType.ALL)
+                .collectList()
+                .block();
+        assertNotNull(leaderboard);
+        assertEquals(200, leaderboard.size());
+        assertEquals(9892440, leaderboard.get(0).user().accountId());
+        assertEquals(1, leaderboard.get(0).leaderboardRank());
+        assertEquals(100, leaderboard.get(0).percentage());
+        assertEquals("1 year", leaderboard.get(0).postedAgo());
+    }
+
+    @Test
+    public void getPlatformerLevelLeaderboardTest() {
+        final List<GDPlatformerLeaderboardEntry> leaderboard = authClient.getPlatformerLevelLeaderboard(7933030, LevelLeaderboardType.ALL)
+                .collectList()
+                .block();
+        assertNotNull(leaderboard);
+        assertEquals(200, leaderboard.size());
+        assertEquals(6823264, leaderboard.get(0).user().accountId());
+        assertEquals(1, leaderboard.get(0).leaderboardRank());
+        assertEquals(1000, leaderboard.get(0).timeMs());
+        assertEquals("1 week", leaderboard.get(0).postedAgo());
     }
 }

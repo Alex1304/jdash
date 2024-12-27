@@ -3,15 +3,13 @@ package jdash.client;
 
 import jdash.client.request.GDRequest;
 import jdash.client.request.GDRouter;
-import jdash.common.CommentSortMode;
-import jdash.common.LeaderboardType;
-import jdash.common.LevelSearchFilter;
-import jdash.common.LevelSearchMode;
+import jdash.common.*;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 import java.util.Map;
 
 import static jdash.client.request.GDRequests.*;
@@ -92,7 +90,17 @@ public final class GDRouterMock implements GDRouter {
             Map.entry(GDRequest.of(GET_GJ_SCORES_20)
                     .addParameters(commonParams())
                     .addParameter("type", LeaderboardType.RELATIVE.name().toLowerCase())
-                    .addParameter("count", 50), "getLeaderboard")
+                    .addParameter("count", 50), "getLeaderboard"),
+            Map.entry(GDRequest.of(GET_LEVEL_LEADERBOARD)
+                    .addParameters(AUTH_PARAMS)
+                    .addParameters(commonParams())
+                    .addParameter("type", LevelLeaderboardType.ALL.getTypeId())
+                    .addParameter("levelID", 7933030), "getLevelLeaderboard"),
+            Map.entry(GDRequest.of(GET_PLATFORMER_LEADERBOARD)
+                    .addParameters(AUTH_PARAMS)
+                    .addParameters(commonParams())
+                    .addParameter("type", LevelLeaderboardType.ALL.getTypeId())
+                    .addParameter("levelID", 7933030), "getPlatformerLevelLeaderboard")
     );
 
     private int requestCount;

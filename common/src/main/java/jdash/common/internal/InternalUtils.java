@@ -312,6 +312,27 @@ public final class InternalUtils {
         );
     }
 
+    public static GDLeaderboardEntry buildLeaderboardEntry(Map<Integer, String> data) {
+        requireKeys(data, ENTRY_PROGRESS, USER_LEADERBOARD_RANK, USER_SECRET_COINS, ENTRY_PUBLISHED_AGO);
+        return new GDLeaderboardEntry(
+                buildUser(data),
+                Integer.parseInt(data.get(ENTRY_PROGRESS)), // Level percentage
+                Integer.parseInt(data.get(USER_LEADERBOARD_RANK)),
+                Integer.parseInt(data.get(USER_SECRET_COINS)),
+                data.get(ENTRY_PUBLISHED_AGO)
+        );
+    }
+
+    public static GDPlatformerLeaderboardEntry buildPlatformerLeaderboardEntry(Map<Integer, String> data) {
+        requireKeys(data, ENTRY_PROGRESS, USER_LEADERBOARD_RANK, ENTRY_PUBLISHED_AGO);
+        return new GDPlatformerLeaderboardEntry(
+                buildUser(data),
+                Long.parseLong(data.get(ENTRY_PROGRESS)), // Time (in ms)
+                Integer.parseInt(data.get(USER_LEADERBOARD_RANK)),
+                data.get(ENTRY_PUBLISHED_AGO)
+        );
+    }
+
     private static Optional<List<Integer>> toIntList(String str, int minSize) {
         return toList(str, minSize, Integer::parseInt, ",");
     }
