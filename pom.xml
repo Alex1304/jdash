@@ -3,7 +3,7 @@
 
     <groupId>com.alex1304.jdash</groupId>
     <artifactId>jdash</artifactId>
-    <version>5.1.1-SNAPSHOT</version>
+    <version>5.2.0</version>
     <packaging>pom</packaging>
 
     <modules>
@@ -37,7 +37,7 @@
         <connection>scm:git:git://github.com/Alex1304/jdash.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/Alex1304/jdash.git</developerConnection>
         <url>https://github.com/Alex1304/jdash/tree/master</url>
-        <tag>HEAD</tag>
+        <tag>v5.2.0</tag>
     </scm>
 
     <properties>
