@@ -7,9 +7,9 @@ import jdash.client.request.GDRequest;
 import jdash.client.request.GDRouter;
 import jdash.common.*;
 import jdash.common.entity.*;
+import org.jspecify.annotations.Nullable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.util.annotation.Nullable;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -40,7 +40,7 @@ public final class GDClient {
     private final GDRouter router;
     private final GDCache cache;
     private final String uniqueDeviceId;
-    private final AuthenticationInfo auth;
+    private final @Nullable AuthenticationInfo auth;
     private final Collection<Long> followedAccountIds;
 
     private GDClient(GDRouter router, GDCache cache, String uniqueDeviceId, @Nullable AuthenticationInfo auth,

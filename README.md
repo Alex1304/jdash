@@ -155,6 +155,6 @@ Have a feature to suggest or a bug to report ? Issues and pull requests are more
 
 E-mail: mirandaa1304@gmail.com
 
-Discord: Alex1304#9704
+Discord: alex1304
 
 Twitter: @gd_alex1304

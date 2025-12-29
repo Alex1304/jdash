@@ -1,6 +1,7 @@
 package jdash.events.producer;
 
 import jdash.client.GDClient;
+import org.jspecify.annotations.Nullable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.function.Tuples;
@@ -15,8 +16,8 @@ import static reactor.function.TupleUtils.function;
 class ComparingPagesEventProducer<T> implements GDEventProducer {
 
     private final PagesComparator<T> pagesComparator;
-    private Set<T> previous0;
-    private Set<T> previous1;
+    private @Nullable Set<T> previous0;
+    private @Nullable Set<T> previous1;
 
     ComparingPagesEventProducer(PagesComparator<T> pagesComparator) {
         this.pagesComparator = pagesComparator;

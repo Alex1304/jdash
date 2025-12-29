@@ -1,7 +1,7 @@
 /**
  * API for caching requests made by the client.
  */
-@NonNullApi
+@NullMarked
 package jdash.client.cache;
 
-import reactor.util.annotation.NonNullApi;
+import org.jspecify.annotations.NullMarked;

@@ -3,12 +3,13 @@ package jdash.events.producer;
 import jdash.client.GDClient;
 import jdash.common.entity.GDDailyInfo;
 import jdash.events.object.EventLevelChange;
+import org.jspecify.annotations.Nullable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 class EventLevelProducer implements GDEventProducer {
 
-    private GDDailyInfo previousEventLevel;
+    private @Nullable GDDailyInfo previousEventLevel;
 
     @Override
     public Flux<Object> produce(GDClient client) {

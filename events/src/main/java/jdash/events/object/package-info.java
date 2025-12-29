@@ -1,7 +1,7 @@
 /**
  * Contains some objects emitted as events.
  */
-@NonNullApi
+@NullMarked
 package jdash.events.object;
 
-import reactor.util.annotation.NonNullApi;
+import org.jspecify.annotations.NullMarked;

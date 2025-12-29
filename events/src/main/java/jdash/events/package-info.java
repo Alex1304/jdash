@@ -1,7 +1,7 @@
 /**
  * Contains the main class for the event loop.
  */
-@NonNullApi
+@NullMarked
 package jdash.events;
 
-import reactor.util.annotation.NonNullApi;
+import org.jspecify.annotations.NullMarked;

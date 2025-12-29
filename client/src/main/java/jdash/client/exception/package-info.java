@@ -1,7 +1,7 @@
 /**
  * Exceptions that may occur when using the client.
  */
-@NonNullApi
+@NullMarked
 package jdash.client.exception;
 
-import reactor.util.annotation.NonNullApi;
+import org.jspecify.annotations.NullMarked;

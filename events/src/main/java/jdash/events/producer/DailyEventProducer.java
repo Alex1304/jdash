@@ -3,13 +3,14 @@ package jdash.events.producer;
 import jdash.client.GDClient;
 import jdash.common.entity.GDDailyInfo;
 import jdash.events.object.DailyLevelChange;
+import org.jspecify.annotations.Nullable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 class DailyEventProducer implements GDEventProducer {
 
-    private GDDailyInfo previousDaily;
-    private GDDailyInfo previousWeekly;
+    private @Nullable GDDailyInfo previousDaily;
+    private @Nullable GDDailyInfo previousWeekly;
 
     @Override
     public Flux<Object> produce(GDClient client) {

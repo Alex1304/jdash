@@ -1,7 +1,7 @@
 /**
  * API to produce events on each iteration of the loop.
  */
-@NonNullApi
+@NullMarked
 package jdash.events.producer;
 
-import reactor.util.annotation.NonNullApi;
+import org.jspecify.annotations.NullMarked;

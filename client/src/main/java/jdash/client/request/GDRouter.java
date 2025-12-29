@@ -3,7 +3,7 @@ package jdash.client.request;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
-import reactor.util.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.time.Duration;
 import java.util.Objects;
@@ -45,10 +45,10 @@ public interface GDRouter {
 
     final class Builder {
 
-        private RequestLimiter limiter;
-        private Duration timeout;
-        private String baseUrl;
-        private Scheduler scheduler;
+        private @Nullable RequestLimiter limiter;
+        private @Nullable Duration timeout;
+        private @Nullable String baseUrl;
+        private @Nullable Scheduler scheduler;
 
         private Builder() {
         }

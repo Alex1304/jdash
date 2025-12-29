@@ -1,7 +1,7 @@
 /**
  * Internal implementations.
  */
-@NonNullApi
+@NullMarked
 package jdash.client.response.impl;
 
-import reactor.util.annotation.NonNullApi;
+import org.jspecify.annotations.NullMarked;

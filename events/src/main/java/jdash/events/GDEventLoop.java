@@ -10,7 +10,7 @@ import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 import reactor.util.Logger;
 import reactor.util.Loggers;
-import reactor.util.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.time.Duration;
 import java.util.Objects;
@@ -95,9 +95,9 @@ public class GDEventLoop {
     public static class Builder {
 
         private final GDClient client;
-        private Set<GDEventProducer> eventProducers;
-        private Duration interval;
-        private Scheduler scheduler;
+        private @Nullable Set<GDEventProducer> eventProducers;
+        private @Nullable Duration interval;
+        private @Nullable Scheduler scheduler;
 
         private Builder(GDClient client) {
             this.client = Objects.requireNonNull(client).withCacheDisabled();

@@ -4,7 +4,7 @@ import jdash.client.cache.GDCache;
 import jdash.client.response.GDResponse;
 import jdash.client.response.impl.GDCachedObjectResponse;
 import jdash.client.response.impl.GDSerializedSourceResponse;
-import reactor.util.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;

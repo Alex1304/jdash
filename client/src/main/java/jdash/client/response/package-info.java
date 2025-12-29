@@ -1,7 +1,7 @@
 /**
  * Contains the logic to deserialize responses.
  */
-@NonNullApi
+@NullMarked
 package jdash.client.response;
 
-import reactor.util.annotation.NonNullApi;
+import org.jspecify.annotations.NullMarked;

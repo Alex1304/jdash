@@ -1,7 +1,7 @@
 /**
  * Contains the logic to build and route requests.
  */
-@NonNullApi
+@NullMarked
 package jdash.client.request;
 
-import reactor.util.annotation.NonNullApi;
+import org.jspecify.annotations.NullMarked;

@@ -1,7 +1,7 @@
 /**
  * Contains the main client
  */
-@NonNullApi
+@NullMarked
 package jdash.client;
 
-import reactor.util.annotation.NonNullApi;
+import org.jspecify.annotations.NullMarked;

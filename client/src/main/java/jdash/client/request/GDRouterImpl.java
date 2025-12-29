@@ -1,6 +1,7 @@
 package jdash.client.request;
 
 import jdash.client.exception.HttpResponseException;
+import org.jspecify.annotations.Nullable;
 import org.reactivestreams.Subscription;
 import reactor.core.Exceptions;
 import reactor.core.publisher.*;
@@ -22,13 +23,13 @@ class GDRouterImpl extends BaseSubscriber<RequestWithCallback> implements GDRout
     private static final Logger LOGGER = Loggers.getLogger(GDRouterImpl.class);
 
     private final RequestLimiter limiter;
-    private final Duration timeout;
+    private final @Nullable Duration timeout;
     private final Scheduler scheduler;
     private final HttpClient httpClient;
     private final Sinks.Many<RequestWithCallback> requestQueue = Sinks.many().multicast().onBackpressureBuffer();
     private final Sinks.Many<Duration> nextRequestScheduler = Sinks.many().multicast().onBackpressureBuffer();
 
-    public GDRouterImpl(RequestLimiter limiter, Duration timeout, String baseUrl, Scheduler scheduler) {
+    public GDRouterImpl(RequestLimiter limiter, @Nullable Duration timeout, String baseUrl, Scheduler scheduler) {
         this.limiter = limiter;
         this.timeout = timeout;
         this.scheduler = scheduler;

@@ -5,7 +5,7 @@ module.exports = {
     baseUrl: '/',
     favicon: 'favicon.ico',
     onBrokenLinks: 'throw',
-    onBrokenMarkdownLinks: 'warn',
+    markdown: { hooks: { onBrokenMarkdownLinks: 'warn' } },
     organizationName: 'Alex1304', // Usually your GitHub org/user name.
     projectName: 'jdash', // Usually your repo name.
     themeConfig: {

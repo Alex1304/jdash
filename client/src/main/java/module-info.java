@@ -16,4 +16,5 @@ module jdash.client {
     requires transitive org.reactivestreams;
     requires transitive reactor.core;
     requires transitive reactor.netty.http;
+    requires transitive org.jspecify;
 }
